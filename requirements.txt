@@ -4,7 +4,7 @@ pandas
 matplotlib
 requests
 plotly
-nba-api>=1.4.1
+nbapy
 bs4
 numpy
 datetime
