@@ -36,7 +36,7 @@ def create_court(ax, color):
     # Your create_court function implementation...
 
 # Modified make_shot_chart function with longer timeout
-@st.cache()
+
 def make_shot_chart(TEAM_ID, PLAYER_ID, SEASON):
     clutch_time = typeclutch if Clutch_Time == 1 else None
     seasontype = 'Playoffs' if Playoffs == 1 else 'Regular Season'
