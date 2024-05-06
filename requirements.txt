@@ -1,0 +1,12 @@
+xgboost
+scikit-learn
+pandas
+matplotlib
+requests
+plotly
+nba-api>=1.4.1
+bs4
+numpy
+datetime
+unidecode
+streamlit
