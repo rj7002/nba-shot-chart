@@ -9,6 +9,7 @@ from nba_api.stats.static import players
 import requests
 currentyear = datetime.datetime.now().year
 
+from nba_api.stats.static import players
 def scrape_player_ids():
 
     # Load the CSV file into a DataFrame
@@ -32,6 +33,7 @@ def scrape_player_ids():
             player_info.append({'Player': player_name, 'Player ID': player_id})
         else:
             print(f"No player found for {player_name}")
+            player_info.append({'Player': player_name, 'Player ID': 2})
 
 # Create a DataFrame from the player info list
     player_info_df = pd.DataFrame(player_info)
