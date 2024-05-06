@@ -78,12 +78,25 @@ def create_court(ax, color):
 
 # Modified make_shot_chart function with longer timeout
 
-def make_shot_chart(TEAM_ID, PLAYER_ID, SEASON,SEGMENT,CONF,LOC,OUTCOME):
+def make_shot_chart(TEAM_ID, PLAYER_ID, SEASON, SEGMENT, CONF, LOC, OUTCOME):
     clutch_time = typeclutch if Clutch_Time == 1 else None
     seasontype = 'Playoffs' if Playoffs == 1 else 'Regular Season'
     stattype = Stat
     try:
-        # GET THE DATA with longer timeout
+        # Headers with additional fields
+        headers = {
+            'Host': 'stats.nba.com',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0',
+            'Accept': 'application/json, text/plain, */*',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Referer': 'https://stats.nba.com/',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            'x-nba-stats-origin': 'stats',
+            'x-nba-stats-token': 'true'
+        }
+
+        # GET THE DATA with longer timeout and additional headers
         shot_json = shotchartdetail.ShotChartDetail(
             team_id=TEAM_ID, # team parameter
             player_id=PLAYER_ID, # player parameter
@@ -95,7 +108,8 @@ def make_shot_chart(TEAM_ID, PLAYER_ID, SEASON,SEGMENT,CONF,LOC,OUTCOME):
             vs_conference_nullable=CONF,
             location_nullable=LOC,
             outcome_nullable=OUTCOME,
-            timeout=60 # Longer timeout period in seconds
+            timeout=60, # Longer timeout period in seconds
+            headers=headers  # Additional headers
         )
 
         # Load data into a Python dictionary
