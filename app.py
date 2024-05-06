@@ -5,31 +5,39 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-st.title('Shot Chart Visualization')
+from nba_api.stats.static import players
+@st.cache(10000)
+def scrape_player_ids():
 
-# Load teams file
-teams = pd.read_csv('teamids.csv')
-# Load players file
-players = pd.read_csv('playerids.csv')
+    # Load the CSV file into a DataFrame
+    nba_data_all = pd.read_csv('matched_data.csv')
 
-teams_df = pd.DataFrame(teams)
-player_df = pd.DataFrame(players)
+    # Get the unique player names
+    player_names = nba_data_all['Player'].unique()
 
-team_list = teams_df['Team'].tolist()
+    # List to store player names and their corresponding IDs
+    player_info = []
 
-# Allow user to select player
-PLAYER = st.selectbox('Select a player', player_df['Player'].to_list())
-PLAYER_ID = player_df.loc[(player_df['Player'] == PLAYER), 'Player ID'].iloc[0]
+    # Iterate over each player name
+    for player_name in player_names:
+    # Find the player by full name
+        player = players.find_players_by_full_name(player_name)
+    # Check if player found
+        if player:
+        # Get the player ID
+            player_id = player[0]['id']
+        # Append player name and ID to the list
+            player_info.append({'Player': player_name, 'Player ID': player_id})
+        else:
+            print(f"No player found for {player_name}")
 
-# Allow user to select season
-SEASONS = [f'{i}-{str(i+1)[2:]}' for i in range(1999, 2024)]
-SEASON = st.multiselect('Select a season', SEASONS)
+# Create a DataFrame from the player info list
+    player_info_df = pd.DataFrame(player_info)
 
-Clutch_Time = st.checkbox('Clutch Time')
-if Clutch_Time == 1:
-    typeclutch = st.selectbox('Time Remaining', ['Last 5 Minutes', 'Last 4 Minutes','Last 3 Minutes','Last 2 Minutes','Last 1 Minute','Last 30 Seconds', 'Last 10 Seconds'])
-Playoffs = st.checkbox('Playoffs')
-Stat = st.selectbox('Select Stat',['PTS', 'FGA','FGM','FG3A','FG3M'])
+# Save the DataFrame to a CSV file
+    player_info_df.to_csv('playerids.csv', index=False)
+
+    print("Player IDs saved to player_ids2.csv")
 
 # Function to draw basketball court
 def create_court(ax, color):
@@ -116,4 +124,40 @@ def make_shot_chart(TEAM_ID, PLAYER_ID, SEASON):
     except requests.exceptions.ReadTimeout:
         st.error('Timeout error: The request took too long to complete. Please try again later.')
 
-make_shot_chart(0, PLAYER_ID, SEASON)
+
+page = st.sidebar.selectbox("", ('Home','Shot Chart Visualization'))
+
+if page == 'Home':
+    scrape_player_ids()
+    st.title('NBA Shot Chart Visualizer')
+    st.subheader('Plot NBA Players' Shot Charts')
+
+elif page == 'Shot Chart Visualization':
+    st.title('Shot Chart Visualization')
+
+# Load teams file
+    teams = pd.read_csv('teamids.csv')
+# Load players file
+    players = pd.read_csv('playerids.csv')
+
+    teams_df = pd.DataFrame(teams)
+    player_df = pd.DataFrame(players)
+
+    team_list = teams_df['Team'].tolist()
+
+# Allow user to select player
+    PLAYER = st.selectbox('Select a player', player_df['Player'].to_list())
+    PLAYER_ID = player_df.loc[(player_df['Player'] == PLAYER), 'Player ID'].iloc[0]
+
+# Allow user to select season
+    SEASONS = [f'{i}-{str(i+1)[2:]}' for i in range(1999, 2024)]
+    SEASON = st.multiselect('Select a season', SEASONS)
+
+    Clutch_Time = st.checkbox('Clutch Time')
+    if Clutch_Time == 1:
+        typeclutch = st.selectbox('Time Remaining', ['Last 5 Minutes', 'Last 4 Minutes','Last 3 Minutes','Last 2 Minutes','Last 1 Minute','Last 30 Seconds', 'Last 10 Seconds'])
+    Playoffs = st.checkbox('Playoffs')
+    Stat = st.selectbox('Select Stat',['PTS', 'FGA','FGM','FG3A','FG3M'])
+
+
+    make_shot_chart(0, PLAYER_ID, SEASON)
