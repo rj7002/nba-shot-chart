@@ -1,47 +1,16 @@
 import streamlit as st
+import pandas as pd
+from nbapy import constants
+from nbapy.nba_api import NbaAPI
+import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import pandas as pd
 from nbapy import constants
-from nbapy.nba_api import NbaAPI
 import datetime
 from nba_api.stats.static import players
 import requests
 currentyear = datetime.datetime.now().year
-
-from nba_api.stats.static import players
-def scrape_player_ids():
-
-    # Load the CSV file into a DataFrame
-    nba_data_all = pd.read_csv('matched_data.csv')
-
-    # Get the unique player names
-    player_names = nba_data_all['Player'].unique()
-
-    # List to store player names and their corresponding IDs
-    player_info = []
-
-    # Iterate over each player name
-    for player_name in player_names:
-    # Find the player by full name
-        player = players.find_players_by_full_name(player_name)
-    # Check if player found
-        if player:
-        # Get the player ID
-            player_id = player[0]['id']
-        # Append player name and ID to the list
-            player_info.append({'Player': player_name, 'Player ID': player_id})
-        else:
-            print(f"No player found for {player_name}")
-            player_info.append({'Player': player_name, 'Player ID': 2})
-
-# Create a DataFrame from the player info list
-    player_info_df = pd.DataFrame(player_info)
-
-# Save the DataFrame to a CSV file
-    player_info_df.to_csv('playerids.csv', index=False)
-
-    print("Player IDs saved to player_ids2.csv")
 
 def display_player_image(player_id, width2, caption2):
     # Construct the URL for the player image using the player ID
@@ -166,122 +135,176 @@ class ShotChart:
     def league_average(self):
         return self.api.get_result("LeagueAverages")
 
+
+class PlayerNotFoundException(Exception):
+    pass
+
+class PlayerList:
+    """Contains a list of players and their teams.
+
+    Args:
+        league_id: ID for the league to look in
+        season: Season given to look up. This affects whether or not the player
+            is active and on what team.
+        active_only: (1 or 0 for true or false respectively).
+            Only return active players for the given season.
+            If season is set prior to the current season, and active_only is 1,
+            then only players who's career ended in the specified season will
+            be listed.
+    """
+
+    _endpoint = "commonallplayers"
+
+    def __init__(
+        self,
+        league_id=constants.League.NBA,
+        season=constants.CURRENT_SEASON,
+        active_only=1,
+    ):
+        self._params = {
+            "LeagueID": league_id,
+            "Season": season,
+            "IsOnlyCurrentSeason": active_only,
+        }
+        self.api = NbaAPI(self._endpoint, self._params)
+
+    def players(self):
+        return self.api.get_result()
+
+def get_id(
+    name, season=constants.CURRENT_SEASON, active_only=1,
+):
+    """Get a player_id for any specified player.
+
+    Calls PlayerList, then matches name to return the id. Player id is needed
+    for most of our player functions.
+
+    Args:
+        name: name of the player to lookup. This must match the name
+            as presented on nba.com (case insensitive)
+        season: season to lookup
+        active_only: only match active players
+
+    Returns:
+        Nba.com player_id
+
+    Raises:
+        PlayerNotFoundException
+    """
+    name = name.lower()
+
+    players = pd.DataFrame(PlayerList(season=season, active_only=active_only).players())
+
+    player = players.loc[players["DISPLAY_FIRST_LAST"].str.lower() == name, "PERSON_ID"]
+    try:
+        player_id = player.iat[0]
+    except IndexError:
+        raise PlayerNotFoundException(
+            f'The player "{name}" could not be found. Please double check the '
+            "name against nba.com"
+        )
+
+    return player_id
+
+# Define Streamlit app
 page = st.sidebar.selectbox("", ('Home','Shot Chart Visualization'))
-players = pd.read_csv('playerids.csv')
-player_df = pd.DataFrame(players)
 
 if page == 'Home':
-    scrape_player_ids()
     st.title('NBA Shot Chart Visualizer')
     st.subheader('Plot Shot Charts For Any Player')
-
 elif page == 'Shot Chart Visualization':
     st.title('Shot Chart Visualization')
+    # User input for player name
+    player_name = st.text_input("Enter the player's name:")
+    if player_name:
+        try:
+            # Call get_id function to retrieve player ID
+            PLAYER_ID = get_id(player_name)
+            st.success(f"Successfully found {player_name}")
+            display_player_image(PLAYER_ID,300,'')
+            
+            # Get season range from user input
+            SEASONS = [f'{i}-{str(i+1)[2:]}' for i in range(1996, currentyear)]
+            SEASON = st.sidebar.selectbox('Select a season', SEASONS)
+            Stat = st.sidebar.selectbox('Select Stat',['PTS', 'FGA','FG3A'])
+            GameSegment = st.sidebar.checkbox('Game Segment')
+            if GameSegment == 1:
+                typeseg = st.sidebar.selectbox('Game Segment',['First Half', 'Second Half', 'Overtime'])
+            else:
+                typeseg = None
+            Clutch_Time = st.sidebar.checkbox('Clutch Time')
+            if Clutch_Time == 1:
+                typeclutch = st.sidebar.selectbox('Time Remaining', ['Last 5 Minutes', 'Last 4 Minutes','Last 3 Minutes','Last 2 Minutes','Last 1 Minute','Last 30 Seconds', 'Last 10 Seconds'])
+            else:
+                typeclutch = None
+            Playoffs = st.sidebar.checkbox('Playoffs')
+            if Playoffs == 1:
+                typeseason = 'Playoffs'
+            else:
+                typeseason = "Regular Season"
+            Conference = st.sidebar.checkbox('Conference')
+            if Conference == 1:
+                typeconf = st.sidebar.selectbox('Select a conference',['East', 'West'])
+            else:
+                typeconf = None
+            Location = st.sidebar.checkbox('Location')
+            if Location == 1:
+                typeloc = st.sidebar.selectbox('Location',['Home', 'Road'])
+            else:
+                typeloc = None
+            Outcome = st.sidebar.checkbox('Outcome')
+            if Outcome == 1:
+                typeout = st.sidebar.selectbox('Outcome',['W', 'L'])
+            else:
+                typeout = None
 
-# Streamlit UI
+            col1, col2 = st.columns(2)
+            # Create ShotChart object
+            shot_chart = ShotChart(PLAYER_ID, season=SEASON,game_segment=typeseg,clutch_time=typeclutch,season_type=typeseason,vs_conf=typeconf,location=typeloc,outcome=typeout,context_measure=Stat)
 
-# Get player ID from user input
-    PLAYER = st.sidebar.selectbox('Select a player', player_df['Player'].to_list())
-    PLAYER_ID = player_df.loc[(player_df['Player'] == PLAYER), 'Player ID'].iloc[0]
+            # Fetch shot chart data
+            shot_data = shot_chart.shot_chart()
 
-    player_row = player_df.loc[player_df['Player'] == PLAYER]
+            # Visualize shot chart
+            if not shot_data.empty:
+                # Plot shot chart on basketball court
+                plt.figure(figsize=(10, 5))
+                ax = plt.gca()
+                # Plot makes in green
+                ax.scatter(shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"], 
+                        shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"] + 60, 
+                        color="green", alpha=0.6, label="Makes",marker='o')
+                # Plot misses in red
+                ax.scatter(shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"], 
+                        shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60, 
+                        color="red", alpha=0.6, label="Misses",marker='x')
+                create_court(ax, 'black')
+                ax.set_xlim(-250, 250)
+                ax.set_ylim(0, 470)
+                ax.set_aspect('equal')
+                ax.legend()
+                with col2:
+                    st.subheader('Makes and Misses Plot')
+                    st.pyplot(plt)
 
-    if not player_row.empty:
-    # If the player row exists, get the player ID
-        playerid = player_row['Player ID'].values[0]
-    else:
-    # If the player row does not exist, provide a default player ID
-        playerid = 436
-    display_player_image(playerid,300,PLAYER)
-    col1, col2= st.columns(2)
+                fig = plt.figure(figsize=(4, 3.76))
+                ax = fig.add_axes([0, 0, 1, 1])
 
-# Get season range from user input
-    SEASONS = [f'{i}-{str(i+1)[2:]}' for i in range(1996, currentyear)]
-    SEASON = st.sidebar.selectbox('Select a season', SEASONS)
-    Stat = st.sidebar.selectbox('Select Stat',['PTS', 'FGA','FG3A'])
-    GameSegment = st.sidebar.checkbox('Game Segment')
-    if GameSegment == 1:
-        typeseg = st.sidebar.selectbox('Game Segment',['First Half', 'Second Half', 'Overtime'])
-    else:
-        typeseg = None
-    Clutch_Time = st.sidebar.checkbox('Clutch Time')
-    if Clutch_Time == 1:
-        typeclutch = st.sidebar.selectbox('Time Remaining', ['Last 5 Minutes', 'Last 4 Minutes','Last 3 Minutes','Last 2 Minutes','Last 1 Minute','Last 30 Seconds', 'Last 10 Seconds'])
-    else:
-        typeclutch = None
-    Playoffs = st.sidebar.checkbox('Playoffs')
-    if Playoffs == 1:
-        typeseason = 'Playoffs'
-    else:
-        typeseason = "Regular Season"
-    Conference = st.sidebar.checkbox('Conference')
-    if Conference == 1:
-        typeconf = st.sidebar.selectbox('Select a conference',['East', 'West'])
-    else:
-        typeconf = None
-    Location = st.sidebar.checkbox('Location')
-    if Location == 1:
-        typeloc = st.sidebar.selectbox('Location',['Home', 'Road'])
-    else:
-        typeloc = None
-    Outcome = st.sidebar.checkbox('Outcome')
-    if Outcome == 1:
-        typeout = st.sidebar.selectbox('Outcome',['W', 'L'])
-    else:
-        typeout = None
-
-
-
-    if PLAYER_ID:
-    # Create ShotChart object
-        shot_chart = ShotChart(PLAYER_ID, season=SEASON,game_segment=typeseg,clutch_time=typeclutch,season_type=typeseason,vs_conf=typeconf,location=typeloc,outcome=typeout,context_measure=Stat)
-
-    # Fetch shot chart data
-        shot_data = shot_chart.shot_chart()
-
-    # Visualize shot chart
-        if not shot_data.empty:
-        # Plot shot chart on basketball court
-            plt.figure(figsize=(10, 5))
-            ax = plt.gca()
-        # Plot makes in green
-            ax.scatter(shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"], 
-                    shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"] + 60, 
-                    color="green", alpha=0.6, label="Makes",marker='o')
-        # Plot misses in red
-            ax.scatter(shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"], 
-                    shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60, 
-                    color="red", alpha=0.6, label="Misses",marker='x')
-            create_court(ax, 'black')
-            ax.set_xlim(-250, 250)
-            ax.set_ylim(0, 470)
-            ax.set_aspect('equal')
-            ax.legend()
-            with col2:
-                st.subheader('Makes and Misses Plot')
-                st.pyplot(plt)
-
-            fig = plt.figure(figsize=(4, 3.76))
-            ax = fig.add_axes([0, 0, 1, 1])
-
-            # Plot hexbin with custom colormap
-            hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(30, 30), extent=(-300, 300, 0, 940), bins='log', cmap='inferno')
-            legend_elements = [plt.Line2D([0], [0], marker='H', color='w', label='Less Shots', markerfacecolor='black', markersize=10),
-            plt.Line2D([0], [0], marker='H', color='w', label='More Shots', markerfacecolor='yellow', markersize=10)]
-            plt.legend(handles=legend_elements, loc='upper right')  
-            # Customize color bar legend
+                    # Plot hexbin with custom colormap
+                hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(30, 30), extent=(-300, 300, 0, 940), bins='log', cmap='inferno')
+                legend_elements = [plt.Line2D([0], [0], marker='H', color='w', label='Less Shots', markerfacecolor='black', markersize=10),
+                plt.Line2D([0], [0], marker='H', color='w', label='More Shots', markerfacecolor='yellow', markersize=10)]
+                plt.legend(handles=legend_elements, loc='upper right')  
+                    # Customize color bar legend
 
 
-            ax = create_court(ax, 'black')
+                ax = create_court(ax, 'black')
 
 
-            with col1:
-                st.subheader('Shot Frequency Plot')
-                st.pyplot(fig)
-    
-        
-
-
-
-    else:
-        st.error("Failed to fetch shot chart data. Please check the player ID and season range.")
+                with col1:
+                    st.subheader('Shot Frequency Plot')
+                    st.pyplot(fig)
+        except PlayerNotFoundException as e:
+            st.error(str(e))
+else:
+    st.error("Failed to fetch shot chart data. Please check the player ID and season range.")
