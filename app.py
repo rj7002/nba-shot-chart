@@ -113,7 +113,9 @@ def make_shot_chart(TEAM_ID, PLAYER_ID, SEASON,SEGMENT,CONF,LOC,OUTCOME):
             shot_data.columns = headers
 
             # General plot parameters
-            mpl.rcParams['font.family'] = 'Avenir'
+            # mpl.rcParams['font.family'] = 'Avenir'
+            plt.rcParams['font.family'] = 'Avenir'
+
             mpl.rcParams['font.size'] = 14
             mpl.rcParams['axes.linewidth'] = 2
 
