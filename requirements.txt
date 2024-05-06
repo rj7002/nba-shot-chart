@@ -10,3 +10,4 @@ numpy
 datetime
 unidecode
 streamlit
+nba-api>=1.4.1
