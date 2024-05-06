@@ -23,7 +23,7 @@ def scrape_player_ids():
     # Iterate over each player name
     for player_name in player_names:
     # Find the player by full name
-        player = players.find_players_by_full_name(player_name)
+        player = players.find_player_by_full_name(player_name)
     # Check if player found
         if player:
         # Get the player ID
