@@ -424,9 +424,11 @@ if player_name:
                     total_makes = len(makes_data)
                     total_misses = len(misses_data)
                     total_shots = total_makes + total_misses
-                    shooting_percentage = round((total_makes / total_shots) * 100, 1)
+                    if total_shots != 0:
+                        shooting_percentage = round((total_makes / total_shots) * 100, 1)
+                    else: 
+                        shooting_percentage = 0
                     shootperc = shooting_percentage
-
                     fig, (ax2, ax1) = plt.subplots(1, 2, figsize=(12, 5))
 
                     ax1.scatter(makes_data["LOC_X"], makes_data["LOC_Y"] + 60, color='green', alpha=0.5, label='Made Shots',marker='o')
@@ -455,7 +457,10 @@ if player_name:
                     total_makes = len(shot_data[shot_data["SHOT_MADE_FLAG"] == 1])
                     total_misses = len(shot_data[shot_data["SHOT_MADE_FLAG"] == 0])
                     total_shots = total_makes + total_misses
-                    shooting_percentage = round((total_makes / total_shots) * 100, 1)
+                    if total_shots != 0:
+                        shooting_percentage = round((total_makes / total_shots) * 100, 1)
+                    else: 
+                        shooting_percentage = 0
                     shootperc = shooting_percentage
 
                     fig, ax = plt.subplots(figsize=(6, 5))
