@@ -442,7 +442,7 @@ if player_name:
                 if CourtLoc:
                     shot_data = shot_data[shot_data['SHOT_ZONE_AREA'] == courtloc]
                 if Teams:
-                    shot_data = shot_data[shot_data['VTM'] == teamtype]
+                    shot_data = shot_data[(shot_data['VTM'] == teamtype) | (shot_data['HTM'] == teamtype)]
                 if ShotType:  # Check if ShotType checkbox is selected
                     shot_data = shot_data[shot_data['ACTION_TYPE'] == finaltype]
                 # Plot makes in green
