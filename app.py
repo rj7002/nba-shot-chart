@@ -333,7 +333,7 @@ if player_name:
             # Generate the list of seasons within the range
         SEASONS = [f'{season}-{str(int(season)+1)[2:]}' for season in range(int(first_season), int(last_season)+1)]
             
-        SEASON = st.multiselect('Select seasons', reversed(SEASONS))
+        SEASON = st.sidebar.multiselect('Select seasons', reversed(SEASONS))
         if SEASON:
             # Create an empty list to store shot data for all selected seasons
             all_shot_data = []
