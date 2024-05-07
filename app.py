@@ -333,9 +333,18 @@ if player_name:
             # Generate the list of seasons within the range
         SEASONS = [f'{season}-{str(int(season)+1)[2:]}' for season in range(int(first_season), int(last_season)+1)]
             
-        SEASON = st.sidebar.selectbox('Select a season', reversed(SEASONS))
-        player_summary = Splits(player_id=PLAYER_ID,season=SEASON)
-        player_headline_stats = player_summary.overall()
+        SEASON = st.multiselect('Select seasons', reversed(SEASONS))
+        if SEASON:
+            # Create an empty list to store shot data for all selected seasons
+            all_shot_data = []
+
+        for season1 in SEASON:
+            
+            player_summary = Splits(player_id=PLAYER_ID,season=season1)
+            player_headline_stats = player_summary.overall()
+            st.write(player_headline_stats[['GROUP_VALUE','GP', 'PTS','OREB', 'DREB', 'REB', 'AST',
+        'STL', 'BLK', 'TOV', 'BLKA', 'PF', 'PFD', 'W', 'L', 'W_PCT', 'MIN', 'FGM', 'FGA', 'FG_PCT', 'FG3M',
+       'FG3A', 'FG3_PCT', 'FTM', 'FTA', 'FT_PCT',  'PLUS_MINUS']])
 
         Stat = st.sidebar.selectbox('Select Stat',['MAKES', 'MISSES','FGA','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS','PF'])
         if Stat == 'MAKES':
@@ -392,13 +401,13 @@ if player_name:
 
         col1, col2 = st.columns(2)
             # Create ShotChart object
-        shot_chart = ShotChart(PLAYER_ID, season=SEASON,game_segment=typeseg,clutch_time=typeclutch,season_type=typeseason,vs_conf=typeconf,location=typeloc,outcome=typeout,context_measure=Stat2,ahead_behind=typeaheadbehind)
+        for season1 in SEASON:
+
+            shot_chart = ShotChart(PLAYER_ID, season=season1,game_segment=typeseg,clutch_time=typeclutch,season_type=typeseason,vs_conf=typeconf,location=typeloc,outcome=typeout,context_measure=Stat2,ahead_behind=typeaheadbehind)
 
             # Fetch shot chart data
-        shot_data = shot_chart.shot_chart()
-
-            # Visualize shot chart
-        if not shot_data.empty:
+            shot_data = shot_chart.shot_chart()
+         
             if Stat != 'MISSES':
                 # Plot shot chart on basketball court
                 plt.figure(figsize=(10, 5))
@@ -409,20 +418,20 @@ if player_name:
                 total_shots = total_makes + total_misses
                 shooting_percentage = round((total_makes / total_shots) * 100, 1)
                 ax.scatter(shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"], 
-                        shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"] + 60, 
-                        color="green", alpha=0.6, label="Makes",marker='o')
+                            shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"] + 60, 
+                            color="green", alpha=0.6, label="Makes",marker='o')
                 # Plot misses in red
                 ax.scatter(shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"], 
-                        shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60, 
-                        color="red", alpha=0.6, label="Misses",marker='x')
+                            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60, 
+                            color="red", alpha=0.6, label="Misses",marker='x')
                 create_court(ax, 'black')
                 ax.set_xlim(-250, 250)
                 ax.set_ylim(0, 470)
                 ax.set_aspect('equal')
                 ax.legend(loc='upper right')
                 with col2:
-                    st.subheader('Makes and Misses Plot')
-                    st.pyplot(plt)
+                        st.subheader(f'Makes and Misses in {season1}')
+                        st.pyplot(plt)
 
                 fig = plt.figure(figsize=(4, 3.76))
                 ax = fig.add_axes([0, 0, 1, 1])
@@ -439,53 +448,49 @@ if player_name:
 
 
                 with col1:
-                    st.subheader('Shot Frequency Plot')
-                    st.pyplot(fig)
-                st.write(player_headline_stats[['GP', 'PTS','OREB', 'DREB', 'REB', 'AST',
-        'STL', 'BLK', 'TOV', 'BLKA', 'PF', 'PFD', 'W', 'L', 'W_PCT', 'MIN', 'FGM', 'FGA', 'FG_PCT', 'FG3M',
-       'FG3A', 'FG3_PCT', 'FTM', 'FTA', 'FT_PCT',  'PLUS_MINUS']])
-                st.sidebar.header(f'{total_makes}/{total_shots} - {shooting_percentage}%')
+                        st.subheader(f'Shot Frequency in {season1}')
+                        st.pyplot(fig)
+                
+                st.sidebar.header(f'{season1}: {total_makes}/{total_shots} - {shooting_percentage}%')
             else:
                 # Plot shot chart on basketball court
-                plt.figure(figsize=(10, 5))
-                ax = plt.gca()
+                    plt.figure(figsize=(10, 5))
+                    ax = plt.gca()
                 # Plot makes in green
-                total_misses = len(shot_data[shot_data["SHOT_MADE_FLAG"] == 0])
-                shooting_percentage = 0
+                    total_misses = len(shot_data[shot_data["SHOT_MADE_FLAG"] == 0])
+                    shooting_percentage = 0
                 # Plot misses in red
-                ax.scatter(shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"], 
-                        shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60, 
-                        color="red", alpha=0.6, label="Misses",marker='x')
-                create_court(ax, 'black')
-                ax.set_xlim(-250, 250)
-                ax.set_ylim(0, 470)
-                ax.set_aspect('equal')
-                ax.legend(loc='upper right')
-                with col2:
-                    st.subheader('Makes and Misses Plot')
-                    st.pyplot(plt)
+                    ax.scatter(shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"], 
+                            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60, 
+                            color="red", alpha=0.6, label="Misses",marker='x')
+                    create_court(ax, 'black')
+                    ax.set_xlim(-250, 250)
+                    ax.set_ylim(0, 470)
+                    ax.set_aspect('equal')
+                    ax.legend(loc='upper right')
+                    with col2:
+                        st.subheader(f'Makes and Misses in {season1}')
+                        st.pyplot(plt)
 
-                fig = plt.figure(figsize=(4, 3.76))
-                ax = fig.add_axes([0, 0, 1, 1])
+                    fig = plt.figure(figsize=(4, 3.76))
+                    ax = fig.add_axes([0, 0, 1, 1])
 
                     # Plot hexbin with custom colormap
-                hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(30, 30), extent=(-300, 300, 0, 940), bins='log', cmap='inferno')
-                legend_elements = [plt.Line2D([0], [0], marker='H', color='w', label='Less Shots', markerfacecolor='black', markersize=10),
-                plt.Line2D([0], [0], marker='H', color='w', label='More Shots', markerfacecolor='yellow', markersize=10)]
-                plt.legend(handles=legend_elements, loc='upper right')  
+                    hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(30, 30), extent=(-300, 300, 0, 940), bins='log', cmap='inferno')
+                    legend_elements = [plt.Line2D([0], [0], marker='H', color='w', label='Less Shots', markerfacecolor='black', markersize=10),
+                    plt.Line2D([0], [0], marker='H', color='w', label='More Shots', markerfacecolor='yellow', markersize=10)]
+                    plt.legend(handles=legend_elements, loc='upper right')  
                     # Customize color bar legend
 
 
-                ax = create_court(ax, 'black')
+                    ax = create_court(ax, 'black')
 
 
-                with col1:
-                    st.subheader('Shot Frequency Plot')
-                    st.pyplot(fig)
-                st.write(player_headline_stats[['GP', 'PTS','OREB', 'DREB', 'REB', 'AST',
-        'STL', 'BLK', 'TOV', 'BLKA', 'PF', 'PFD', 'W', 'L', 'W_PCT', 'MIN', 'FGM', 'FGA', 'FG_PCT', 'FG3M',
-       'FG3A', 'FG3_PCT', 'FTM', 'FTA', 'FT_PCT',  'PLUS_MINUS']])
-                st.sidebar.header(f'0/{total_misses} - {shooting_percentage}%')
+                    with col1:
+                        st.subheader(f'Shot Frequency in {season1}')
+                        st.pyplot(fig)
+                    
+                    st.sidebar.header(f'{season1}: 0/{total_misses} - {shooting_percentage}%')
     except PlayerNotFoundException as e:
         st.error(str(e))
 else:
