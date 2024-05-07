@@ -648,4 +648,4 @@ if player_name:
     except PlayerNotFoundException as e:
         st.error(str(e))
 else:
-    st.image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRySCj5qvbL9p1BvKiI_Ti17ke-dy0x1XNAzlBZzhfombjYuFv8",use_column_width=True)
+    st.image("https://static.vecteezy.com/system/resources/thumbnails/013/861/222/small/silhouette-of-basketball-player-with-ball-shooting-dunk-free-vector.jpg",use_column_width=True)
