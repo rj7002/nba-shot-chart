@@ -486,7 +486,6 @@ if player_name:
         'STL', 'BLK', 'TOV', 'BLKA', 'PF', 'PFD', 'W', 'L', 'W_PCT', 'MIN', 'FGM', 'FGA', 'FG_PCT', 'FG3M',
        'FG3A', 'FG3_PCT', 'FTM', 'FTA', 'FT_PCT',  'PLUS_MINUS']])
                 st.sidebar.header(f'0/{total_misses} - {shooting_percentage}%')
-                st.write('test')
     except PlayerNotFoundException as e:
         st.error(str(e))
 else:
