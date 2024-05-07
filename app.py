@@ -11,6 +11,7 @@ import datetime
 from nba_api.stats.static import players
 import requests
 from nba_api.stats.endpoints import LeagueDashPlayerStats
+st.set_page_config(page_title="NBA Shot Visualizer", page_icon='https://juststickers.in/wp-content/uploads/2015/05/basket-ball-player-1-decal.png', initial_sidebar_state="expanded")
 
 currentyear = datetime.datetime.now().year
 
@@ -227,7 +228,7 @@ def get_player_season_range(player_id):
 
 # Define Streamlit app
 
-st.title('Shot Chart Visualization')
+st.title('NBA Shot Visualizer')
     # User input for player name
 player_name = st.text_input("Enter player name (not case sensitive)")
 if player_name:
