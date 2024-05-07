@@ -368,6 +368,9 @@ if player_name:
             typeseg = st.sidebar.selectbox('Game Segment',['First Half', 'Second Half', 'Overtime'])
         else:
             typeseg = None
+        Quarters = st.sidebar.checkbox('Quarters')
+        if Quarters:
+            typequart = st.sidebar.selectbox('Quarters',['1','2','3','4'])
         Clutch_Time = st.sidebar.checkbox('Clutch Time')
         if Clutch_Time == 1:
             typeclutch = st.sidebar.selectbox('Time Remaining', ['Last 5 Minutes', 'Last 4 Minutes','Last 3 Minutes','Last 2 Minutes','Last 1 Minute','Last 30 Seconds', 'Last 10 Seconds'])
@@ -439,6 +442,8 @@ if player_name:
                 # Plot shot chart on basketball court
                 plt.figure(figsize=(10, 5))
                 ax = plt.gca()
+                if Quarters:
+                    shot_data = shot_data[shot_data['PERIOD'] == int(typequart)]
                 if CourtLoc:
                     shot_data = shot_data[shot_data['SHOT_ZONE_AREA'] == courtloc]
                 if Teams:
