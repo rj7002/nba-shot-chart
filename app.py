@@ -402,6 +402,28 @@ if player_name:
         if ShotDist == 1:
             shotdistbool = True
             shotdistance = st.sidebar.slider("Shot Distance", 0, 40)
+        ShotType = st.sidebar.checkbox('Shot Type')
+        if ShotType == 1:
+            shottypebool = True
+            shottype = st.sidebar.selectbox('Shot Type', ['Jump Shot', 'Layup','Dunk','Other'])
+            if shottype == 'Jump Shot':
+                jumpshottype = st.sidebar.selectbox('Jump Shot Type', ['Stepback Jump shot', 'Running Pull-Up Jump Shot','Turnaround Fadeaway shot','Fadeaway Jump Shot','Pullup Jump shot','Jump Bank Shot','Jump Shot'])
+                finaltype = jumpshottype
+            elif shottype == 'Layup':
+                layuptype = st.sidebar.selectbox('Layup Type', ['Layup Shot', 'Running Finger Roll Layup Shot','Cutting Layup Shot','Driving Layup Shot','Running Layup Shot','Alley Oop Layup shot','Tip Layup Shot','Reverse Layup Shot','Driving Reverse Layup Shot','Running Reverse Layup Shot'])
+                finaltype = layuptype
+            elif shottype == 'Dunk':
+                dunktype = st.sidebar.selectbox('Dunk Type', ['Running Dunk Shot', 'Cutting Dunk Shot','Running Reverse Dunk Shot','Running Alley Oop Dunk Shot','Dunk Shot','Tip Dunk Shot'])    
+                finaltype = dunktype
+            elif shottype == 'Other':
+                othertype = st.sidebar.selectbox('Other Type', ['Driving Floating Jump Shot', 'Floating Jump shot','Driving Floating Bank Jump Shot','Driving Bank Hook Shot','Driving Hook Shot','Turnaround Hook Shot','Hook Shot'])
+                finaltype = othertype
+        Teams = st.sidebar.checkbox('Teams')
+        if Teams == 1:
+            teamtype = st.sidebar.selectbox('Teams', ['ATL', 'BOS', 'BKN', 'CHA', 'CHI', 'CLE', 'DAL', 'DEN', 'DET', 'GSW', 'HOU', 'IND', 'LAC', 'LAL', 'MEM', 'MIA', 'MIL', 'MIN', 'NOP', 'NYK', 'OKC', 'ORL', 'PHI', 'PHX', 'POR', 'SAC', 'SAS', 'TOR', 'UTA', 'WAS'])
+        CourtLoc = st.sidebar.checkbox('Court Location')
+        if CourtLoc == 1:
+            courtloc = st.sidebar.selectbox('Court Location',['Right Side(R)','Left Side(L)','Center(C)','Right Side Center(RC)','Left Side Center(LC)'])
 
         col1, col2 = st.columns(2)
             # Create ShotChart object
@@ -417,6 +439,12 @@ if player_name:
                 # Plot shot chart on basketball court
                 plt.figure(figsize=(10, 5))
                 ax = plt.gca()
+                if CourtLoc:
+                    shot_data = shot_data[shot_data['SHOT_ZONE_AREA'] == courtloc]
+                if Teams:
+                    shot_data = shot_data[shot_data['VTM'] == teamtype]
+                if ShotType:  # Check if ShotType checkbox is selected
+                    shot_data = shot_data[shot_data['ACTION_TYPE'] == finaltype]
                 # Plot makes in green
                 if ShotDist == 1:
                     makes_data = shot_data[(shot_data["SHOT_MADE_FLAG"] == 1) & (shot_data['SHOT_DISTANCE'] >= shotdistance)]
@@ -429,6 +457,7 @@ if player_name:
                     else: 
                         shooting_percentage = 0
                     shootperc = shooting_percentage
+
                     fig, (ax2, ax1) = plt.subplots(1, 2, figsize=(12, 5))
 
                     ax1.scatter(makes_data["LOC_X"], makes_data["LOC_Y"] + 60, color='green', alpha=0.5, label='Made Shots',marker='o')
@@ -448,8 +477,8 @@ if player_name:
 
                     ax2 = create_court(ax2, 'black')
 
-                    st.sidebar.header(f'{season1}: {total_makes}/{total_shots} - {shootperc}%')
-                    st.subheader(f'Shot Frequency in {season1} Makes and Misses in {season1}')
+                    # st.sidebar.header(f'{season1}: {total_makes}/{total_shots} - {shootperc}%')
+                    st.subheader(f'Makes and Misses in {season1}')
                     st.pyplot(fig)
                     
 
@@ -494,14 +523,22 @@ if player_name:
                         st.subheader(f'Shot Frequency in {season1}')
                         st.pyplot(fig)
             else:
+                if CourtLoc:
+                    shot_data = shot_data[shot_data['SHOT_ZONE_AREA'] == courtloc]
+                if Teams:
+                    shot_data = shot_data[shot_data['VTM'] == teamtype]
+                if ShotType:  # Check if ShotType checkbox is selected
+                    shot_data = shot_data[shot_data['ACTION_TYPE'] == finaltype]
                 if ShotDist == 1:
                     plt.figure(figsize=(10, 5))
                     ax = plt.gca()
 
-                    # shooting_percentage = round((total_makes / total_shots) * 100, 1)
                     misses_data = shot_data[(shot_data["SHOT_MADE_FLAG"] == 0) & (shot_data['SHOT_DISTANCE'] >= shotdistance)]
                     total_misses = len(misses_data)
-                    shooting_percentage = round((0 / total_misses) * 100, 1)
+                    if total_misses != 0:
+                        shooting_percentage = round((0 / total_misses) * 100, 1)
+                    else: 
+                        shooting_percentage = 0
                     shootperc = shooting_percentage
                     ax.scatter(misses_data["LOC_X"], misses_data["LOC_Y"] + 60, color='red', alpha=0.5, label='Missed Shots',marker='x')
                     create_court(ax, 'black')
@@ -532,9 +569,15 @@ if player_name:
                     
                 else:
                     total_misses = len(shot_data[shot_data["SHOT_MADE_FLAG"] == 0])
-                    shooting_percentage = round((0 / total_misses) * 100, 1)
+                    if total_misses != 0:
+                        shooting_percentage = round((0 / total_misses) * 100, 1)
+                    else: 
+                        shooting_percentage = 0
                     shootperc = shooting_percentage
                 # Plot misses in red
+                    plt.figure(figsize=(10, 5))
+                    ax = plt.gca()
+
                     ax.scatter(shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"], 
                             shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60, 
                             color="red", alpha=0.6, label="Misses",marker='x')
