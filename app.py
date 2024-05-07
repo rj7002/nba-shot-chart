@@ -8,9 +8,7 @@ import matplotlib.patches as patches
 import pandas as pd
 from nbapy import constants
 import datetime
-from nba_api.stats.static import players
 import requests
-from nba_api.stats.endpoints import LeagueDashPlayerStats
 st.set_page_config(page_title="NBA Shot Visualizer", page_icon='https://juststickers.in/wp-content/uploads/2015/05/basket-ball-player-1-decal.png', initial_sidebar_state="expanded")
 
 currentyear = datetime.datetime.now().year
@@ -74,6 +72,98 @@ def create_court(ax, color):
     ax.set_ylim(0, 470)
     
     return ax
+
+class Splits:
+    """Player stats splits.
+
+    Also a base class containing common arguments for different split type
+    child classes.
+
+    Args:
+        player_id: ID of the player to look up
+        team_id: ID of the team to look up
+        measure_type: Specifies type of measure to use (Base, Advanced, etc.)
+        per_mode: Mode to measure statistics (Totals, PerGame, Per36, etc.)
+        plus_minus: Whether or not to consider plus minus (Y or N)
+        pace_adjust: Whether or not to pace adjust stats (Y or N)
+        rank: Whether or not to consider rank (Y or N)
+        league_id: ID for the league to look in (Default is 00)
+        season: Season given to look up
+        season_type: Season type to consider (Regular / Playoffs)
+        po_round: Playoff round
+        outcome: Filter out by wins or losses
+        location: Filter out by home or away
+        month: Specify month to filter by
+        season_segment: Filter by pre/post all star break
+        date_from: Filter out games before a specific date
+        date_to: Filter out games after a specific date
+        opponent_team_id: Opponent team ID to look up
+        vs_conference: Filter by conference
+        vs_division: Filter by division
+        game_segment: Filter by half / overtime
+        period: Filter by quarter / specific overtime
+        shot_clock_range: Filter statistics by range in shot clock
+        last_n_games: Filter by number of games specified in N
+    """
+
+    _endpoint = "playerdashboardbygeneralsplits"  # this could be any split
+
+    def __init__(
+        self,
+        player_id: str,
+        team_id: str = "0",
+        measure_type=constants.MeasureType.Default,
+        per_mode=constants.PerMode.Default,
+        plus_minus=constants.PlusMinus.Default,
+        pace_adjust=constants.PaceAdjust.Default,
+        rank=constants.PaceAdjust.Default,
+        league_id=constants.League.Default,
+        season=constants.CURRENT_SEASON,
+        season_type=constants.SeasonType.Default,
+        po_round=constants.PlayoffRound.Default,
+        outcome=constants.Outcome.Default,
+        location=constants.Location.Default,
+        month=constants.Month.Default,
+        season_segment=constants.SeasonSegment.Default,
+        date_from=constants.DateFrom.Default,
+        date_to=constants.DateTo.Default,
+        opponent_team_id=constants.OpponentTeamID.Default,
+        vs_conference=constants.VsConference.Default,
+        vs_division=constants.VsDivision.Default,
+        game_segment=constants.GameSegment.Default,
+        period=constants.Period.Default,
+        shot_clock_range=constants.ShotClockRange.Default,
+        last_n_games=constants.LastNGames.Default,
+    ):
+        self._params = {
+            "PlayerID": player_id,
+            "TeamID": team_id,
+            "MeasureType": measure_type,
+            "PerMode": per_mode,
+            "PlusMinus": plus_minus,
+            "PaceAdjust": pace_adjust,
+            "Rank": rank,
+            "LeagueID": league_id,
+            "Season": season,
+            "SeasonType": season_type,
+            "PORound": po_round,
+            "Outcome": outcome,
+            "Location": location,
+            "Month": month,
+            "SeasonSegment": season_segment,
+            "DateFrom": date_from,
+            "DateTo": date_to,
+            "OpponentTeamID": opponent_team_id,
+            "VsConference": vs_conference,
+            "VsDivision": vs_division,
+            "GameSegment": game_segment,
+            "Period": period,
+            "ShotClockRange": shot_clock_range,
+            "LastNGames": last_n_games,
+        }
+        self.api = NbaAPI(self._endpoint, self._params)
+    def overall(self):
+        return self.api.get_result("OverallPlayerDashboard")
 
 class ShotChart:
     _endpoint = "shotchartdetail"
@@ -228,7 +318,7 @@ def get_player_season_range(player_id):
 
 # Define Streamlit app
 
-st.title('NBA Shot Visualizer')
+st.title('Shot Chart Visualization')
     # User input for player name
 player_name = st.text_input("Enter player name (not case sensitive)")
 if player_name:
@@ -244,9 +334,8 @@ if player_name:
         SEASONS = [f'{season}-{str(int(season)+1)[2:]}' for season in range(int(first_season), int(last_season)+1)]
             
         SEASON = st.sidebar.selectbox('Select a season', reversed(SEASONS))
-        player_stats = LeagueDashPlayerStats(season=SEASON,per_mode_detailed='PerGame')
-        player_stats_df = player_stats.get_data_frames()[0]
-        specificstats = player_stats_df[player_stats_df['PLAYER_ID'] == PLAYER_ID]
+        player_summary = Splits(player_id=PLAYER_ID)
+        player_headline_stats = player_summary.overall()
 
         Stat = st.sidebar.selectbox('Select Stat',['MAKES', 'MISSES','FGA','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS','PF'])
         if Stat == 'MAKES':
@@ -352,8 +441,7 @@ if player_name:
                 with col1:
                     st.subheader('Shot Frequency Plot')
                     st.pyplot(fig)
-                st.write(specificstats[['PLAYER_NAME', 'TEAM_ABBREVIATION',
-       'AGE', 'GP', 'PTS','OREB', 'DREB', 'REB', 'AST',
+                st.write(player_headline_stats[['GP', 'PTS','OREB', 'DREB', 'REB', 'AST',
         'STL', 'BLK', 'TOV', 'BLKA', 'PF', 'PFD', 'W', 'L', 'W_PCT', 'MIN', 'FGM', 'FGA', 'FG_PCT', 'FG3M',
        'FG3A', 'FG3_PCT', 'FTM', 'FTA', 'FT_PCT',  'PLUS_MINUS']])
                 st.sidebar.header(f'{total_makes}/{total_shots} - {shooting_percentage}%')
@@ -394,11 +482,11 @@ if player_name:
                 with col1:
                     st.subheader('Shot Frequency Plot')
                     st.pyplot(fig)
-                st.write(specificstats[['PLAYER_NAME', 'TEAM_ABBREVIATION',
-       'AGE', 'GP', 'PTS','OREB', 'DREB', 'REB', 'AST',
+                st.write(player_headline_stats[['GP', 'PTS','OREB', 'DREB', 'REB', 'AST',
         'STL', 'BLK', 'TOV', 'BLKA', 'PF', 'PFD', 'W', 'L', 'W_PCT', 'MIN', 'FGM', 'FGA', 'FG_PCT', 'FG3M',
        'FG3A', 'FG3_PCT', 'FTM', 'FTA', 'FT_PCT',  'PLUS_MINUS']])
                 st.sidebar.header(f'0/{total_misses} - {shooting_percentage}%')
+                st.write('test')
     except PlayerNotFoundException as e:
         st.error(str(e))
 else:
