@@ -318,7 +318,7 @@ def get_player_season_range(player_id):
 
 # Define Streamlit app
 
-st.title('Shot Chart Visualization')
+st.title('NBA Shot Visualizer')
     # User input for player name
 player_name = st.text_input("Enter player name (not case sensitive)")
 if player_name:
