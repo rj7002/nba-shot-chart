@@ -648,4 +648,4 @@ if player_name:
     except PlayerNotFoundException as e:
         st.error(str(e))
 else:
-    st.write("")
+    st.image("https://static.vecteezy.com/system/resources/thumbnails/013/861/222/small/silhouette-of-basketball-player-with-ball-shooting-dunk-free-vector.jpg")
