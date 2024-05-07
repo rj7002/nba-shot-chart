@@ -447,7 +447,7 @@ if player_name:
                     ax2 = create_court(ax2, 'black')
 
                     st.sidebar.header(f'{season1}: {total_makes}/{total_shots} - {shootperc}%')
-                    st.subheader(f'Makes and Misses in {season1}')
+                    st.subheader(f'Shot Frequency in {season1} Makes and Misses in {season1}')
                     st.pyplot(fig)
                     
 
