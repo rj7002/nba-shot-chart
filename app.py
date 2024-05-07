@@ -334,7 +334,7 @@ if player_name:
         SEASONS = [f'{season}-{str(int(season)+1)[2:]}' for season in range(int(first_season), int(last_season)+1)]
             
         SEASON = st.sidebar.selectbox('Select a season', reversed(SEASONS))
-        player_summary = Splits(player_id=PLAYER_ID)
+        player_summary = Splits(player_id=PLAYER_ID,season=SEASON)
         player_headline_stats = player_summary.overall()
 
         Stat = st.sidebar.selectbox('Select Stat',['MAKES', 'MISSES','FGA','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS','PF'])
