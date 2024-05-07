@@ -333,7 +333,7 @@ if player_name:
             # Generate the list of seasons within the range
         SEASONS = [f'{season}-{str(int(season)+1)[2:]}' for season in range(int(first_season), int(last_season)+1)]
             
-        SEASON = st.sidebar.multiselect('Select seasons', reversed(SEASONS))
+        SEASON = st.multiselect('Select seasons', reversed(SEASONS))
         if SEASON:
             # Create an empty list to store shot data for all selected seasons
             all_shot_data = []
@@ -449,6 +449,7 @@ if player_name:
                     st.sidebar.header(f'{season1}: {total_makes}/{total_shots} - {shootperc}%')
                     st.subheader(f'Makes and Misses in {season1}')
                     st.pyplot(fig)
+                    
 
                 else:
                     total_makes = len(shot_data[shot_data["SHOT_MADE_FLAG"] == 1])
@@ -470,10 +471,23 @@ if player_name:
                     ax.set_aspect('equal')
                     ax.legend()
                     ax = create_court(ax, 'black')
-
+# ???????
                     st.sidebar.header(f'{season1}: {total_makes}/{total_shots} - {shootperc}%')
-                    st.subheader(f'Makes and Misses in {season1}')
-                    st.pyplot(fig)
+                    with col2:
+                        st.subheader(f'Makes and Misses in {season1}')
+                        st.pyplot(fig)
+                    # Plot hexbin with custom colormap
+                    hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(30, 30), extent=(-300, 300, 0, 940), bins='log', cmap='inferno')
+                    legend_elements = [plt.Line2D([0], [0], marker='H', color='w', label='Less Shots', markerfacecolor='black', markersize=10),
+                    plt.Line2D([0], [0], marker='H', color='w', label='More Shots', markerfacecolor='yellow', markersize=10)]
+                    plt.legend(handles=legend_elements, loc='upper right')  
+                    # Customize color bar legend
+
+
+                    # ax = create_court(ax, 'black')
+                    with col1:
+                        st.subheader(f'Shot Frequency in {season1}')
+                        st.pyplot(fig)
             else:
                 if ShotDist == 1:
                     plt.figure(figsize=(10, 5))
