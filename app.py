@@ -324,10 +324,10 @@ def get_player_season_range(player_id):
 
 # Define Streamlit app
 
-st.sidebar.markdown('<div style="text-align: center;"><span style="font-size:30px;">NBA Shot Analyzer</span></div>', unsafe_allow_html=True)
+st.sidebar.markdown('<div style="text-align: center;"><span style="font-size:30px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
 
     # User input for player name
-st.markdown('<div style="text-align: center;"><span style="font-size:80px;">NBA Shot Analyzer</span></div>', unsafe_allow_html=True)
+st.markdown('<div style="text-align: center;"><span style="font-size:80px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
 
 player_name = st.text_input("Enter player name (not case sensitive)")
 
@@ -759,9 +759,10 @@ if player_name:
 # Set axis titles
 
 # Display the plot
-        st.header(f'{total_makes}/{total_shots} - {shootperc}%')
+        st.sidebar.markdown(f'<div style="text-align: center;"><span style="font-size:30px;">{total_makes}/{total_shots} - {shootperc}%</span></div>', unsafe_allow_html=True)
+        # st.header(f'{total_makes}/{total_shots} - {shootperc}%')
         with col2:
-            st.subheader(f'Makes and Misses')
+            st.sidebar.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">Makes and Misses</span></div>', unsafe_allow_html=True)
             st.plotly_chart(fig)
                     # Plot hexbin with custom colormap
         fig2 = plt.figure(figsize=(4, 3.76))
@@ -784,7 +785,7 @@ if player_name:
 
         
         with col1:
-                st.subheader(f'Shot Frequency')
+                st.sidebar.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">Shot Frequency</span></div>', unsafe_allow_html=True)
                 st.header('')
                 st.header('')
                 st.header('')
