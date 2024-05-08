@@ -508,7 +508,7 @@ if player_name:
 # ???????
         st.sidebar.header(f'{SEASON}: {total_makes}/{total_shots} - {shootperc}%')
         with col2:
-                st.subheader(f'Makes and Misses in {SEASON}')
+                st.subheader(f'Makes and Misses')
                 st.pyplot(fig)
                     # Plot hexbin with custom colormap
         hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(45, 45), extent=(-300, 300, 0, 940), bins='log', cmap='inferno')
@@ -520,7 +520,7 @@ if player_name:
 
                     # ax = create_court(ax, 'black')
         with col1:
-                st.subheader(f'Shot Frequency in {SEASON}')
+                st.subheader(f'Shot Frequency')
                 st.pyplot(fig)
             
             # st.sidebar.header(f'{season1}: 0/{total_misses} - {shooting_percentage}%')
