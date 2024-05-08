@@ -759,7 +759,7 @@ if player_name:
 # Set axis titles
 
 # Display the plot
-        st.sidebar.header(f'{SEASON}: {total_makes}/{total_shots} - {shootperc}%')
+        st.header(f'{total_makes}/{total_shots} - {shootperc}%')
         with col2:
             st.subheader(f'Makes and Misses')
             st.plotly_chart(fig)
