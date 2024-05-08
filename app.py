@@ -325,7 +325,8 @@ if player_name:
     try:
             # Call get_id function to retrieve player ID
         PLAYER_ID = get_id(player_name)
-        st.success(f"Successfully found {player_name}")
+        name = player_name.lower().title()
+        st.success(f"Successfully found {name}")
         
             
             # Get the range of seasons the selected player has played in
@@ -350,7 +351,6 @@ if player_name:
             fg_pct = player_headline_stats2['FG_PCT'].values[0]
             fg3_pct = player_headline_stats2['FG3_PCT'].values[0]
             ft_pct = player_headline_stats2['FT_PCT'].values[0]
-            name = player_name.lower().title()
 
 
 # Display the variables
