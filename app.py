@@ -542,12 +542,12 @@ if player_name:
     hovermode='closest',
     xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-230, 230]),
     yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[0, 470]),
-    plot_bgcolor='white',  # Set background color to white
+    plot_bgcolor='#D2B48C',  # Set background color to white
     width=330,  # Set the width of the background
     height=485,  # Set the height of the background
     autosize=False,
-    legend=dict(x=1, y=1, xanchor='right', yanchor='top', bgcolor='white',font=dict(color='black'), bordercolor='gray', borderwidth=1),
-    plot_bgcolor='#D2B48C'# Disable autosizing
+    legend=dict(x=1, y=1, xanchor='right', yanchor='top', bgcolor='white',font=dict(color='black'), bordercolor='gray', borderwidth=1)
+    # Disable autosizing
 )
 
 # Create figure
