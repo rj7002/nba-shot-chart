@@ -335,7 +335,7 @@ if player_name:
     try:
             # Call get_id function to retrieve player ID
         PLAYER_ID = get_id(player_name)
-        players_df = pd.DataFrame(PlayerList(0, active_only=False).players())
+        players_df = pd.DataFrame(PlayerList(active_only=False).players())
         splits = Splits(PLAYER_ID)
     # Retrieve the player's overall stats
         overall_stats = splits.overall()
