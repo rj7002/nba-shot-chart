@@ -387,7 +387,7 @@ if player_name:
                 stl_color = "orange"
                 fg_pct_color = "yellow"
                 fg3_pct_color = "gray"
-                ft_pct_color = "brown"
+                ft_pct_color = "gold"
 
 # Display text with different colors
                 font_size_large = "28px"
