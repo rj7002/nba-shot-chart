@@ -395,7 +395,7 @@ if player_name:
 # Display text with different colors and font sizes using markdown syntax
                 st.markdown(f"<span style='font-size:{font_size_large}'>**Pts:** <span style='color:{pts_color}'>{pts}</span>   **Ast:** <span style='color:{ast_color}'>{ast}</span></span>", unsafe_allow_html=True)
                 st.markdown(f"<span style='font-size:{font_size_large}'>**Reb:** <span style='color:{reb_color}'>{reb}</span>   **Blk:** <span style='color:{blk_color}'>{blk}</span></span>", unsafe_allow_html=True)
-                st.markdown(f"<span style='font-size:{font_size_large}'>**Stl:** <span style='color:{stl_color}'>{stl}</span>   **{round(fg_pct*100,1)} FG%**</span>", unsafe_allow_html=True)
+                st.markdown(f"<span style='font-size:{font_size_large}'>**Stl:** <span style='color:{stl_color}'>{stl}</span>   **<span style='color:{stl_color}'>{round(fg_pct*100,1)} FG%**</span>", unsafe_allow_html=True)
                 st.markdown(f"<span style='font-size:{font_size_large}'>**{round(fg3_pct*100,1)} 3P%**   **{round(ft_pct*100,1)} FT%**</span>", unsafe_allow_html=True)
            
             
