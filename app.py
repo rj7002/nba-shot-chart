@@ -335,6 +335,13 @@ if player_name:
     try:
             # Call get_id function to retrieve player ID
         PLAYER_ID = get_id(player_name)
+        players_df = pd.DataFrame(PlayerList(season=season, active_only=False).players())
+        splits = Splits(PLAYER_ID)
+    # Retrieve the player's overall stats
+        overall_stats = splits.overall()
+    # Extract the player's name from the overall stats
+        player_name = overall_stats["PlayerDashboard"][0]["PlayerName"]
+
         st.success(f"Successfully found {player_name}")
         
             
