@@ -46,6 +46,7 @@ def display_player_image(player_id, width2, caption2):
     )
 def create_court(ax, color):
     # Short corner 3PT lines
+    ax.set_facecolor('#D2B48C')
     ax.plot([-220, -220], [0, 140], linewidth=2, color=color)
     ax.plot([220, 220], [0, 140], linewidth=2, color=color)
 
@@ -545,7 +546,8 @@ if player_name:
     width=330,  # Set the width of the background
     height=485,  # Set the height of the background
     autosize=False,
-    legend=dict(x=1, y=1, xanchor='right', yanchor='top', bgcolor='white',font=dict(color='black'), bordercolor='gray', borderwidth=1)  # Disable autosizing
+    legend=dict(x=1, y=1, xanchor='right', yanchor='top', bgcolor='white',font=dict(color='black'), bordercolor='gray', borderwidth=1),
+    plot_bgcolor='#D2B48C'# Disable autosizing
 )
 
 # Create figure
