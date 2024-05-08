@@ -11,7 +11,6 @@ from nbapy import constants
 import datetime
 import requests
 import plotly.graph_objs as go
-import seaborn as sns
 
 st.set_page_config(page_title="NBA Shot Visualizer", page_icon='https://juststickers.in/wp-content/uploads/2015/05/basket-ball-player-1-decal.png', initial_sidebar_state="expanded")
 
