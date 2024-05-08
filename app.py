@@ -396,7 +396,7 @@ if player_name:
                 st.markdown(f"<span style='font-size:{font_size_large}'>**Pts:** <span style='color:{pts_color}'>{pts}</span>   **Ast:** <span style='color:{ast_color}'>{ast}</span></span>", unsafe_allow_html=True)
                 st.markdown(f"<span style='font-size:{font_size_large}'>**Reb:** <span style='color:{reb_color}'>{reb}</span>   **Blk:** <span style='color:{blk_color}'>{blk}</span></span>", unsafe_allow_html=True)
                 st.markdown(f"<span style='font-size:{font_size_large}'>**Stl:** <span style='color:{stl_color}'>{stl}</span>   **<span style='color:{fg_pct_color}'>{round(fg_pct*100,1)}</span> FG%**</span>", unsafe_allow_html=True)
-                st.markdown(f"<span style='font-size:{font_size_large}'>**<span style='color:{fg3_pct_color}'>{round(fg3_pct*100,1)} </span>3P%   **<span style='color:{ft_pct_color}'>{round(ft_pct*100,1)} </span>FT%**</span>", unsafe_allow_html=True)
+                st.markdown(f"<span style='font-size:{font_size_large}'><span style='color:{fg3_pct_color}'>{round(fg3_pct*100,1)} </span>3P%   **<span style='color:{ft_pct_color}'>{round(ft_pct*100,1)} </span>FT%**</span>", unsafe_allow_html=True)
 
 
            
