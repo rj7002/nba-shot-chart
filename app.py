@@ -340,9 +340,10 @@ if player_name:
     # Retrieve the player's overall stats
         overall_stats = splits.overall()
     # Extract the player's name from the overall stats
-        player_name = overall_stats['DISPLAY_NAME']
+        # player_name = overall_stats['DISPLAY_NAME']
+        st.write(overall_stats)
 
-        st.success(f"Successfully found {player_name}")
+        # st.success(f"Successfully found {player_name}")
         
             
             # Get the range of seasons the selected player has played in
