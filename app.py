@@ -9,9 +9,12 @@ import pandas as pd
 from nbapy import constants
 import datetime
 import requests
+import plotly.graph_objs as go
+
 st.set_page_config(page_title="NBA Shot Visualizer", page_icon='https://juststickers.in/wp-content/uploads/2015/05/basket-ball-player-1-decal.png', initial_sidebar_state="expanded")
 
 currentyear = datetime.datetime.now().year
+
 
 def display_player_image(player_id, width2, caption2):
     # Construct the URL for the player image using the player ID
@@ -491,37 +494,243 @@ if player_name:
         else: 
                 shooting_percentage = 0
         shootperc = shooting_percentage
+        #20211019
 
-        fig, ax = plt.subplots(figsize=(8, 7))
+# Create trace for makes
+        text_make = shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]])) + ': ' + shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["HTM"] + ' VS ' + \
+            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["VTM"] + ' | ' + \
+            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["ACTION_TYPE"] + ' (' + \
+            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["SHOT_DISTANCE"].astype(str) + ' ft)' + ' | '  + ' | ' +  \
+            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["PERIOD"].astype(str) + 'Q' + ' - ' + \
+            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["MINUTES_REMAINING"].astype(str) + ':' + \
+            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["SECONDS_REMAINING"].astype(str)
 
-        ax.scatter(shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"], 
-                        shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"] + 60, 
-                        color="green", alpha=0.6, label="Makes", marker='o')
-        ax.scatter(shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"], 
-                        shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60, 
-                        color="red", alpha=0.6, label="Misses", marker='x')
-        ax.set_xlim(-250, 250)
-        ax.set_ylim(0, 470)
-        ax.set_aspect('equal')
-        ax.legend()
-        ax = create_court(ax, 'black')
-# ???????
+            
+        text_miss = shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]])) + ': ' + shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["HTM"] + ' VS ' + \
+            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["VTM"] + ' | ' + \
+            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["ACTION_TYPE"] + ' (' + \
+            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["SHOT_DISTANCE"].astype(str) + ' ft)' + ' | '  + ' | ' +  \
+            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["PERIOD"].astype(str) + 'Q' + ' - ' + \
+            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["MINUTES_REMAINING"].astype(str) + ':' + \
+            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["SECONDS_REMAINING"].astype(str)
+
+# Create trace for makes
+        make_trace = go.Scatter(
+    x=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"],
+    y=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"] + 60,
+    mode='markers',
+    marker=dict(color='rgba(0, 128, 0, 0.6)', size=6),
+    name='Makes',
+    text=text_make,
+    hoverinfo='text'
+)
+
+# Create trace for misses
+        miss_trace = go.Scatter(
+    x=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"],
+    y=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60,
+    mode='markers',
+    marker=dict(symbol='x', color='rgba(255, 0, 0, 0.6)', size=6),
+    name='Misses',
+    text=text_miss,
+    hoverinfo='text'
+)
+
+# Create layout
+        layout = go.Layout(
+    hovermode='closest',
+    xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-230, 230]),
+    yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[0, 470]),
+    plot_bgcolor='white',  # Set background color to white
+    width=330,  # Set the width of the background
+    height=485,  # Set the height of the background
+    autosize=False,
+    legend=dict(x=1, y=1, xanchor='right', yanchor='top', bgcolor='white',font=dict(color='black'), bordercolor='gray', borderwidth=1)  # Disable autosizing
+)
+
+# Create figure
+        fig = go.Figure(data=[make_trace, miss_trace], layout=layout)
+
+# Add basketball court lines as shapes
+        court_shapes = [
+    dict(
+         type='line',
+         x0=-30,
+         y0=40,
+         y1=40,
+         x1=30
+    ),
+    dict(
+        type='line',
+        x0=-223,
+        y0=0,
+        x1=-223,
+        y1=140,
+        line=dict(color='black', width=2)
+    ),
+    dict(
+        type='line',
+        x0=220,
+        y0=0,
+        x1=220,
+        y1=140,
+        line=dict(color='black', width=2)
+    ),
+    dict(
+        type='path',
+        path='M -225,132,100,150,160,170,180,190 C -200,320 150,375 219,140',
+        line=dict(color='black', width=2)
+    ),
+    dict(
+        type='line',
+        x0=-80,
+        y0=0,
+        x1=-80,
+        y1=190,
+        line=dict(color='black', width=2)
+    ),
+    dict(
+        type='line',
+        x0=80,
+        y0=0,
+        x1=80,
+        y1=190,
+        line=dict(color='black', width=2)
+    ),
+    dict(
+        type='line',
+        x0=-60,
+        y0=0,
+        x1=-60,
+        y1=190,
+        line=dict(color='black', width=2)
+    ),
+    dict(
+        type='line',
+        x0=60,
+        y0=0,
+        x1=60,
+        y1=190,
+        line=dict(color='black', width=2)
+    ),
+    dict(
+        type='line',
+        x0=-80,
+        y0=190,
+        x1=80,
+        y1=190,
+        line=dict(color='black', width=2)
+    ),
+    dict(
+        type='circle',
+        xref='x',
+        yref='y',
+        x0=-60,
+        y0=130,
+        x1=60,
+        y1=245,
+        line=dict(color='black', width=2)
+    ),
+    dict(
+        type='circle',
+        xref='x',
+        yref='y',
+        x0=-15,
+        y0=45,
+        x1=15,
+        y1=75,
+        line=dict(color='black', width=2)
+    )
+]
+        fig.update_layout(shapes=court_shapes)
+
+# Set aspect ratio
+        fig.update_yaxes(scaleanchor='x', scaleratio=1)
+
+# Update hover labels
+        fig.update_traces(hoverlabel=dict(bgcolor='black', font_size=12))
+        
+
+    # Create a 2D histogram of shot locations
+        histogram_trace = go.Histogram2d(
+    x=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"],
+    y=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"] + 60,
+    autobinx=False,
+    xbins=dict(
+        start=-300,
+        end=300,
+        size=10  # Adjust the size based on your preference
+    ),
+    autobiny=False,
+    ybins=dict(
+        start=0,
+        end=940,
+        size=10  # Adjust the size based on your preference
+    ),
+    colorscale='magma',
+    showscale=False,
+     # Hide the color scale legend
+)
+    # Create a 2D histogram of shot locations
+        histogram_trace2 = go.Histogram2d(
+    x=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"],
+    y=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60,
+    autobinx=True,
+    xbins=dict(
+        start=-300,
+        end=300,
+        size=10  # Adjust the size based on your preference
+    ),
+    autobiny=True,
+    ybins=dict(
+        start=0,
+        end=940,
+        size=10,
+          # Adjust the size based on your preference
+    ),
+    colorscale='magma',
+    showscale=False  # Hide the color scale legend
+)
+
+# Add the histogram trace to the plot
+
+# Add the histogram trace to the plot
+
+        fig3 = go.Figure(data=[histogram_trace, histogram_trace2], layout=layout)
+        fig3.update_layout(shapes=court_shapes)
+
+# Set aspect ratio
+        fig3.update_yaxes(scaleanchor='x', scaleratio=1)
+
+# Update hover labels
+        fig3.update_traces(hoverlabel=dict(bgcolor='black', font_size=12))
+        
+
+# Set axis titles
+
+# Display the plot
         st.sidebar.header(f'{SEASON}: {total_makes}/{total_shots} - {shootperc}%')
         with col2:
-                st.subheader(f'Makes and Misses')
-                st.pyplot(fig)
+            st.subheader(f'Makes and Misses')
+            st.plotly_chart(fig)
                     # Plot hexbin with custom colormap
+        fig2 = plt.figure(figsize=(4, 3.76))
+        ax = fig2.add_axes([0, 0, 1, 1])
+        ax = create_court(ax, 'black')
         hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(45, 45), extent=(-300, 300, 0, 940), bins='log', cmap='inferno')
         legend_elements = [plt.Line2D([0], [0], marker='H', color='w', label='Less Shots', markerfacecolor='black', markersize=10),
         plt.Line2D([0], [0], marker='H', color='w', label='More Shots', markerfacecolor='yellow', markersize=10)]
         plt.legend(handles=legend_elements, loc='upper right')  
                     # Customize color bar legend
 
-
-                    # ax = create_court(ax, 'black')
+        
         with col1:
                 st.subheader(f'Shot Frequency')
-                st.pyplot(fig)
+                st.header('')
+                st.header('')
+                st.header('')
+                st.pyplot(fig2)
+                # st.plotly_chart(fig3)
             
             # st.sidebar.header(f'{season1}: 0/{total_misses} - {shooting_percentage}%')
     except PlayerNotFoundException as e:
