@@ -498,22 +498,12 @@ if player_name:
         #20211019
 
 # Create trace for makes
-        text_make = shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]])) + ': ' + shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["HTM"] + ' VS ' + \
-            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["VTM"] + ' | ' + \
-            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["ACTION_TYPE"] + ' (' + \
-            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["SHOT_DISTANCE"].astype(str) + ' ft)' + ' | '  + ' | ' +  \
-            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["PERIOD"].astype(str) + 'Q' + ' - ' + \
-            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["MINUTES_REMAINING"].astype(str) + ':' + \
-            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["SECONDS_REMAINING"].astype(str)
-
-            
-        text_miss = shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]])) + ': ' + shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["HTM"] + ' VS ' + \
-            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["VTM"] + ' | ' + \
-            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["ACTION_TYPE"] + ' (' + \
-            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["SHOT_DISTANCE"].astype(str) + ' ft)' + ' | '  + ' | ' +  \
-            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["PERIOD"].astype(str) + 'Q' + ' - ' + \
-            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["MINUTES_REMAINING"].astype(str) + ':' + \
-            shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["SECONDS_REMAINING"].astype(str)
+        text_all = shot_data["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]])) + ': ' + \
+           shot_data["HTM"] + ' VS ' + shot_data["VTM"] + ' | ' + \
+           shot_data["ACTION_TYPE"] + ' (' + shot_data["SHOT_DISTANCE"].astype(str) + ' ft)' + ' | ' + ' | ' + \
+           shot_data["PERIOD"].astype(str) + 'Q' + ' - ' + \
+           shot_data["MINUTES_REMAINING"].astype(str) + ':' + \
+           shot_data["SECONDS_REMAINING"].astype(str)
 
 # Create trace for makes
         make_trace = go.Scatter(
@@ -522,7 +512,7 @@ if player_name:
     mode='markers',
     marker=dict(color='rgba(0, 128, 0, 0.6)', size=6),
     name='Makes',
-    text=text_make,
+    text=text_all[shot_data["SHOT_MADE_FLAG"] == 1],  # Use concatenated text for makes only
     hoverinfo='text'
 )
 
@@ -533,7 +523,7 @@ if player_name:
     mode='markers',
     marker=dict(symbol='x', color='rgba(255, 0, 0, 0.6)', size=6),
     name='Misses',
-    text=text_miss,
+    text=text_all[shot_data["SHOT_MADE_FLAG"] == 0],  # Use concatenated text for misses only
     hoverinfo='text'
 )
 
@@ -542,17 +532,15 @@ if player_name:
     hovermode='closest',
     xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-230, 230]),
     yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[0, 470]),
-    plot_bgcolor='#D2B48C',  # Set background color to white
-    width=330,  # Set the width of the background
+    plot_bgcolor='#D2B48C',  # Set background color to the desired color
+    width=345,  # Set the width of the background
     height=485,  # Set the height of the background
     autosize=False,
-    legend=dict(x=1, y=1, xanchor='right', yanchor='top', bgcolor='white',font=dict(color='black'), bordercolor='gray', borderwidth=1)
-    # Disable autosizing
+    legend=dict(x=1, y=1, xanchor='right', yanchor='top', bgcolor='white',font=dict(color='black'), bordercolor='gray', borderwidth=1)  # Customize legend
 )
 
 # Create figure
         fig = go.Figure(data=[make_trace, miss_trace], layout=layout)
-
 # Add basketball court lines as shapes
         court_shapes = [
     dict(
