@@ -12,6 +12,7 @@ import datetime
 import requests
 import plotly.graph_objs as go
 
+
 st.set_page_config(page_title="NBA Shot Visualizer", page_icon='https://juststickers.in/wp-content/uploads/2015/05/basket-ball-player-1-decal.png', initial_sidebar_state="expanded")
 
 currentyear = datetime.datetime.now().year
@@ -29,7 +30,7 @@ def display_player_image(player_id, width2, caption2):
         st.markdown(
     f'<div style="display: flex; flex-direction: column; align-items: center;">'
     f'<img src="{image_url}" style="width: {width2}px;">'
-    f'<p style="text-align: center; font-size: 30px;">{caption2}</p>'
+    f'<p style="text-align: center; font-size: 25px;">{caption2}</p>'
     f'</div>',
     unsafe_allow_html=True
 )
@@ -416,7 +417,7 @@ player_names_input = st.text_input("Enter player name (if multiple, separate by 
 
 # Parse the input to extract individual player names
 player_names = [name.strip() for name in player_names_input.split(',') if name.strip()]
-type = st.sidebar.radio('Stats',['PerGame','Totals','Per36'])
+type = st.radio('',['PerGame','Totals','Per36'])
 
 for player_name in player_names:
     if player_name:
@@ -459,11 +460,15 @@ for player_name in player_names:
     # Display the variables
                 cl1,cl2 = st.columns(2)
                 with cl1:
-                    display_player_image(PLAYER_ID,350,name)
+                    if len(player_names) > 1:
+                        display_player_image(PLAYER_ID,200,name)
+                    else:
+                        display_player_image(PLAYER_ID,350,name)
+
                 
                 
                 with cl2:
-                    st.header("Season: " + season_val)
+                    
 
     # Define text colors
                     pts_color = "blue"
@@ -476,9 +481,14 @@ for player_name in player_names:
                     ft_pct_color = "gold"
 
     # Display text with different colors
-                    font_size_large = "28px"
+                    if len(player_names) > 1:
+                        font_size_large = "20px"
+                    else:
+                         font_size_large = "28px"
 
     # Display text with different colors and font sizes using markdown syntax
+                    st.markdown(f"<span style='font-size:{font_size_large}'>**Season:** <span style='color:{pts_color}'>{season_val}", unsafe_allow_html=True)
+
                     st.markdown(f"<span style='font-size:{font_size_large}'>**Pts:** <span style='color:{pts_color}'>{pts}</span>   **Ast:** <span style='color:{ast_color}'>{ast}</span></span>", unsafe_allow_html=True)
                     st.markdown(f"<span style='font-size:{font_size_large}'>**Reb:** <span style='color:{reb_color}'>{reb}</span>   **Blk:** <span style='color:{blk_color}'>{blk}</span></span>", unsafe_allow_html=True)
                     st.markdown(f"<span style='font-size:{font_size_large}'>**Stl:** <span style='color:{stl_color}'>{stl}</span>   **<span style='color:{fg_pct_color}'>{round(fg_pct*100,1)}</span> FG%**</span>", unsafe_allow_html=True)
@@ -567,13 +577,15 @@ for player_name in player_names:
     )
 
     # Create layout
+        
             layout = go.Layout(
         hovermode='closest',
         xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-230, 230]),
         yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[3, 470]),
         plot_bgcolor='#D2B48C',  # Set background color to the desired color
-        width=330,  # Set the width of the background
-        height=485,  # Set the height of the background
+        
+        width=350,  # Set the width of the background
+        height=505,  # Set the height of the background
         autosize=False,
         legend=dict(x=1, y=1, xanchor='right', yanchor='top', bgcolor='white',font=dict(color='black'), bordercolor='gray', borderwidth=1)  # Customize legend
     )
@@ -749,10 +761,10 @@ for player_name in player_names:
 
                 st.plotly_chart(fig)
                         # Plot hexbin with custom colormap
-            fig2 = plt.figure(figsize=(4, 3.76))
+            fig2 = plt.figure(figsize=(5, 5))
             ax = fig2.add_axes([0, 0, 1, 1])
-            ax = create_court(ax, 'black')
             hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(50, 50), extent=(-300, 300, 0, 940), bins='log', cmap='inferno')
+            ax = create_court(ax, 'black')
             legend_elements = [
                 plt.Line2D([0], [0], marker='H', color='w', label='Less Shots', markerfacecolor='black', markersize=10),
                 plt.Line2D([0], [0], marker='H', color='w', label='More Shots', markerfacecolor='yellow', markersize=10)
