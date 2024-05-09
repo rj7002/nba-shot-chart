@@ -350,7 +350,7 @@ if player_name:
             type = st.radio('',['PerGame','Totals','Per36'])
 
 # Iterate through the player list to find the player with ID 2544
-            players = player_list.players(season=SEASON)
+            players = PlayerList(season=SEASON,active_only=False).players()
 
 # Initialize variables to store player's team information
             player_team = None
