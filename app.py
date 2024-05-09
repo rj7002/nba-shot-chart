@@ -343,7 +343,7 @@ if player_name:
 # Iterate through the player list to find the player with ID 2544
         player_name = None
         for player in players:
-            if int(player['PLAYER_ID']) == PLAYER_ID:
+            if int(player['PLAYER_ID']) == int(PLAYER_ID):
                 player_name = player['DISPLAY_FIRST_LAST']
                 break
 
