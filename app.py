@@ -352,51 +352,52 @@ if player_name:
 
             
             
-            player_summary = Splits(player_id=PLAYER_ID,season=SEASON)
             player_summarytotals = Splits(player_id=PLAYER_ID,season=SEASON,per_mode=type)
-            player_headline_stats = player_summary.overall()
-            player_headline_stats2 = player_summarytotals.overall()
-            min = player_headline_stats2['MIN'].values[0]
-            tov = player_headline_stats2['TOV'].values[0]
-            pts = player_headline_stats2['PTS'].values[0]
-            ast = player_headline_stats2['AST'].values[0]
-            reb = player_headline_stats2['REB'].values[0]
-            blk = player_headline_stats2['BLK'].values[0]
-            stl = player_headline_stats2['STL'].values[0]
-            season_val = player_headline_stats2['GROUP_VALUE'].values[0]
-            fg_pct = player_headline_stats2['FG_PCT'].values[0]
-            fg3_pct = player_headline_stats2['FG3_PCT'].values[0]
-            ft_pct = player_headline_stats2['FT_PCT'].values[0]
-            name = player_name.lower().title()
+            if player_summarytotals:
+                player_headline_stats2 = player_summarytotals.overall()
+                min = player_headline_stats2['MIN'].values[0]
+                tov = player_headline_stats2['TOV'].values[0]
+                pts = player_headline_stats2['PTS'].values[0]
+                ast = player_headline_stats2['AST'].values[0]
+                reb = player_headline_stats2['REB'].values[0]
+                blk = player_headline_stats2['BLK'].values[0]
+                stl = player_headline_stats2['STL'].values[0]
+                season_val = player_headline_stats2['GROUP_VALUE'].values[0]
+                fg_pct = player_headline_stats2['FG_PCT'].values[0]
+                fg3_pct = player_headline_stats2['FG3_PCT'].values[0]
+                ft_pct = player_headline_stats2['FT_PCT'].values[0]
+                name = player_name.lower().title()
 
 
 # Display the variables
-            cl1,cl2 = st.columns(2)
-            with cl1:
-                display_player_image(PLAYER_ID,350,name)
+                cl1,cl2 = st.columns(2)
+                with cl1:
+                    display_player_image(PLAYER_ID,350,name)
             
             
-            with cl2:
-                st.header("Season: " + season_val)
+                with cl2:
+                    st.header("Season: " + season_val)
 
 # Define text colors
-                pts_color = "blue"
-                ast_color = "green"
-                reb_color = "red"
-                blk_color = "purple"
-                stl_color = "orange"
-                fg_pct_color = "yellow"
-                fg3_pct_color = "gray"
-                ft_pct_color = "gold"
+                    pts_color = "blue"
+                    ast_color = "green"
+                    reb_color = "red"
+                    blk_color = "purple"
+                    stl_color = "orange"
+                    fg_pct_color = "yellow"
+                    fg3_pct_color = "gray"
+                    ft_pct_color = "gold"
 
 # Display text with different colors
-                font_size_large = "28px"
+                    font_size_large = "28px"
 
 # Display text with different colors and font sizes using markdown syntax
-                st.markdown(f"<span style='font-size:{font_size_large}'>**Pts:** <span style='color:{pts_color}'>{pts}</span>   **Ast:** <span style='color:{ast_color}'>{ast}</span></span>", unsafe_allow_html=True)
-                st.markdown(f"<span style='font-size:{font_size_large}'>**Reb:** <span style='color:{reb_color}'>{reb}</span>   **Blk:** <span style='color:{blk_color}'>{blk}</span></span>", unsafe_allow_html=True)
-                st.markdown(f"<span style='font-size:{font_size_large}'>**Stl:** <span style='color:{stl_color}'>{stl}</span>   **<span style='color:{fg_pct_color}'>{round(fg_pct*100,1)}</span> FG%**</span>", unsafe_allow_html=True)
-                st.markdown(f"<span style='font-size:{font_size_large}'><span style='color:{fg3_pct_color}'>{round(fg3_pct*100,1)} </span>3P%   **<span style='color:{ft_pct_color}'>{round(ft_pct*100,1)} </span>FT%**</span>", unsafe_allow_html=True)
+                    st.markdown(f"<span style='font-size:{font_size_large}'>**Pts:** <span style='color:{pts_color}'>{pts}</span>   **Ast:** <span style='color:{ast_color}'>{ast}</span></span>", unsafe_allow_html=True)
+                    st.markdown(f"<span style='font-size:{font_size_large}'>**Reb:** <span style='color:{reb_color}'>{reb}</span>   **Blk:** <span style='color:{blk_color}'>{blk}</span></span>", unsafe_allow_html=True)
+                    st.markdown(f"<span style='font-size:{font_size_large}'>**Stl:** <span style='color:{stl_color}'>{stl}</span>   **<span style='color:{fg_pct_color}'>{round(fg_pct*100,1)}</span> FG%**</span>", unsafe_allow_html=True)
+                    st.markdown(f"<span style='font-size:{font_size_large}'><span style='color:{fg3_pct_color}'>{round(fg3_pct*100,1)} </span>3P%   **<span style='color:{ft_pct_color}'>{round(ft_pct*100,1)} </span>FT%**</span>", unsafe_allow_html=True)
+            else:
+                st.error('No data found for this season')
 
 
            
