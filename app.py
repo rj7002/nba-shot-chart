@@ -349,7 +349,7 @@ if player_name:
             all_shot_data = []
             type = st.radio('',['PerGame','Totals','Per36'])
 
-            players = player_list.players(season=SEASON)
+            players = PlayerList.players(season=SEASON)
             player_team = None
 
 # Iterate through the list of players to find the player by name
