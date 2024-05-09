@@ -405,7 +405,7 @@ if player_name:
            
             
 
-        Stat = st.sidebar.selectbox('Select Stat',['MAKES', 'MISSES','FGA','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS','PF'])
+        Stat = st.sidebar.selectbox('Select Stat',['MAKES', 'MISSES','FGA','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS'])
         if Stat == 'MAKES':
             Stat2 = 'PTS'
         elif Stat == 'MISSES':
@@ -420,8 +420,7 @@ if player_name:
             Stat2 = 'PTS_OFF_TOV'
         elif Stat == '2ND CHANCE PTS':
             Stat2 = 'PTS_2ND_CHANCE'
-        elif Stat == 'PF':
-            Stat2 = 'PF'
+        
         GameSegment = st.sidebar.checkbox('Game Segment')
         if GameSegment == 1:
             typeseg = st.sidebar.selectbox('Game Segment',['First Half', 'Second Half', 'Overtime'])
