@@ -354,8 +354,8 @@ if player_name:
             
             player_summarytotals = Splits(player_id=PLAYER_ID,season=SEASON,per_mode=type)
             if player_summarytotals is not None and player_summarytotals:
+                player_headline_stats2 = player_summarytotals.overall()
                 if player_headline_stats2 is not None:
-                    player_headline_stats2 = player_summarytotals.overall()
                     min = player_headline_stats2['MIN'].values[0]
                     tov = player_headline_stats2['TOV'].values[0]
                     pts = player_headline_stats2['PTS'].values[0]
