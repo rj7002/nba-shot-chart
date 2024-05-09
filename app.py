@@ -350,6 +350,17 @@ if player_name:
             type = st.radio('',['PerGame','Totals','Per36'])
 
 # Iterate through the player list to find the player with ID 2544
+            players = player_list.players(season=SEASON)
+
+# Initialize variables to store player's team information
+            player_team = None
+
+# Iterate through the list of players to find the player by name
+            for player in players:
+                if player['DISPLAY_FIRST_LAST'].lower() == player_name.lower():
+        # Player found, retrieve their team information
+                    player_team = player['TEAM_ABBREVIATION']
+                    break
             
             player_summarytotals = Splits(player_id=PLAYER_ID,season=SEASON,per_mode=type)
             if player_summarytotals is not None and player_summarytotals:
