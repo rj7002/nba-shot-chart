@@ -795,6 +795,15 @@ if player_name:
                 st.image(img_buffer, use_column_width=False, width=345)  
 
                 # st.plotly_chart(fig3)
+                player_list = PlayerList()
+
+# Get the list of players
+        players = player_list.players()
+
+# Iterate through the player list to find the player with ID 2544
+        st.write(players)
+
+
                 
         
 
