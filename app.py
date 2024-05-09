@@ -533,7 +533,7 @@ if player_name:
 # Concatenate text labels for makes and misses
         text_all = shot_data["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]])) + ': ' + \
            shot_data["HTM"] + ' VS ' + shot_data["VTM"] + ' | ' + \
-           shot_data["ACTION_TYPE"] + ' (' + shot_data["SHOT_DISTANCE"].astype(str) + ' ft)' + ' | ' + ' | ' + \
+           shot_data["ACTION_TYPE"] + ' (' + shot_data["SHOT_DISTANCE"].astype(str) + ' ft)' + ' | ' + \
            shot_data["PERIOD"].astype(str) + 'Q' + ' - ' + \
            shot_data["MINUTES_REMAINING"].astype(str) + ':' + \
            shot_data["SECONDS_REMAINING"].astype(str)
@@ -585,7 +585,7 @@ if player_name:
          y1=465,
          y0=0,
          fillcolor="white",
-         line=dict(color='black', width=1)
+         line=dict(color='black', width=2)
     ),
      dict(
          type = 'line',
@@ -593,7 +593,7 @@ if player_name:
          x1 = 253,
          y1=465,
          y0=0,
-         line=dict(color='black', width=1)
+         line=dict(color='black', width=2)
     ),
     dict(
          type = 'line',
@@ -601,14 +601,15 @@ if player_name:
          x1 = 254,
          y1=467,
          y0=467,
-         line=dict(color='black', width=1)
+         line=dict(color='black', width=2)
     ),
     dict(
          type='line',
          x0=-30,
          y0=40,
          y1=40,
-         x1=30
+         x1=30,
+         line=dict(color='black', width=2)
     ),
     dict(
         type='line',
