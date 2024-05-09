@@ -581,31 +581,31 @@ if player_name:
 # Add basketball court lines as shapes
         court_shapes = [
 
-    dict(
-         type = 'rect',
-         x0=-253,
-         x1 = -253,
-         y1=465,
-         y0=0,
-         fillcolor="white",
-         line=dict(color='black', width=2)
-    ),
-     dict(
-         type = 'line',
-         x0=253,
-         x1 = 253,
-         y1=465,
-         y0=0,
-         line=dict(color='black', width=2)
-    ),
-    dict(
-         type = 'line',
-         x0=-254,
-         x1 = 254,
-         y1=467,
-         y0=467,
-         line=dict(color='black', width=2)
-    ),
+    # dict(
+    #      type = 'rect',
+    #      x0=-253,
+    #      x1 = -253,
+    #      y1=465,
+    #      y0=0,
+    #      fillcolor="white",
+    #      line=dict(color='black', width=2)
+    # ),
+    #  dict(
+    #      type = 'line',
+    #      x0=253,
+    #      x1 = 253,
+    #      y1=465,
+    #      y0=0,
+    #      line=dict(color='black', width=2)
+    # ),
+    # dict(
+    #      type = 'line',
+    #      x0=-254,
+    #      x1 = 254,
+    #      y1=467,
+    #      y0=467,
+    #      line=dict(color='black', width=2)
+    # ),
     dict(
          type='line',
          x0=-30,
