@@ -349,17 +349,6 @@ if player_name:
             all_shot_data = []
             type = st.radio('',['PerGame','Totals','Per36'])
 
-            players = pd.DataFrame(PlayerList(season=SEASON, active_only=False).players())
-            player_team = None
-
-# Iterate through the list of players to find the player by name
-            for player in players:
-                if player['DISPLAY_FIRST_LAST'].lower() == player_name.lower():
-        # Player found, retrieve their team information
-                    player_team = player['TEAM_ABBREVIATION']
-                    break
-
-
 # Iterate through the player list to find the player with ID 2544
             
             player_summarytotals = Splits(player_id=PLAYER_ID,season=SEASON,per_mode=type)
