@@ -586,7 +586,7 @@ if player_name:
     #      x0=-253,
     #      x1 = -253,
     #      y1=465,
-    #      y0=-10,
+    #      y0=0,
     #      fillcolor="white",
     #      line=dict(color='black', width=2)
     # ),
@@ -595,7 +595,7 @@ if player_name:
     #      x0=253,
     #      x1 = 253,
     #      y1=465,
-    #      y0=-10,
+    #      y0=0,
     #      line=dict(color='black', width=2)
     # ),
     # dict(
@@ -617,7 +617,7 @@ if player_name:
     dict(
         type='line',
         x0=-223,
-        y0=-10,
+        y0=0,
         x1=-223,
         y1=140,
         line=dict(color='black', width=2)
@@ -625,7 +625,7 @@ if player_name:
     dict(
         type='line',
         x0=220,
-        y0=-10,
+        y0=0,
         x1=220,
         y1=140,
         line=dict(color='black', width=2)
@@ -638,7 +638,7 @@ if player_name:
     dict(
         type='line',
         x0=-80,
-        y0=-10,
+        y0=0,
         x1=-80,
         y1=190,
         line=dict(color='black', width=2)
@@ -646,7 +646,7 @@ if player_name:
     dict(
         type='line',
         x0=80,
-        y0=-10,
+        y0=0,
         x1=80,
         y1=190,
         line=dict(color='black', width=2)
@@ -654,7 +654,7 @@ if player_name:
     dict(
         type='line',
         x0=-60,
-        y0=-10,
+        y0=0,
         x1=-60,
         y1=190,
         line=dict(color='black', width=2)
@@ -662,7 +662,7 @@ if player_name:
     dict(
         type='line',
         x0=60,
-        y0=-10,
+        y0=0,
         x1=60,
         y1=190,
         line=dict(color='black', width=2)
