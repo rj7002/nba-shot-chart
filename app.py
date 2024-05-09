@@ -372,7 +372,7 @@ if player_name:
 # Display the variables
                     cl1,cl2 = st.columns(2)
                     with cl1:
-                        display_player_image(PLAYER_ID,350,f'{name} - {player_team}')
+                        display_player_image(PLAYER_ID,350,name)
             
             
                     with cl2:
