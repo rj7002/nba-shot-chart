@@ -768,8 +768,9 @@ if player_name:
                     # Plot hexbin with custom colormap
         fig2 = plt.figure(figsize=(4, 3.76))
         ax = fig2.add_axes([0, 0, 1, 1])
-        ax = create_court(ax, 'black')
+        
         hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(48, 48), extent=(-300, 300, 0, 940), bins='log', cmap='inferno')
+        ax = create_court(ax, 'black')
         legend_elements = [
             plt.Line2D([0], [0], marker='H', color='w', label='Less Shots', markerfacecolor='black', markersize=10),
             plt.Line2D([0], [0], marker='H', color='w', label='More Shots', markerfacecolor='yellow', markersize=10)
