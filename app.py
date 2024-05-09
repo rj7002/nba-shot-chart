@@ -335,8 +335,19 @@ if player_name:
     try:
             # Call get_id function to retrieve player ID
         PLAYER_ID = get_id(player_name)
+        player_list = PlayerList()
 
-        st.success(f"Successfully found {player_name.lower().title()}")
+# Get the list of players
+        players = player_list.players()
+
+# Iterate through the player list to find the player with ID 2544
+        player_name = None
+        for player in players:
+            if player['PERSON_ID'] == PLAYER_ID:
+                player_name = player['DISPLAY_FIRST_LAST']
+                break
+
+        st.success(f"Successfully found {player_name}")
         
             
             # Get the range of seasons the selected player has played in
