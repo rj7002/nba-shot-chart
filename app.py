@@ -349,7 +349,7 @@ if player_name:
             all_shot_data = []
             type = st.radio('',['PerGame','Totals','Per36'])
 
-            players = PlayerList(season=SEASON, active_only=False).players()
+            players = pd.DataFrame(PlayerList(season=SEASON, active_only=False).players())
             player_team = None
 
 # Iterate through the list of players to find the player by name
