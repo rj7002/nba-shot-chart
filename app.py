@@ -349,7 +349,18 @@ if player_name:
             all_shot_data = []
             type = st.radio('',['PerGame','Totals','Per36'])
 
-            
+            players = player_list.players(season=SEASON)
+            player_team = None
+
+# Iterate through the list of players to find the player by name
+            for player in players:
+                if player['DISPLAY_FIRST_LAST'].lower() == player_name.lower():
+        # Player found, retrieve their team information
+                    player_team = player['TEAM_ABBREVIATION']
+                    break
+
+
+# Iterate through the player list to find the player with ID 2544
             
             player_summarytotals = Splits(player_id=PLAYER_ID,season=SEASON,per_mode=type)
             if player_summarytotals is not None and player_summarytotals:
@@ -372,7 +383,7 @@ if player_name:
 # Display the variables
                     cl1,cl2 = st.columns(2)
                     with cl1:
-                        display_player_image(PLAYER_ID,350,name)
+                        display_player_image(PLAYER_ID,350,f'{name} - {player_team}')
             
             
                     with cl2:
@@ -796,12 +807,7 @@ if player_name:
 
                 # st.plotly_chart(fig3)
                 player_list = PlayerList()
-
-# Get the list of players
-        players = player_list.players()
-
-# Iterate through the player list to find the player with ID 2544
-        st.write(players)
+        
 
 
                 
