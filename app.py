@@ -567,7 +567,7 @@ if player_name:
         layout = go.Layout(
     hovermode='closest',
     xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-230, 230]),
-    yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[0, 470]),
+    yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[5, 470]),
     plot_bgcolor='#D2B48C',  # Set background color to the desired color
     width=345,  # Set the width of the background
     height=485,  # Set the height of the background
