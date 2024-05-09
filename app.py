@@ -417,7 +417,7 @@ player_names_input = st.text_input("Enter player name (if multiple, separate by 
 
 # Parse the input to extract individual player names
 player_names = [name.strip() for name in player_names_input.split(',') if name.strip()]
-type = st.radio('',['PerGame','Totals','Per36'])
+type = st.sidebar.radio('',['PerGame','Totals','Per36'])
 
 for player_name in player_names:
     if player_name:
