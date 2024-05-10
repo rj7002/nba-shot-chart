@@ -332,7 +332,7 @@ def get_player_season_range(player_id):
 # Define Streamlit app
 
 st.sidebar.markdown('<div style="text-align: center;"><span style="font-size:30px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
-type = st.sidebar.selectbox('Player Stats',['Per Game','Totals','Per36'])
+type = st.sidebar.selectbox('Player Stats',['Per Game','Totals'])
 Stat = st.sidebar.selectbox('',['FGA','MAKES', 'MISSES','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS'])
 if Stat == 'MAKES':
     Stat2 = 'PTS'
