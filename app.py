@@ -456,7 +456,7 @@ for player_name in selected_players:
                 # Generate the list of seasons within the range
             SEASONS = [f'{season}-{str(int(season)+1)[2:]}' for season in range(int(first_season), int(last_season)+1)]
                 
-            SEASON = st.selectbox(f'Select season - {player_name.lower().title()}', reversed(SEASONS))
+            SEASON = st.selectbox(f'Select season - {player_name.lower().title()}', reversed(SEASONS), help="Shot data prior to 1996 unavailable")
             if SEASON:
                 # Create an empty list to store shot data for all selected seasons
                 all_shot_data = []
