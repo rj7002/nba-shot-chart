@@ -1,4 +1,5 @@
 import io
+import json
 import streamlit as st
 import pandas as pd
 from nbapy import constants
@@ -55,12 +56,17 @@ def create_court(ax, color):
 
     # 3PT Arc
     ax.add_artist(patches.Arc((0, 140), 440, 315, theta1=0, theta2=180, facecolor='none', edgecolor=color, lw=2))
+    ax.add_artist(patches.Circle((0, 475), 60, facecolor='none', edgecolor=color, lw=2))
 
     # Lane and Key
-    ax.plot([-80, -80], [0, 190], linewidth=2, color=color)
-    ax.plot([80, 80], [0, 190], linewidth=2, color=color)
-    ax.plot([-60, -60], [0, 190], linewidth=2, color=color)
-    ax.plot([60, 60], [0, 190], linewidth=2, color=color)
+    ax.plot([-255,255],[0,0],linewidth=2,color=color)
+    ax.plot([-255,-255],[0,515],linewidth=2,color=color)
+    ax.plot([255,255],[0,515],linewidth=2,color=color)
+    ax.plot([-255,255],[468,468],linewidth=2,color=color)
+    ax.plot([-80, -80], [3, 190], linewidth=2, color=color)
+    ax.plot([80, 80], [3, 190], linewidth=2, color=color)
+    ax.plot([-60, -60], [3, 190], linewidth=2, color=color)
+    ax.plot([60, 60], [3, 190], linewidth=2, color=color)
     ax.plot([-80, 80], [190, 190], linewidth=2, color=color)
     ax.add_artist(patches.Circle((0, 190), 60, facecolor='none', edgecolor=color, lw=2))
 
@@ -75,8 +81,8 @@ def create_court(ax, color):
     ax.set_yticks([])
 
     # Set axis limits
-    ax.set_xlim(-250, 250)
-    ax.set_ylim(0, 470)
+    ax.set_xlim(-257, 257)
+    ax.set_ylim(-5, 470)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
@@ -326,7 +332,7 @@ def get_player_season_range(player_id):
 # Define Streamlit app
 
 st.sidebar.markdown('<div style="text-align: center;"><span style="font-size:30px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
-Stat = st.sidebar.selectbox('Select Stat',['MAKES', 'MISSES','FGA','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS','PF'])
+Stat = st.sidebar.selectbox('',['FGA','MAKES', 'MISSES','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS','PF'])
 if Stat == 'MAKES':
     Stat2 = 'PTS'
 elif Stat == 'MISSES':
@@ -343,49 +349,49 @@ elif Stat == '2ND CHANCE PTS':
     Stat2 = 'PTS_2ND_CHANCE'
 elif Stat == 'PF':
     Stat2 = 'PF'
-GameSegment = st.sidebar.checkbox('Game Segment')
+GameSegment = st.sidebar.toggle('Game Segment')
 if GameSegment == 1:
     typeseg = st.sidebar.selectbox('Game Segment',['First Half', 'Second Half', 'Overtime'])
 else:
     typeseg = None
-Quarters = st.sidebar.checkbox('Quarters')
+Quarters = st.sidebar.toggle('Quarters')
 if Quarters:
     typequart = st.sidebar.selectbox('Quarters',['1','2','3','4'])
-Clutch_Time = st.sidebar.checkbox('Clutch Time')
+Clutch_Time = st.sidebar.toggle('Clutch Time')
 if Clutch_Time == 1:
     typeclutch = st.sidebar.selectbox('Time Remaining', ['Last 5 Minutes', 'Last 4 Minutes','Last 3 Minutes','Last 2 Minutes','Last 1 Minute','Last 30 Seconds', 'Last 10 Seconds'])
 else:
     typeclutch = None
-Playoffs = st.sidebar.checkbox('Playoffs')
+Playoffs = st.sidebar.toggle('Playoffs')
 if Playoffs == 1:
     typeseason = 'Playoffs'
 else:
     typeseason = "Regular Season"
-Conference = st.sidebar.checkbox('Conference')
+Conference = st.sidebar.toggle('Conference')
 if Conference == 1:
     typeconf = st.sidebar.selectbox('Select a conference',['East', 'West'])
 else:
     typeconf = None
-Location = st.sidebar.checkbox('Location')
+Location = st.sidebar.toggle('Location')
 if Location == 1:
     typeloc = st.sidebar.selectbox('Location',['Home', 'Road'])
 else:
     typeloc = None
-Outcome = st.sidebar.checkbox('Outcome')
+Outcome = st.sidebar.toggle('Outcome')
 if Outcome == 1:
     typeout = st.sidebar.selectbox('Outcome',['W', 'L'])
 else:
     typeout = None
-AheadBehind = st.sidebar.checkbox('Ahead/Behind')
+AheadBehind = st.sidebar.toggle('Ahead/Behind')
 if AheadBehind == 1:
     typeaheadbehind = st.sidebar.selectbox('Ahead/Behind',['Behind or Tied','Ahead or Tied'])
 else:
     typeaheadbehind = None
-ShotDist = st.sidebar.checkbox('Shot Distance')
+ShotDist = st.sidebar.toggle('Shot Distance')
 if ShotDist == 1:
     shotdistbool = True
     shotdistance = st.sidebar.slider("Shot Distance", 0, 40)
-ShotType = st.sidebar.checkbox('Shot Type')
+ShotType = st.sidebar.toggle('Shot Type')
 if ShotType == 1:
     shottypebool = True
     shottype = st.sidebar.selectbox('Shot Type', ['Jump Shot', 'Layup','Dunk','Other'])
@@ -401,13 +407,13 @@ if ShotType == 1:
     elif shottype == 'Other':
         othertype = st.sidebar.selectbox('Other Type', ['Driving Floating Jump Shot', 'Floating Jump shot','Driving Floating Bank Jump Shot','Driving Bank Hook Shot','Driving Hook Shot','Turnaround Hook Shot','Hook Shot'])
         finaltype = othertype
-Teams = st.sidebar.checkbox('Teams')
+Teams = st.sidebar.toggle('Teams')
 if Teams == 1:
     teamtype = st.sidebar.selectbox('Teams', ['ATL', 'BOS', 'BKN', 'CHA', 'CHI', 'CLE', 'DAL', 'DEN', 'DET', 'GSW', 'HOU', 'IND', 'LAC', 'LAL', 'MEM', 'MIA', 'MIL', 'MIN', 'NOP', 'NYK', 'OKC', 'ORL', 'PHI', 'PHX', 'POR', 'SAC', 'SAS', 'TOR', 'UTA', 'WAS'])
-CourtLoc = st.sidebar.checkbox('Court Location')
+CourtLoc = st.sidebar.toggle('Court Location')
 if CourtLoc == 1:
     courtloc = st.sidebar.selectbox('Court Location',['Right Side(R)','Left Side(L)','Center(C)','Right Side Center(RC)','Left Side Center(LC)'])
-Date = st.sidebar.checkbox('Date')
+Date = st.sidebar.toggle('Date')
 
     # User input for player name
 st.markdown('<div style="text-align: center;"><span style="font-size:80px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
@@ -417,7 +423,14 @@ player_names_input = st.text_input("Enter player name (if multiple, separate by 
 
 # Parse the input to extract individual player names
 player_names = [name.strip() for name in player_names_input.split(',') if name.strip()]
-type = st.sidebar.radio('Stats',['PerGame','Totals','Per36'])
+type = st.sidebar.selectbox('Player Stats',['Per Game','Totals','Per 36'])
+type2 = ''
+if type == 'Per Game':
+     type2 = 'PerGame'
+elif type == 'Totals':
+        type2 == 'Totals'
+elif type == 'Per 36':
+     type2 == 'Per36'
 
 for player_name in player_names:
     if player_name:
@@ -432,7 +445,7 @@ for player_name in player_names:
                 # Generate the list of seasons within the range
             SEASONS = [f'{season}-{str(int(season)+1)[2:]}' for season in range(int(first_season), int(last_season)+1)]
                 
-            SEASON = st.sidebar.selectbox(f'Select season - {player_name.lower().title()}', reversed(SEASONS))
+            SEASON = st.selectbox(f'Select season - {player_name.lower().title()}', reversed(SEASONS))
             if SEASON:
                 # Create an empty list to store shot data for all selected seasons
                 all_shot_data = []
@@ -440,63 +453,66 @@ for player_name in player_names:
                 
                 
                 player_summary = Splits(player_id=PLAYER_ID,season=SEASON)
-                player_summarytotals = Splits(player_id=PLAYER_ID,season=SEASON,per_mode=type)
-                player_headline_stats = player_summary.overall()
+                player_summarytotals = Splits(player_id=PLAYER_ID,season=SEASON,per_mode=type2)
                 player_headline_stats2 = player_summarytotals.overall()
-                min = player_headline_stats2['MIN'].values[0]
-                tov = player_headline_stats2['TOV'].values[0]
-                pts = player_headline_stats2['PTS'].values[0]
-                ast = player_headline_stats2['AST'].values[0]
-                reb = player_headline_stats2['REB'].values[0]
-                blk = player_headline_stats2['BLK'].values[0]
-                stl = player_headline_stats2['STL'].values[0]
-                season_val = player_headline_stats2['GROUP_VALUE'].values[0]
-                fg_pct = player_headline_stats2['FG_PCT'].values[0]
-                fg3_pct = player_headline_stats2['FG3_PCT'].values[0]
-                ft_pct = player_headline_stats2['FT_PCT'].values[0]
-                name = player_name.lower().title()
+
+               # Check if player_summarytotals has data
+                if player_headline_stats2 is not None and len(player_headline_stats2) > 0:
+                    min = player_headline_stats2['MIN'].values[0]
+                    tov = player_headline_stats2['TOV'].values[0]
+                    pts = player_headline_stats2['PTS'].values[0]
+                    ast = player_headline_stats2['AST'].values[0]
+                    reb = player_headline_stats2['REB'].values[0]
+                    blk = player_headline_stats2['BLK'].values[0]
+                    stl = player_headline_stats2['STL'].values[0]
+                    season_val = player_headline_stats2['GROUP_VALUE'].values[0]
+                    fg_pct = player_headline_stats2['FG_PCT'].values[0]
+                    fg3_pct = player_headline_stats2['FG3_PCT'].values[0]
+                    ft_pct = player_headline_stats2['FT_PCT'].values[0]
+                    name = player_name.lower().title()
+
 
 
     # Display the variables
-                cl1,cl2 = st.columns(2)
-                with cl1:
-                    if len(player_names) > 1:
-                        display_player_image(PLAYER_ID,200,name)
-                    else:
-                        display_player_image(PLAYER_ID,350,name)
+                    cl1,cl2 = st.columns(2)
+                    with cl1:
+                        if len(player_names) > 1:
+                            display_player_image(PLAYER_ID,200,name)
+                        else:
+                            display_player_image(PLAYER_ID,350,name)
 
-                
-                
-                with cl2:
                     
+                    
+                    with cl2:
+                        
 
-    # Define text colors
-                    pts_color = "blue"
-                    ast_color = "green"
-                    reb_color = "red"
-                    blk_color = "purple"
-                    stl_color = "orange"
-                    fg_pct_color = "yellow"
-                    fg3_pct_color = "gray"
-                    ft_pct_color = "gold"
+        # Define text colors
+                        pts_color = "blue"
+                        ast_color = "green"
+                        reb_color = "red"
+                        blk_color = "purple"
+                        stl_color = "orange"
+                        fg_pct_color = "violet"
+                        fg3_pct_color = "gray"
+                        ft_pct_color = "gold"
 
-    # Display text with different colors
-                    if len(player_names) > 1:
-                        font_size_large = "20px"
-                    else:
-                         font_size_large = "28px"
+        # Display text with different colors
+                        if len(player_names) > 1:
+                            font_size_large = "20px"
+                        else:
+                            font_size_large = "28px"
 
-    # Display text with different colors and font sizes using markdown syntax
-                    st.markdown(f"<span style='font-size:{font_size_large}'>**Season:** <span style='color:{pts_color}'>{season_val}", unsafe_allow_html=True)
+        # Display text with different colors and font sizes using markdown syntax
+                        st.markdown(f"<span style='font-size:{font_size_large}'>**Season:** <span style='color:{pts_color}'>{season_val}", unsafe_allow_html=True)
 
-                    st.markdown(f"<span style='font-size:{font_size_large}'>**Pts:** <span style='color:{pts_color}'>{pts}</span>   **Ast:** <span style='color:{ast_color}'>{ast}</span></span>", unsafe_allow_html=True)
-                    st.markdown(f"<span style='font-size:{font_size_large}'>**Reb:** <span style='color:{reb_color}'>{reb}</span>   **Blk:** <span style='color:{blk_color}'>{blk}</span></span>", unsafe_allow_html=True)
-                    st.markdown(f"<span style='font-size:{font_size_large}'>**Stl:** <span style='color:{stl_color}'>{stl}</span>   **<span style='color:{fg_pct_color}'>{round(fg_pct*100,1)}</span> FG%**</span>", unsafe_allow_html=True)
-                    st.markdown(f"<span style='font-size:{font_size_large}'><span style='color:{fg3_pct_color}'>{round(fg3_pct*100,1)} </span>3P%   **<span style='color:{ft_pct_color}'>{round(ft_pct*100,1)} </span>FT%**</span>", unsafe_allow_html=True)
-            
+                        st.markdown(f"<span style='font-size:{font_size_large}'>**Pts:** <span style='color:{pts_color}'>{pts}</span>   **Ast:** <span style='color:{ast_color}'>{ast}</span></span>", unsafe_allow_html=True)
+                        st.markdown(f"<span style='font-size:{font_size_large}'>**Reb:** <span style='color:{reb_color}'>{reb}</span>   **Blk:** <span style='color:{blk_color}'>{blk}</span></span>", unsafe_allow_html=True)
+                        st.markdown(f"<span style='font-size:{font_size_large}'>**Stl:** <span style='color:{stl_color}'>{stl}</span>   **<span style='color:{fg_pct_color}'>{round(fg_pct*100,1)}</span> FG%**</span>", unsafe_allow_html=True)
+                        st.markdown(f"<span style='font-size:{font_size_large}'><span style='color:{fg3_pct_color}'>{round(fg3_pct*100,1)} </span>3P%   **<span style='color:{ft_pct_color}'>{round(ft_pct*100,1)} </span>FT%**</span>", unsafe_allow_html=True)
+                else:
+                    st.error(f'No data found for {player_name.lower().title()} in {SEASON}')
+
                 
-
-            
             
 
             col1, col2 = st.columns(2)
@@ -510,7 +526,7 @@ for player_name in player_names:
     
             shootperc = 0
                     # Plot shot chart on basketball court
-            plt.figure(figsize=(12, 7))
+            plt.figure(figsize=(13, 8))
             ax = plt.gca()
             if Date == 1:
                     date = shot_data['GAME_DATE'].unique()
@@ -575,26 +591,78 @@ for player_name in player_names:
         text=text_all[shot_data["SHOT_MADE_FLAG"] == 0],  # Use concatenated text for misses only
         hoverinfo='text'
     )
+            fig2trace = go.Scatter(
+                  x=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"],
+        y=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60,
+        mode='markers',
+        marker=dict(symbol='hexagon', color='rgba(255, 0, 0, 0.6)', size=6),
+        name='Shots',
+        text=text_all[shot_data["SHOT_MADE_FLAG"] == 0],  # Use concatenated text for misses only
+        hoverinfo='text'
+            )
 
     # Create layout
         
             layout = go.Layout(
         hovermode='closest',
-        xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-230, 230]),
-        yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[3, 470]),
+        xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-260, 260]),
+        yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[0, 470]),
         plot_bgcolor='#D2B48C',  # Set background color to the desired color
         
-        width=350,  # Set the width of the background
-        height=505,  # Set the height of the background
+        width=360,  # Set the width of the background
+        height=328,  # Set the height of the background
         autosize=False,
-        legend=dict(x=1, y=1, xanchor='right', yanchor='top', bgcolor='white',font=dict(color='black'), bordercolor='gray', borderwidth=1)  # Customize legend
+        legend=dict(x=1, y=1, xanchor='right', yanchor='top', bgcolor='white',font=dict(color='black'), bordercolor='gray', borderwidth=1),
+        margin=dict(l=0, r=0, t=0, b=0)# Customize legend
     )
 
     # Create figure
-            fig = go.Figure(data=[make_trace, miss_trace], layout=layout)
+            fig = go.Figure(layout=layout)
+            fig3 = go.Figure(layout=layout)
 
+            
     # Add basketball court lines as shapes
             court_shapes = [
+        dict(
+             type = 'line',
+             x0=256,
+             x1=-256,
+             y0=0,
+             y1=0,
+             line=dict(color='black', width=2.5)
+        ),
+         dict(
+             type = 'line',
+             x1=256,
+             x0=256,
+             y0=515,
+             y1 = 0,
+             line=dict(color='black', width=2.5)
+        ),
+        dict(
+             type = 'line',
+             x1=-256,
+             x0=-256,
+             y0=515,
+             y1 = 0,
+             line=dict(color='black', width=2.5)
+        ),
+        dict(
+            type = 'circle',
+            x1 = 60,
+            x0 = -60,
+            y0=405,
+            y1 = 530,
+            line=dict(color='black', width=2.5)
+        ),
+        dict(
+             type = 'line',
+             y0 = 469,
+             y1 = 469,
+             x1 = -255,
+             x0 = 255,
+             line=dict(color='black', width=2.5)
+        ),
 
         
         dict(
@@ -688,80 +756,35 @@ for player_name in player_names:
             line=dict(color='black', width=2.5)
         )
     ]
-            fig.update_layout(shapes=court_shapes)
 
     # Set aspect ratio
+            fig.update_layout(shapes=court_shapes)
+            fig.add_trace(make_trace)
+            fig.add_trace(miss_trace)
+
             fig.update_yaxes(scaleanchor='x', scaleratio=1)
 
     # Update hover labels
             fig.update_traces(hoverlabel=dict(bgcolor='black', font_size=12))
             
-
-        # Create a 2D histogram of shot locations
-            histogram_trace = go.Histogram2d(
-        x=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"],
-        y=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"] + 60,
-        autobinx=False,
-        xbins=dict(
-            start=-300,
-            end=300,
-            size=10  # Adjust the size based on your preference
-        ),
-        autobiny=False,
-        ybins=dict(
-            start=0,
-            end=940,
-            size=10  # Adjust the size based on your preference
-        ),
-        colorscale='magma',
-        showscale=False,
-        # Hide the color scale legend
-    )
-        # Create a 2D histogram of shot locations
-            histogram_trace2 = go.Histogram2d(
-        x=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"],
-        y=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60,
-        autobinx=True,
-        xbins=dict(
-            start=-300,
-            end=300,
-            size=10  # Adjust the size based on your preference
-        ),
-        autobiny=True,
-        ybins=dict(
-            start=0,
-            end=940,
-            size=10,
-            # Adjust the size based on your preference
-        ),
-        colorscale='magma',
-        showscale=False  # Hide the color scale legend
-    )
-
-    # Add the histogram trace to the plot
-
-    # Add the histogram trace to the plot
-
-            fig3 = go.Figure(data=[histogram_trace, histogram_trace2], layout=layout)
             fig3.update_layout(shapes=court_shapes)
-
-    # Set aspect ratio
+            fig3.add_trace(fig2trace)
+            fig3.update_traces(hoverlabel=dict(bgcolor='black', font_size=12))
             fig3.update_yaxes(scaleanchor='x', scaleratio=1)
 
-    # Update hover labels
-            fig3.update_traces(hoverlabel=dict(bgcolor='black', font_size=12))
-            
 
-    # Set axis titles
+
+
 
     # Display the plot
-            st.sidebar.header(f'{SEASON}: {total_makes}/{total_shots} - {shootperc}%')
+            st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">{SEASON}: {total_makes}/{total_shots} - {shootperc}%</span></div>', unsafe_allow_html=True)
+
             with col2:
                 st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">Makes and Misses</span></div>', unsafe_allow_html=True)
 
                 st.plotly_chart(fig)
                         # Plot hexbin with custom colormap
-            fig2 = plt.figure(figsize=(5, 5))
+            fig2 = plt.figure(figsize=(4.2, 4))
             ax = fig2.add_axes([0, 0, 1, 1])
             hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(50, 50), extent=(-300, 300, 0, 940), bins='log', cmap='inferno')
             ax = create_court(ax, 'black')
@@ -782,9 +805,6 @@ for player_name in player_names:
             
             with col1:
                     st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">Shot Frequency</span></div>', unsafe_allow_html=True)
-                    st.header('')
-                    st.header('')
-                    st.header('')
                     st.image(img_buffer, use_column_width=False, width=345)  
 
                     # st.plotly_chart(fig3)
