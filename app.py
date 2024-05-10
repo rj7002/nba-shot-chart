@@ -424,6 +424,9 @@ player_names_input = st.text_input("Enter player name (if multiple, separate by 
 
 # Parse the input to extract individual player names
 player_names = [name.strip() for name in player_names_input.split(',') if name.strip()]
+if not player_names_input:
+    st.image("https://static.vecteezy.com/system/resources/thumbnails/013/861/222/small/silhouette-of-basketball-player-with-ball-shooting-dunk-free-vector.jpg",use_column_width=True)
+
 type2 = ''
 if type == 'Per Game':
      type2 = 'PerGame'
