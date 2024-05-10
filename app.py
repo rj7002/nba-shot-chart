@@ -332,6 +332,8 @@ def get_player_season_range(player_id):
 # Define Streamlit app
 
 st.sidebar.markdown('<div style="text-align: center;"><span style="font-size:30px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
+type = st.sidebar.selectbox('Player Stats',['Per Game','Totals','Per 36'])
+
 Stat = st.sidebar.selectbox('',['FGA','MAKES', 'MISSES','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS','PF'])
 if Stat == 'MAKES':
     Stat2 = 'PTS'
@@ -433,7 +435,6 @@ if not selected_players:
 
 # Parse the input to extract individual player names
 # player_names = [name.strip() for name in player_names_input.split(',') if name.strip()]
-type = st.sidebar.selectbox('Player Stats',['Per Game','Totals','Per 36'])
 type2 = ''
 if type == 'Per Game':
      type2 = 'PerGame'
