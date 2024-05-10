@@ -609,7 +609,7 @@ for player_name in player_names:
             layout = go.Layout(
         hovermode='closest',
         xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-260, 260]),
-        yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-2, 472]),
+        yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-3, 472]),
         plot_bgcolor='#D2B48C',  # Set background color to the desired color
         
         width=360,  # Set the width of the background
