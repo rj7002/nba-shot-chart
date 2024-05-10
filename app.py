@@ -789,7 +789,7 @@ for player_name in player_names:
                         # Plot hexbin with custom colormap
             fig2 = plt.figure(figsize=(4.2, 4))
             ax = fig2.add_axes([0, 0, 1, 1])
-            hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(50, 50), extent=(-300, 300, 0, 940), bins='log', cmap='inferno')
+            hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(50, 50), extent=(-300, 302, 0, 940), bins='log', cmap='inferno')
             ax = create_court(ax, 'black')
             legend_elements = [
                 plt.Line2D([0], [0], marker='H', color='w', label='Less Shots', markerfacecolor='black', markersize=10),
