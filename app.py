@@ -573,10 +573,10 @@ for player_name in selected_players:
     # Concatenate text labels for makes and misses
             text_all = (
     shot_data["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]])) + ': ' +
-    shot_data["HTM"] + ' VS ' + shot_data["VTM"] + '|' +
+    shot_data["HTM"] + ' VS ' + shot_data["VTM"] + ' | ' +
     shot_data['SHOT_TYPE'].str.replace(' Field Goal', '') + ' - ' +  # Remove 'Field Goal'
     shot_data["ACTION_TYPE"] + ' (' +
-    shot_data["SHOT_DISTANCE"].astype(str) + ' ft)' + '|'  + shot_data["PERIOD"].astype(str) + 'Q' + ' - ' +
+    shot_data["SHOT_DISTANCE"].astype(str) + ' ft)' + ' | '  + shot_data["PERIOD"].astype(str) + 'Q' + ' - ' +
     shot_data["MINUTES_REMAINING"].astype(str) + ':' +
     shot_data["SECONDS_REMAINING"].astype(str)
 )
