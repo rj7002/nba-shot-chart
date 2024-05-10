@@ -267,7 +267,7 @@ class PlayerList:
         self,
         league_id=constants.League.NBA,
         season=constants.CURRENT_SEASON,
-        active_only=1,
+        active_only=0,
     ):
         self._params = {
             "LeagueID": league_id,
@@ -300,7 +300,7 @@ def get_id(
     """
     name = name.lower()
 
-    players = pd.DataFrame(PlayerList(season=season, active_only=active_only).players())
+    players = pd.DataFrame(PlayerList(season=season, active_only=0).players())
 
     player = players.loc[players["DISPLAY_FIRST_LAST"].str.lower() == name, "PERSON_ID"]
     try:
@@ -332,8 +332,7 @@ def get_player_season_range(player_id):
 # Define Streamlit app
 
 st.sidebar.markdown('<div style="text-align: center;"><span style="font-size:30px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
-type = st.sidebar.selectbox('Player Stats',['Per Game','Totals'])
-Stat = st.sidebar.selectbox('',['FGA','MAKES', 'MISSES','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS'])
+Stat = st.sidebar.selectbox('',['FGA','MAKES', 'MISSES','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS','PF'])
 if Stat == 'MAKES':
     Stat2 = 'PTS'
 elif Stat == 'MISSES':
@@ -420,13 +419,21 @@ Date = st.sidebar.toggle('Date')
 st.markdown('<div style="text-align: center;"><span style="font-size:80px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
 
 # Text input for entering player names
-player_names_input = st.text_input("Enter player name (if multiple, separate by commas)")
 
-# Parse the input to extract individual player names
-player_names = [name.strip() for name in player_names_input.split(',') if name.strip()]
-if not player_names_input:
+# Fetch all players
+player_list = PlayerList()
+players_df = player_list.players()
+
+# Create a multiselect widget with player options
+selected_players = st.multiselect("Select players:", options=players_df["DISPLAY_FIRST_LAST"].tolist(), help="Select one or more players")
+
+# player_names_input = st.text_input("Enter player name (if multiple, separate by commas)")
+if not selected_players:
     st.image("https://static.vecteezy.com/system/resources/thumbnails/013/861/222/small/silhouette-of-basketball-player-with-ball-shooting-dunk-free-vector.jpg",use_column_width=True)
 
+# Parse the input to extract individual player names
+# player_names = [name.strip() for name in player_names_input.split(',') if name.strip()]
+type = st.sidebar.selectbox('Player Stats',['Per Game','Totals','Per 36'])
 type2 = ''
 if type == 'Per Game':
      type2 = 'PerGame'
@@ -435,7 +442,7 @@ elif type == 'Totals':
 elif type == 'Per 36':
      type2 == 'Per36'
 
-for player_name in player_names:
+for player_name in selected_players:
     if player_name:
         try:
                 # Call get_id function to retrieve player ID
@@ -479,7 +486,7 @@ for player_name in player_names:
     # Display the variables
                     cl1,cl2 = st.columns(2)
                     with cl1:
-                        if len(player_names) > 1:
+                        if len(selected_players) > 1:
                             display_player_image(PLAYER_ID,200,name)
                         else:
                             display_player_image(PLAYER_ID,350,name)
@@ -500,7 +507,7 @@ for player_name in player_names:
                         ft_pct_color = "gold"
 
         # Display text with different colors
-                        if len(player_names) > 1:
+                        if len(selected_players) > 1:
                             font_size_large = "20px"
                         else:
                             font_size_large = "28px"
@@ -578,7 +585,7 @@ for player_name in player_names:
         x=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"],
         y=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"] + 60,
         mode='markers',
-        marker=dict(color='rgba(0, 128, 0, 0.6)', size=8),
+        marker=dict(color='rgba(0, 128, 0, 0.6)', size=6),
         name='Makes',
         text=text_all[shot_data["SHOT_MADE_FLAG"] == 1],  # Use concatenated text for makes only
         hoverinfo='text'
@@ -598,7 +605,7 @@ for player_name in player_names:
                   x=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"],
         y=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60,
         mode='markers',
-        marker=dict(symbol='hexagon', color='rgba(255, 0, 0, 0.6)', size=6),
+        marker=dict(symbol='hexagon', color='rgba(255, 0, 0, 0.6)', size=10),
         name='Shots',
         text=text_all[shot_data["SHOT_MADE_FLAG"] == 0],  # Use concatenated text for misses only
         hoverinfo='text'
@@ -609,13 +616,13 @@ for player_name in player_names:
             layout = go.Layout(
         hovermode='closest',
         xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-260, 260]),
-        yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-3, 472]),
+        yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[0, 470]),
         plot_bgcolor='#D2B48C',  # Set background color to the desired color
         
         width=360,  # Set the width of the background
         height=328,  # Set the height of the background
         autosize=False,
-        legend=dict(x=1, y=1, xanchor='right', yanchor='top', bgcolor='white',font=dict(color='black'), bordercolor='gray', borderwidth=1),
+        legend=dict(x=0.98, y=0.98, xanchor='right', yanchor='top', bgcolor='#D2B48C',font=dict(color='black'), bordercolor='black', borderwidth=0),
         margin=dict(l=0, r=0, t=0, b=0)# Customize legend
     )
 
@@ -789,13 +796,13 @@ for player_name in player_names:
                         # Plot hexbin with custom colormap
             fig2 = plt.figure(figsize=(4.2, 4))
             ax = fig2.add_axes([0, 0, 1, 1])
-            hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(50, 50), extent=(-300, 302, 0, 940), bins='log', cmap='inferno')
+            hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(50, 50), extent=(-300, 300, 0, 940), bins='log', cmap='inferno')
             ax = create_court(ax, 'black')
             legend_elements = [
-                plt.Line2D([0], [0], marker='H', color='w', label='Less Shots', markerfacecolor='black', markersize=10),
-                plt.Line2D([0], [0], marker='H', color='w', label='More Shots', markerfacecolor='yellow', markersize=10)
+                plt.Line2D([0], [0], marker='H', color='#D2B48C', label='Less Shots', markerfacecolor='black', markersize=15),
+                plt.Line2D([0], [0], marker='H', color='#D2B48C', label='More Shots', markerfacecolor='yellow', markersize=15)
             ]
-            plt.legend(handles=legend_elements, loc='upper right') 
+            plt.legend(handles=legend_elements, loc='upper right',framealpha=0) 
 
     # Save the figure as an image
             img_buffer = io.BytesIO()
@@ -820,3 +827,4 @@ for player_name in player_names:
             st.error(str(e))
     else:
         st.image("https://static.vecteezy.com/system/resources/thumbnails/013/861/222/small/silhouette-of-basketball-player-with-ball-shooting-dunk-free-vector.jpg",use_column_width=True)
+
