@@ -333,7 +333,7 @@ def get_player_season_range(player_id):
 
 st.sidebar.markdown('<div style="text-align: center;"><span style="font-size:30px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
 type = st.sidebar.selectbox('Player Stats',['Per Game','Totals','Per 36'])
-Stat = st.sidebar.selectbox('',['FGA','MAKES', 'MISSES','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS','PF'])
+Stat = st.sidebar.selectbox('',['FGA','MAKES', 'MISSES','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS'])
 if Stat == 'MAKES':
     Stat2 = 'PTS'
 elif Stat == 'MISSES':
