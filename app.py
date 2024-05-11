@@ -74,8 +74,7 @@ class GameLogs:
 
 def display_player_image(player_id, width2, caption2):
     # Construct the URL for the player image using the player ID
-    image_url = f"https://ak-static.cms.nba.com/wp-content/uploads/headshots/nba/latest/260x190/{player_id}.png"
-    
+    image_url = f"https://cdn.nba.com/headshots/nba/latest/260x190/{player_id}.png" 
     # Check if the image URL returns a successful response
     response = requests.get(image_url)
     
