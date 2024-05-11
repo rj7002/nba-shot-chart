@@ -1056,7 +1056,7 @@ for player_name in selected_players:
             plt.legend(handles=legend_elements, loc='upper right',framealpha=0) 
 
             # Create hexbin plot with Plotly
-            fig5 = px.density_heatmap(shot_data, x='LOC_X', y=shot_data['LOC_Y'] + 60, nbinsx=55, nbinsy=55, color_continuous_scale='Hot')
+            fig5 = px.density_heatmap(shot_data, x='LOC_X', y=shot_data['LOC_Y'] + 60, nbinsx=60, nbinsy=60, color_continuous_scale='Hot')
 
 
 
