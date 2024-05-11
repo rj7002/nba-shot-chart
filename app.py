@@ -1090,7 +1090,7 @@ for player_name in selected_players:
 
             
             with col1:
-                    st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">Heat Map</span></div>', unsafe_allow_html=True)
+                    st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">Favorite Spots</span></div>', unsafe_allow_html=True)
                     # st.image(img_buffer, use_column_width=False, width=345)  
                     fig2.patch.set_visible(False)
 
