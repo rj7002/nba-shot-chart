@@ -591,14 +591,18 @@ for player_name in selected_players:
 
     # Display the variables
                     cl1,cl2 = st.columns(2)
+                    if len(selected_players) > 1:
+                            font_size_large = "20px"
+                        else:
+                            font_size_large = "28px"
                     with cl1:
                         if len(selected_players) > 1:
                             display_player_image(PLAYER_ID,200,f"{name} - {fullteam}")
-                            st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">{playerheight} {playerweight}</span></div>', unsafe_allow_html=True)
+                            st.markdown(f'<div style="text-align: center;"><span style="font-size:{font_size_large};">{playerheight} {playerweight}</span></div>', unsafe_allow_html=True)
 
                         else:
                             display_player_image(PLAYER_ID,350,f"{name} - {fullteam}")
-                            st.markdown(f'<div style="text-align: center;"><span style="font-size:20px;">Height: {playerheight} Weight: {playerweight}</span></div>', unsafe_allow_html=True)
+                            st.markdown(f'<div style="text-align: center;"><span style="font-size:{font_size_large};">Height: {playerheight} Weight: {playerweight}</span></div>', unsafe_allow_html=True)
 
 
                     
@@ -619,10 +623,7 @@ for player_name in selected_players:
                         tov_color = "magenta"
 
         # Display text with different colors
-                        if len(selected_players) > 1:
-                            font_size_large = "20px"
-                        else:
-                            font_size_large = "28px"
+                        
 
         # Display text with different colors and font sizes using markdown syntax
 
