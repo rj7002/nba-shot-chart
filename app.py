@@ -593,7 +593,7 @@ for player_name in selected_players:
                     cl1,cl2 = st.columns(2)
                     if len(selected_players) > 1:
                             font_size_large = "20px"
-                        else:
+                    else:
                             font_size_large = "28px"
                     with cl1:
                         if len(selected_players) > 1:
