@@ -66,7 +66,7 @@ def display_player_image(player_id, width2, caption2):
         st.markdown(
     f'<div style="display: flex; flex-direction: column; align-items: center;">'
     f'<img src="{image_url}" style="width: {width2}px;">'
-    f'<p style="text-align: center; font-size: 25px;">{caption2}</p>'
+    f'<p style="text-align: center; font-size: 20px;">{caption2}</p>'
     f'</div>',
     unsafe_allow_html=True
 )
@@ -417,15 +417,15 @@ elif Stat == 'PF':
     Stat2 = 'PF'
 GameSegment = st.sidebar.toggle('Game Segment')
 if GameSegment == 1:
-    typeseg = st.sidebar.selectbox('Game Segment',['First Half', 'Second Half', 'Overtime'])
+    typeseg = st.sidebar.checkbox('',['First Half', 'Second Half', 'Overtime'])
 else:
     typeseg = None
 Quarters = st.sidebar.toggle('Quarters')
 if Quarters:
-    typequart = st.sidebar.selectbox('Quarters',['1','2','3','4'])
+    typequart = st.sidebar.selectbox('',['1','2','3','4'])
 Clutch_Time = st.sidebar.toggle('Clutch Time')
 if Clutch_Time == 1:
-    typeclutch = st.sidebar.selectbox('Time Remaining', ['Last 5 Minutes', 'Last 4 Minutes','Last 3 Minutes','Last 2 Minutes','Last 1 Minute','Last 30 Seconds', 'Last 10 Seconds'])
+    typeclutch = st.sidebar.selectbox('', ['Last 5 Minutes', 'Last 4 Minutes','Last 3 Minutes','Last 2 Minutes','Last 1 Minute','Last 30 Seconds', 'Last 10 Seconds'])
 else:
     typeclutch = None
 Playoffs = st.sidebar.toggle('Playoffs')
@@ -435,51 +435,52 @@ else:
     typeseason = "Regular Season"
 Conference = st.sidebar.toggle('Conference')
 if Conference == 1:
-    typeconf = st.sidebar.selectbox('Select a conference',['East', 'West'])
+    typeconf = st.sidebar.selectbox('',['East', 'West'])
 else:
     typeconf = None
 Location = st.sidebar.toggle('Location')
 if Location == 1:
-    typeloc = st.sidebar.selectbox('Location',['Home', 'Road'])
+    typeloc = st.sidebar.selectbox('',['Home', 'Road'])
 else:
     typeloc = None
 Outcome = st.sidebar.toggle('Outcome')
 if Outcome == 1:
-    typeout = st.sidebar.selectbox('Outcome',['W', 'L'])
+    typeout = st.sidebar.selectbox('',['W', 'L'])
 else:
     typeout = None
 AheadBehind = st.sidebar.toggle('Ahead/Behind')
 if AheadBehind == 1:
-    typeaheadbehind = st.sidebar.selectbox('Ahead/Behind',['Behind or Tied','Ahead or Tied'])
+    typeaheadbehind = st.sidebar.selectbox('',['Behind or Tied','Ahead or Tied'])
 else:
     typeaheadbehind = None
 ShotDist = st.sidebar.toggle('Shot Distance')
 if ShotDist == 1:
     shotdistbool = True
-    shotdistance = st.sidebar.slider("Shot Distance", 0, 40)
+    # shotdistance = st.sidebar.slider("Shot Distance", 0, 40)
+    shotdistance_min, shotdistance_max = st.sidebar.slider("Shot Distance", 0, 40, (0, 40))
 ShotType = st.sidebar.toggle('Shot Type')
 if ShotType == 1:
     shottypebool = True
-    shottype = st.sidebar.selectbox('Shot Type', ['Jump Shot', 'Layup','Dunk','Other'])
+    shottype = st.sidebar.selectbox('', ['Jump Shot', 'Layup','Dunk','Other'])
     if shottype == 'Jump Shot':
-        jumpshottype = st.sidebar.selectbox('Jump Shot Type', ['Stepback Jump shot', 'Running Pull-Up Jump Shot','Turnaround Fadeaway shot','Fadeaway Jump Shot','Pullup Jump shot','Jump Bank Shot','Jump Shot'])
+        jumpshottype = st.sidebar.multiselect('', ['Stepback Jump shot', 'Running Pull-Up Jump Shot','Turnaround Fadeaway shot','Fadeaway Jump Shot','Pullup Jump shot','Jump Bank Shot','Jump Shot'])
         finaltype = jumpshottype
     elif shottype == 'Layup':
-        layuptype = st.sidebar.selectbox('Layup Type', ['Layup Shot', 'Running Finger Roll Layup Shot','Cutting Layup Shot','Driving Layup Shot','Running Layup Shot','Alley Oop Layup shot','Tip Layup Shot','Reverse Layup Shot','Driving Reverse Layup Shot','Running Reverse Layup Shot'])
+        layuptype = st.sidebar.multiselect('', ['Layup Shot', 'Running Finger Roll Layup Shot','Cutting Layup Shot','Driving Layup Shot','Running Layup Shot','Alley Oop Layup shot','Tip Layup Shot','Reverse Layup Shot','Driving Reverse Layup Shot','Running Reverse Layup Shot'])
         finaltype = layuptype
     elif shottype == 'Dunk':
-        dunktype = st.sidebar.selectbox('Dunk Type', ['Running Dunk Shot', 'Cutting Dunk Shot','Running Reverse Dunk Shot','Running Alley Oop Dunk Shot','Dunk Shot','Tip Dunk Shot'])    
+        dunktype = st.sidebar.multiselect('', ['Running Dunk Shot', 'Cutting Dunk Shot','Running Reverse Dunk Shot','Running Alley Oop Dunk Shot','Dunk Shot','Tip Dunk Shot'])    
         finaltype = dunktype
     elif shottype == 'Other':
-        othertype = st.sidebar.selectbox('Other Type', ['Driving Floating Jump Shot', 'Floating Jump shot','Driving Floating Bank Jump Shot','Driving Bank Hook Shot','Driving Hook Shot','Turnaround Hook Shot','Hook Shot'])
+        othertype = st.sidebar.multiselect('', ['Driving Floating Jump Shot', 'Floating Jump shot','Driving Floating Bank Jump Shot','Driving Bank Hook Shot','Driving Hook Shot','Turnaround Hook Shot','Hook Shot'])
         finaltype = othertype
 Teams = st.sidebar.toggle('Teams')
 if Teams == 1:
-    teamtype = st.sidebar.selectbox('Teams', ['ATL', 'BOS', 'BKN', 'CHA', 'CHI', 'CLE', 'DAL', 'DEN', 'DET', 'GSW', 'HOU', 'IND', 'LAC', 'LAL', 'MEM', 'MIA', 'MIL', 'MIN', 'NOP', 'NYK', 'OKC', 'ORL', 'PHI', 'PHX', 'POR', 'SAC', 'SAS', 'TOR', 'UTA', 'WAS'])
+    teamtype = st.sidebar.multiselect('', ['ATL', 'BOS', 'BKN', 'CHA', 'CHI', 'CLE', 'DAL', 'DEN', 'DET', 'GSW', 'HOU', 'IND', 'LAC', 'LAL', 'MEM', 'MIA', 'MIL', 'MIN', 'NOP', 'NYK', 'OKC', 'ORL', 'PHI', 'PHX', 'POR', 'SAC', 'SAS', 'TOR', 'UTA', 'WAS'])
 CourtLoc = st.sidebar.toggle('Court Location')
 if CourtLoc == 1:
-    courtloc = st.sidebar.selectbox('Court Location',['Right Side(R)','Left Side(L)','Center(C)','Right Side Center(RC)','Left Side Center(LC)'])
-Date = st.sidebar.toggle('Date')
+    courtloc = st.sidebar.multiselect('',['Right Side(R)','Left Side(L)','Center(C)','Right Side Center(RC)','Left Side Center(LC)'])
+Date = st.sidebar.toggle('Date (YearMonthDay)')
 
     # User input for player name
 st.markdown('<div style="text-align: center;"><span style="font-size:80px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
@@ -491,7 +492,7 @@ player_list = PlayerList()
 players_df = player_list.players()
 
 # Create a multiselect widget with player options
-selected_players = st.multiselect("Select players:", options=players_df["DISPLAY_FIRST_LAST"].tolist(), help="Select one or more players")
+selected_players = st.multiselect("Select players:", options=players_df["DISPLAY_FIRST_LAST"].tolist(), help="Select a player to view shot data. Adjust filters on sidebar for specific data. Shot data before 1996 is unavailable")
 
 # player_names_input = st.text_input("Enter player name (if multiple, separate by commas)")
 if not selected_players:
@@ -509,6 +510,7 @@ elif type == 'Per 36':
 
 for player_name in selected_players:
     if player_name:
+        
         try:
                 # Call get_id function to retrieve player ID
             PLAYER_ID = get_id(player_name)
@@ -520,8 +522,14 @@ for player_name in selected_players:
                 # Generate the list of seasons within the range
             SEASONS = [f'{season}-{str(int(season)+1)[2:]}' for season in range(int(first_season), int(last_season)+1)]
                 
-            SEASON = st.selectbox(f'Select season - {player_name.lower().title()}', reversed(SEASONS))
+            SEASON = st.selectbox(f'Select season - {player_name}', reversed(SEASONS))
             if SEASON:
+                player_list = PlayerList(season=SEASON)
+                players_df2 = player_list.players()
+                team_name = players_df2.loc[players_df2["DISPLAY_FIRST_LAST"] == player_name, "TEAM_NAME"].values[0]
+                team_city = players_df2.loc[players_df2["DISPLAY_FIRST_LAST"] == player_name, "TEAM_CITY"].values[0]
+                fullteam = f"{team_city} {team_name}"
+
 
                 game_logs = GameLogs(PLAYER_ID, season=SEASON, season_type=typeseason).logs()
                 
@@ -531,8 +539,8 @@ for player_name in selected_players:
                     game_dates = game_logs['GAME_DATE'][::-1]
                     pts = game_logs['PTS'][::-1]
 
-                plotgames = px.bar(x=game_dates, y=pts, labels={"x": "Game Date", "y": "Points"}, title=f"{player_name}'s Game Log")
-                st.success(f"Successfully found {player_name.lower().title()}")
+                plotgames = px.bar(x=game_dates, y=pts, labels={"x": "Game Date", "y": "Points"},width=600, height=300)
+                # st.success(f"Successfully found {player_name.lower().title()}")
                 # Create an empty list to store shot data for all selected seasons
                 all_shot_data = []
 
@@ -555,7 +563,7 @@ for player_name in selected_players:
                     fg_pct = player_headline_stats2['FG_PCT'].values[0]
                     fg3_pct = player_headline_stats2['FG3_PCT'].values[0]
                     ft_pct = player_headline_stats2['FT_PCT'].values[0]
-                    name = player_name.lower().title()
+                    name = player_name
 
 
 
@@ -563,9 +571,9 @@ for player_name in selected_players:
                     cl1,cl2 = st.columns(2)
                     with cl1:
                         if len(selected_players) > 1:
-                            display_player_image(PLAYER_ID,200,name)
+                            display_player_image(PLAYER_ID,200,f"{name} - {fullteam}")
                         else:
-                            display_player_image(PLAYER_ID,350,name)
+                            display_player_image(PLAYER_ID,350,f"{name} - {fullteam}")
 
                     
                     
@@ -581,6 +589,8 @@ for player_name in selected_players:
                         fg_pct_color = "violet"
                         fg3_pct_color = "gray"
                         ft_pct_color = "gold"
+                        min_color = "cyan"
+                        tov_color = "magenta"
 
         # Display text with different colors
                         if len(selected_players) > 1:
@@ -589,17 +599,19 @@ for player_name in selected_players:
                             font_size_large = "28px"
 
         # Display text with different colors and font sizes using markdown syntax
-                        st.markdown(f"<span style='font-size:{font_size_large}'>**Season:** <span style='color:{pts_color}'>{season_val}", unsafe_allow_html=True)
 
                         st.markdown(f"<span style='font-size:{font_size_large}'>**Pts:** <span style='color:{pts_color}'>{pts}</span>   **Ast:** <span style='color:{ast_color}'>{ast}</span></span>", unsafe_allow_html=True)
                         st.markdown(f"<span style='font-size:{font_size_large}'>**Reb:** <span style='color:{reb_color}'>{reb}</span>   **Blk:** <span style='color:{blk_color}'>{blk}</span></span>", unsafe_allow_html=True)
                         st.markdown(f"<span style='font-size:{font_size_large}'>**Stl:** <span style='color:{stl_color}'>{stl}</span>   **<span style='color:{fg_pct_color}'>{round(fg_pct*100,1)}</span> FG%**</span>", unsafe_allow_html=True)
                         st.markdown(f"<span style='font-size:{font_size_large}'><span style='color:{fg3_pct_color}'>{round(fg3_pct*100,1)} </span>3P%   **<span style='color:{ft_pct_color}'>{round(ft_pct*100,1)} </span>FT%**</span>", unsafe_allow_html=True)
+                        st.markdown(f"<span style='font-size:{font_size_large}'>**Tov:** <span style='color:{tov_color}'>{tov}</span>   **Min:** <span style='color:{min_color}'>{min}</span></span>", unsafe_allow_html=True)
+
                 else:
                     st.error(f'No data found for {player_name.lower().title()} in {SEASON}')
 
                 
-            
+            st.plotly_chart(plotgames)
+
 
             col1, col2 = st.columns(2)
                 # Create ShotChart object
@@ -616,21 +628,21 @@ for player_name in selected_players:
             ax = plt.gca()
             if Date == 1:
                     date = shot_data['GAME_DATE'].unique()
-                    datetype = st.sidebar.selectbox('Date (YearMonthDay)', shot_data['GAME_DATE'].unique())
-                    shot_data = shot_data[shot_data['GAME_DATE'] == datetype]
+                    datetype = st.sidebar.multiselect('', shot_data['GAME_DATE'].unique())
+                    shot_data = shot_data[shot_data['GAME_DATE'].isin(datetype)]
             if Stat == 'MISSES':
                     shot_data = shot_data[shot_data['SHOT_MADE_FLAG'] == 0]
             if Quarters:
                     shot_data = shot_data[shot_data['PERIOD'] == int(typequart)]
             if CourtLoc:
-                    shot_data = shot_data[shot_data['SHOT_ZONE_AREA'] == courtloc]
+                    shot_data = shot_data[shot_data['SHOT_ZONE_AREA'].isin(courtloc)]
             if Teams:
-                        shot_data = shot_data[(shot_data['VTM'] == teamtype) | (shot_data['HTM'] == teamtype)]
+                        shot_data = shot_data[(shot_data['VTM'].isin(teamtype)) | (shot_data['HTM'].isin(teamtype))]
             if ShotType:  # Check if ShotType checkbox is selected
-                    shot_data = shot_data[shot_data['ACTION_TYPE'] == finaltype]
+                    shot_data = shot_data[shot_data['ACTION_TYPE'].isin(finaltype)]
                     # Plot makes in green
             if ShotDist == 1:
-                    shot_data = shot_data[shot_data['SHOT_DISTANCE'] >= shotdistance]
+                    shot_data = shot_data[(shot_data['SHOT_DISTANCE'] >= shotdistance_min) & (shot_data['SHOT_DISTANCE'] <= shotdistance_max)]
                         
 
             
@@ -648,10 +660,10 @@ for player_name in selected_players:
     # Concatenate text labels for makes and misses
             text_all = (
     shot_data["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]])) + ': ' +
-    shot_data["HTM"] + ' VS ' + shot_data["VTM"] + '|' +
+    shot_data["HTM"] + ' VS ' + shot_data["VTM"] + ' | ' +
     shot_data['SHOT_TYPE'].str.replace(' Field Goal', '') + ' - ' +  # Remove 'Field Goal'
     shot_data["ACTION_TYPE"] + ' (' +
-    shot_data["SHOT_DISTANCE"].astype(str) + ' ft)' + '|'  + shot_data["PERIOD"].astype(str) + 'Q' + ' - ' +
+    shot_data["SHOT_DISTANCE"].astype(str) + ' ft)' + ' | '  + shot_data["PERIOD"].astype(str) + 'Q' + ' - ' +
     shot_data["MINUTES_REMAINING"].astype(str) + ':' +
     shot_data["SECONDS_REMAINING"].astype(str)
 )
@@ -698,7 +710,7 @@ for player_name in selected_players:
         width=360,  # Set the width of the background
         height=328,  # Set the height of the background
         autosize=False,
-        legend=dict(x=0.98, y=0.98, xanchor='right', yanchor='top', bgcolor='#D2B48C',font=dict(color='black'), bordercolor='black', borderwidth=0),
+        legend=dict(x=0.98, y=1, xanchor='right', yanchor='top', bgcolor='rgba(0,0,0,0)',font=dict(color='black'), bordercolor='black', borderwidth=0),
         margin=dict(l=0, r=0, t=0, b=0)# Customize legend
     )
 
@@ -892,8 +904,26 @@ for player_name in selected_players:
             with col1:
                     st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">Shot Frequency</span></div>', unsafe_allow_html=True)
                     st.image(img_buffer, use_column_width=False, width=345)  
-            st.plotly_chart(plotgames)
+            shottrack = st.selectbox('Shot Tracking Stats',['Overall','General','Shot Clock','Dribbles','Closest Defender','Closest Defender Long','Touch Time'])
+            shotfull = ShotTracking(PLAYER_ID, season=SEASON, season_type=typeseason)
+            if shottrack == 'Overall':
+                 shots = shotfull.overall()
+            elif shottrack == 'General':
+                 shots = shotfull.general()
+            elif shottrack == 'Shot Clock':
+                 shots = shotfull.shot_clock()
+            elif shottrack == 'Dribbles':
+                 shots = shotfull.dribbles()
+            elif shottrack == 'Closest Defender':
+                 shots = shotfull.closest_defender()
+            elif shottrack == 'Closest Defender Long':
+                 shots = shotfull.closest_defender_long()
+            elif shottrack == 'Touch Time':
+                 shots = shotfull.touch_time()
+            shots.drop(columns=['PLAYER_ID','SORT_ORDER','PLAYER_NAME_LAST_FIRST','GP','G'], inplace=True)
+            st.write(shots)
 
+            
                     # st.plotly_chart(fig3)
                     
             
