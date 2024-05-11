@@ -1078,7 +1078,7 @@ for player_name in selected_players:
             coloraxis=dict(
                 showscale=False,
                 cmin=1,
-                cmax=25
+                cmax=15
             )
 
 
