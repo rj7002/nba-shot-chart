@@ -398,6 +398,8 @@ def get_player_season_range(player_id):
 
 st.sidebar.markdown('<div style="text-align: center;"><span style="font-size:30px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
 type = st.sidebar.selectbox('Player Stats',['Per Game','Totals','Per 36'])
+shottrack = st.selectbox('Shot Tracking Stats',['Overall','General','Shot Clock','Dribbles','Closest Defender','Closest Defender Long','Touch Time'])
+
 Stat = st.sidebar.selectbox('',['FGA','MAKES', 'MISSES','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS','PF'])
 if Stat == 'MAKES':
     Stat2 = 'PTS'
@@ -904,7 +906,6 @@ for player_name in selected_players:
             with col1:
                     st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">Shot Frequency</span></div>', unsafe_allow_html=True)
                     st.image(img_buffer, use_column_width=False, width=345)  
-            shottrack = st.selectbox('Shot Tracking Stats',['Overall','General','Shot Clock','Dribbles','Closest Defender','Closest Defender Long','Touch Time'])
             shotfull = ShotTracking(PLAYER_ID, season=SEASON, season_type=typeseason)
             if shottrack == 'Overall':
                  shots = shotfull.overall()
