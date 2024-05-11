@@ -12,11 +12,46 @@ from nbapy import constants
 import datetime
 import requests
 import plotly.graph_objs as go
+from abc import ABC, abstractmethod
+import plotly.express as px
 
 
 st.set_page_config(page_title="NBA Shot Visualizer", page_icon='https://juststickers.in/wp-content/uploads/2015/05/basket-ball-player-1-decal.png', initial_sidebar_state="expanded")
 
 currentyear = datetime.datetime.now().year
+
+
+
+class GameLogs:
+    """Contains a full log of all the games for a player for a given season.
+
+    Args:
+        player_id: ID of the player to look up
+        league_id: ID for the league to look in
+        season: Season given to look up
+        season_type: Season type to consider (Regular / Playoffs)
+    """
+
+    _endpoint = "playergamelog"
+
+    def __init__(
+        self,
+        player_id: str,
+        league_id=constants.League.NBA,
+        season=constants.CURRENT_SEASON,
+        season_type=constants.SeasonType.Regular,
+    ):
+        self._params = {
+            "PlayerID": player_id,
+            "LeagueID": league_id,
+            "Season": season,
+            "SeasonType": season_type,
+        }
+        self.api = NbaAPI(self._endpoint, self._params)
+
+    def logs(self):
+        return self.api.get_result("PlayerGameLog")
+
 
 
 def display_player_image(player_id, width2, caption2):
@@ -81,8 +116,8 @@ def create_court(ax, color):
     ax.set_yticks([])
 
     # Set axis limits
-    ax.set_xlim(-257, 257)
-    ax.set_ylim(-5, 470)
+    ax.set_xlim(-262, 262)
+    ax.set_ylim(-5, 472)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
@@ -243,6 +278,36 @@ class ShotChart:
     def league_average(self):
         return self.api.get_result("LeagueAverages")
 
+class ShotTracking(Splits):
+    """Tracking data for shooting for a given player.
+
+    Args:
+        see Splits
+    """
+
+    _endpoint = "playerdashptshots"
+
+    def overall(self):
+        return self.api.get_result("Overall")
+
+    def general(self):
+        return self.api.get_result("GeneralShooting")
+
+    def shot_clock(self):
+        return self.api.get_result("ShotClockShooting")
+
+    def dribbles(self):
+        return self.api.get_result("DribbleShooting")
+
+    def closest_defender(self):
+        return self.api.get_result("ClosestDefenderShooting")
+
+    def closest_defender_long(self):
+        return self.api.get_result("ClosestDefender10ftPlusShooting")
+
+    def touch_time(self):
+        return self.api.get_result("TouchTimeShooting")
+
 
 class PlayerNotFoundException(Exception):
     pass
@@ -333,7 +398,6 @@ def get_player_season_range(player_id):
 
 st.sidebar.markdown('<div style="text-align: center;"><span style="font-size:30px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
 type = st.sidebar.selectbox('Player Stats',['Per Game','Totals','Per 36'])
-
 Stat = st.sidebar.selectbox('',['FGA','MAKES', 'MISSES','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS','PF'])
 if Stat == 'MAKES':
     Stat2 = 'PTS'
@@ -448,7 +512,7 @@ for player_name in selected_players:
         try:
                 # Call get_id function to retrieve player ID
             PLAYER_ID = get_id(player_name)
-            st.success(f"Successfully found {player_name.lower().title()}")
+            
             
                 
                 # Get the range of seasons the selected player has played in
@@ -456,8 +520,19 @@ for player_name in selected_players:
                 # Generate the list of seasons within the range
             SEASONS = [f'{season}-{str(int(season)+1)[2:]}' for season in range(int(first_season), int(last_season)+1)]
                 
-            SEASON = st.selectbox(f'Select season - {player_name.lower().title()}', reversed(SEASONS), help="Shot data prior to 1996 unavailable")
+            SEASON = st.selectbox(f'Select season - {player_name.lower().title()}', reversed(SEASONS))
             if SEASON:
+
+                game_logs = GameLogs(PLAYER_ID, season=SEASON, season_type=typeseason).logs()
+                
+
+        # Plot game log
+                if game_logs is not None and not game_logs.empty:
+                    game_dates = game_logs['GAME_DATE'][::-1]
+                    pts = game_logs['PTS'][::-1]
+
+                plotgames = px.bar(x=game_dates, y=pts, labels={"x": "Game Date", "y": "Points"}, title=f"{player_name}'s Game Log")
+                st.success(f"Successfully found {player_name.lower().title()}")
                 # Create an empty list to store shot data for all selected seasons
                 all_shot_data = []
 
@@ -573,10 +648,10 @@ for player_name in selected_players:
     # Concatenate text labels for makes and misses
             text_all = (
     shot_data["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]])) + ': ' +
-    shot_data["HTM"] + ' VS ' + shot_data["VTM"] + ' | ' +
+    shot_data["HTM"] + ' VS ' + shot_data["VTM"] + '|' +
     shot_data['SHOT_TYPE'].str.replace(' Field Goal', '') + ' - ' +  # Remove 'Field Goal'
     shot_data["ACTION_TYPE"] + ' (' +
-    shot_data["SHOT_DISTANCE"].astype(str) + ' ft)' + ' | '  + shot_data["PERIOD"].astype(str) + 'Q' + ' - ' +
+    shot_data["SHOT_DISTANCE"].astype(str) + ' ft)' + '|'  + shot_data["PERIOD"].astype(str) + 'Q' + ' - ' +
     shot_data["MINUTES_REMAINING"].astype(str) + ':' +
     shot_data["SECONDS_REMAINING"].astype(str)
 )
@@ -617,7 +692,7 @@ for player_name in selected_players:
             layout = go.Layout(
         hovermode='closest',
         xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-260, 260]),
-        yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[0, 470]),
+        yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-4, 474]),
         plot_bgcolor='#D2B48C',  # Set background color to the desired color
         
         width=360,  # Set the width of the background
@@ -662,8 +737,8 @@ for player_name in selected_players:
             type = 'circle',
             x1 = 60,
             x0 = -60,
-            y0=405,
-            y1 = 530,
+            y0=410,
+            y1 = 535,
             line=dict(color='black', width=2.5)
         ),
         dict(
@@ -792,7 +867,7 @@ for player_name in selected_players:
 
             with col2:
                 st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">Makes and Misses</span></div>', unsafe_allow_html=True)
-
+                
                 st.plotly_chart(fig)
                         # Plot hexbin with custom colormap
             fig2 = plt.figure(figsize=(4.2, 4))
@@ -817,6 +892,7 @@ for player_name in selected_players:
             with col1:
                     st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">Shot Frequency</span></div>', unsafe_allow_html=True)
                     st.image(img_buffer, use_column_width=False, width=345)  
+            st.plotly_chart(plotgames)
 
                     # st.plotly_chart(fig3)
                     
