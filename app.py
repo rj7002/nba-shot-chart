@@ -14,13 +14,32 @@ import requests
 import plotly.graph_objs as go
 from abc import ABC, abstractmethod
 import plotly.express as px
+import mplcursors
 
 
 st.set_page_config(page_title="NBA Shot Visualizer", page_icon='https://juststickers.in/wp-content/uploads/2015/05/basket-ball-player-1-decal.png', initial_sidebar_state="expanded")
 
 currentyear = datetime.datetime.now().year
 
+class Summary:
+    """Contains common player information like headline stats, weight, etc.
 
+    Args:
+        player_id: ID of the player to look up
+    """
+
+    _endpoint = "commonplayerinfo"
+
+    def __init__(self, player_id: str):
+        self._params = {"PlayerID": player_id}
+
+        self.api = NbaAPI(self._endpoint, self._params)
+
+    def info(self):
+        return self.api.get_result("CommonPlayerInfo")
+
+    def headline_stats(self):
+        return self.api.get_result("PlayerHeadlineStats")
 
 class GameLogs:
     """Contains a full log of all the games for a player for a given season.
@@ -86,34 +105,35 @@ def create_court(ax, color):
     # Short corner 3PT lines
     ax.set_facecolor('#D2B48C')
 
-    ax.plot([-220, -220], [0, 140], linewidth=2, color=color)
-    ax.plot([220, 220], [0, 140], linewidth=2, color=color)
+    ax.plot([-220, -220], [0, 140], linewidth=4, color=color)
+    ax.plot([220, 220], [0, 140], linewidth=4, color=color)
 
     # 3PT Arc
-    ax.add_artist(patches.Arc((0, 140), 440, 315, theta1=0, theta2=180, facecolor='none', edgecolor=color, lw=2))
-    ax.add_artist(patches.Circle((0, 475), 60, facecolor='none', edgecolor=color, lw=2))
+    ax.add_artist(patches.Arc((0, 140), 440, 315, theta1=0, theta2=180, facecolor='none', edgecolor=color, lw=4))
+    ax.add_artist(patches.Circle((0, 475), 60, facecolor='none', edgecolor=color, lw=4))
 
     # Lane and Key
-    ax.plot([-255,255],[0,0],linewidth=2,color=color)
-    ax.plot([-255,-255],[0,515],linewidth=2,color=color)
-    ax.plot([255,255],[0,515],linewidth=2,color=color)
-    ax.plot([-255,255],[468,468],linewidth=2,color=color)
-    ax.plot([-80, -80], [3, 190], linewidth=2, color=color)
-    ax.plot([80, 80], [3, 190], linewidth=2, color=color)
-    ax.plot([-60, -60], [3, 190], linewidth=2, color=color)
-    ax.plot([60, 60], [3, 190], linewidth=2, color=color)
-    ax.plot([-80, 80], [190, 190], linewidth=2, color=color)
-    ax.add_artist(patches.Circle((0, 190), 60, facecolor='none', edgecolor=color, lw=2))
+    ax.plot([-255,255],[0,0],linewidth=4,color=color)
+    ax.plot([-255,-255],[0,515],linewidth=4,color=color)
+    ax.plot([255,255],[0,515],linewidth=4,color=color)
+    ax.plot([-255,255],[468,468],linewidth=4,color=color)
+    ax.plot([-80, -80], [3, 190], linewidth=4, color=color)
+    ax.plot([80, 80], [3, 190], linewidth=4, color=color)
+    ax.plot([-60, -60], [3, 190], linewidth=4, color=color)
+    ax.plot([60, 60], [3, 190], linewidth=4, color=color)
+    ax.plot([-80, 80], [190, 190], linewidth=4, color=color)
+    ax.add_artist(patches.Circle((0, 190), 60, facecolor='none', edgecolor=color, lw=4))
 
     # Rim
-    ax.add_artist(patches.Circle((0, 60), 15, facecolor='none', edgecolor=color, lw=2))
+    ax.add_artist(patches.Circle((0, 60), 15, facecolor='none', edgecolor=color, lw=4))
 
     # Backboard
-    ax.plot([-30, 30], [40, 40], linewidth=2, color=color)
+    ax.plot([-30, 30], [40, 40], linewidth=4, color=color)
 
     # Remove ticks
     ax.set_xticks([])
     ax.set_yticks([])
+    
 
     # Set axis limits
     ax.set_xlim(-262, 262)
@@ -397,9 +417,8 @@ def get_player_season_range(player_id):
 # Define Streamlit app
 
 st.sidebar.markdown('<div style="text-align: center;"><span style="font-size:30px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
-type = st.sidebar.selectbox('Player Stats',['Per Game','Totals','Per 36'])
+type = st.sidebar.selectbox('Player Stats',['Per Game','Totals'])
 shottrack = st.sidebar.selectbox('Shot Tracking Stats',['Overall','General','Shot Clock','Dribbles','Closest Defender','Closest Defender Long','Touch Time'])
-
 Stat = st.sidebar.selectbox('',['FGA','MAKES', 'MISSES','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS','PF'])
 if Stat == 'MAKES':
     Stat2 = 'PTS'
@@ -526,15 +545,17 @@ for player_name in selected_players:
                 
             SEASON = st.selectbox(f'Select season - {player_name}', reversed(SEASONS))
             if SEASON:
+                playerinfo = Summary(player_id=PLAYER_ID).info()
                 player_list = PlayerList(season=SEASON)
                 players_df2 = player_list.players()
+                playerheight = playerinfo.loc[playerinfo['DISPLAY_FIRST_LAST'] == player_name, 'HEIGHT'].values[0]
+                playerweight = playerinfo.loc[playerinfo['DISPLAY_FIRST_LAST'] == player_name, 'WEIGHT'].values[0]
+
                 team_name = players_df2.loc[players_df2["DISPLAY_FIRST_LAST"] == player_name, "TEAM_NAME"].values[0]
                 team_city = players_df2.loc[players_df2["DISPLAY_FIRST_LAST"] == player_name, "TEAM_CITY"].values[0]
                 fullteam = f"{team_city} {team_name}"
 
-
                 game_logs = GameLogs(PLAYER_ID, season=SEASON, season_type=typeseason).logs()
-                
 
         # Plot game log
                 if game_logs is not None and not game_logs.empty:
@@ -554,13 +575,13 @@ for player_name in selected_players:
 
                # Check if player_summarytotals has data
                 if player_headline_stats2 is not None and len(player_headline_stats2) > 0:
-                    min = player_headline_stats2['MIN'].values[0]
-                    tov = player_headline_stats2['TOV'].values[0]
-                    pts = player_headline_stats2['PTS'].values[0]
-                    ast = player_headline_stats2['AST'].values[0]
-                    reb = player_headline_stats2['REB'].values[0]
-                    blk = player_headline_stats2['BLK'].values[0]
-                    stl = player_headline_stats2['STL'].values[0]
+                    min = round(player_headline_stats2['MIN'].values[0],1)
+                    tov = round(player_headline_stats2['TOV'].values[0],1)
+                    pts = round(player_headline_stats2['PTS'].values[0],1)
+                    ast = round(player_headline_stats2['AST'].values[0],1)
+                    reb = round(player_headline_stats2['REB'].values[0],1)
+                    blk = round(player_headline_stats2['BLK'].values[0],1)
+                    stl = round(player_headline_stats2['STL'].values[0],1)
                     season_val = player_headline_stats2['GROUP_VALUE'].values[0]
                     fg_pct = player_headline_stats2['FG_PCT'].values[0]
                     fg3_pct = player_headline_stats2['FG3_PCT'].values[0]
@@ -574,8 +595,12 @@ for player_name in selected_players:
                     with cl1:
                         if len(selected_players) > 1:
                             display_player_image(PLAYER_ID,200,f"{name} - {fullteam}")
+                            st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">{playerheight} {playerweight}</span></div>', unsafe_allow_html=True)
+
                         else:
                             display_player_image(PLAYER_ID,350,f"{name} - {fullteam}")
+                            st.markdown(f'<div style="text-align: center;"><span style="font-size:20px;">Height: {playerheight} Weight: {playerweight}</span></div>', unsafe_allow_html=True)
+
 
                     
                     
@@ -615,7 +640,10 @@ for player_name in selected_players:
             st.plotly_chart(plotgames)
 
 
-            col1, col2 = st.columns(2)
+            col1, col,col2 = st.columns(3)
+
+
+
                 # Create ShotChart object
     
 
@@ -718,7 +746,7 @@ for player_name in selected_players:
 
     # Create figure
             fig = go.Figure(layout=layout)
-            fig3 = go.Figure(layout=layout)
+            fig3 = go.Figure()
 
             
     # Add basketball court lines as shapes
@@ -856,6 +884,140 @@ for player_name in selected_players:
             line=dict(color='black', width=2.5)
         )
     ]
+            court_shapes2 = [
+        dict(
+             type = 'line',
+             x0=256,
+             x1=-256,
+             y0=0,
+             y1=0,
+             line=dict(color='white', width=2.5)
+        ),
+         dict(
+             type = 'line',
+             x1=256,
+             x0=256,
+             y0=515,
+             y1 = 0,
+             line=dict(color='white', width=2.5)
+        ),
+        dict(
+             type = 'line',
+             x1=-256,
+             x0=-256,
+             y0=515,
+             y1 = 0,
+             line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type = 'circle',
+            x1 = 60,
+            x0 = -60,
+            y0=410,
+            y1 = 535,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+             type = 'line',
+             y0 = 469,
+             y1 = 469,
+             x1 = -255,
+             x0 = 255,
+             line=dict(color='white', width=2.5)
+        ),
+
+        
+        dict(
+            type='line',
+            x0=-30,
+            y0=40,
+            y1=40,
+            x1=30,
+            line=dict(color='white', width=2.5)
+
+        ),
+        dict(
+            type='line',
+            x0=-223,
+            y0=0,
+            x1=-223,
+            y1=140,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='line',
+            x0=220,
+            y0=0,
+            x1=220,
+            y1=140,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='path',
+            path='M -225,132,100,150,160,170,180,190 C -200,320 150,375 219,140',
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='line',
+            x0=-80,
+            y0=0,
+            x1=-80,
+            y1=190,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='line',
+            x0=80,
+            y0=0,
+            x1=80,
+            y1=190,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='line',
+            x0=-60,
+            y0=0,
+            x1=-60,
+            y1=190,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='line',
+            x0=60,
+            y0=0,
+            x1=60,
+            y1=190,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='line',
+            x0=-80,
+            y0=190,
+            x1=80,
+            y1=190,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='circle',
+            xref='x',
+            yref='y',
+            x0=-60,
+            y0=130,
+            x1=60,
+            y1=245,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='circle',
+            xref='x',
+            yref='y',
+            x0=-15,
+            y0=45,
+            x1=15,
+            y1=75,
+            line=dict(color='white', width=2.5)
+        )
+    ]
 
     # Set aspect ratio
             fig.update_layout(shapes=court_shapes)
@@ -884,28 +1046,57 @@ for player_name in selected_players:
                 
                 st.plotly_chart(fig)
                         # Plot hexbin with custom colormap
-            fig2 = plt.figure(figsize=(4.2, 4))
+            fig2 = plt.figure(figsize=(8.2,8))
             ax = fig2.add_axes([0, 0, 1, 1])
-            hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(50, 50), extent=(-300, 300, 0, 940), bins='log', cmap='inferno')
+            hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(50, 50), extent=(-300, 300, 0, 940), bins='log', cmap='inferno',edgecolors='none')
             ax = create_court(ax, 'black')
             legend_elements = [
-                plt.Line2D([0], [0], marker='H', color='#D2B48C', label='Less Shots', markerfacecolor='black', markersize=15),
-                plt.Line2D([0], [0], marker='H', color='#D2B48C', label='More Shots', markerfacecolor='yellow', markersize=15)
+                plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='Less Shots', markerfacecolor='black', markersize=20),
+                plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='More Shots', markerfacecolor='yellow', markersize=20)
             ]
             plt.legend(handles=legend_elements, loc='upper right',framealpha=0) 
 
-    # Save the figure as an image
-            img_buffer = io.BytesIO()
-            plt.savefig(img_buffer, format='png')
-            img_buffer.seek(0)
+            # Create hexbin plot with Plotly
+            fig5 = px.density_heatmap(shot_data, x='LOC_X', y=shot_data['LOC_Y'] + 60, nbinsx=55, nbinsy=55, color_continuous_scale='Hot')
 
+
+
+            # Add hover labels
+            fig5.update_traces(hovertemplate='Shots: %{z}<extra></extra>',showscale=False)
+
+            # Customize layout
+            fig5.update_layout(
+                title='Shot Density',
+                xaxis_title='',
+                yaxis_title='',
+            xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-252, 260]),
+            yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-0.5, 475]),
+            plot_bgcolor='black',
+            margin=dict(l=0, r=0, t=0, b=0),
+             width=390,  # Set the width of the background
+            height=355,  # Set the height of the background
+            autosize=False,
+
+
+            )
+            fig5.update_layout(shapes=court_shapes2)
+            fig5.update_yaxes(scaleanchor='x', scaleratio=1)
+            fig5.update_coloraxes(showscale=False)
+
+
+            # Show plot
     # Display the image in Streamlit
                         # Customize color bar legend
 
             
             with col1:
-                    st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">Shot Frequency</span></div>', unsafe_allow_html=True)
-                    st.image(img_buffer, use_column_width=False, width=345)  
+                    st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">Heat Map</span></div>', unsafe_allow_html=True)
+                    # st.image(img_buffer, use_column_width=False, width=345)  
+                    fig2.patch.set_visible(False)
+
+                    # st.pyplot(fig2)
+                    st.plotly_chart(fig5)
+
             shotfull = ShotTracking(PLAYER_ID, season=SEASON, season_type=typeseason)
             if shottrack == 'Overall':
                  shots = shotfull.overall()
