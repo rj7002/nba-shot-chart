@@ -1075,6 +1075,11 @@ for player_name in selected_players:
              width=390,  # Set the width of the background
             height=355,  # Set the height of the background
             autosize=False,
+            coloraxis=dict(
+                showscale=False,
+                cmin=1,
+                cmax=25
+            )
 
 
             )
