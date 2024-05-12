@@ -677,7 +677,7 @@ if player_name:
         shootperc = shooting_percentage
         #20211019
 
-# Create trace for makes
+# Create  for makes
 # Concatenate text labels for makes and misses
         text_all = (
 shot_data["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]])) + ': ' +
@@ -712,7 +712,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
             x=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"],
             y=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"] + 60,
             mode='markers',
-            marker=dict(color='rgba(0, 128, 0, 0.6)', size=6),
+            marker=dict(color='rgba(0, 128, 0, 0.6)', size=10),
             name='Made Shot ✅',
             customdata=shot_data[shot_data["SHOT_MADE_FLAG"] == 1][['GAME_DATE_NEW', 'MATCH', 'SHOT', 'PERIOD_TIME','TIME','DISTANCE']],  # Use customdata for makes only
             hoverinfo='text',  # Set hoverinfo to text
@@ -724,7 +724,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
             x=-(shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"]),
             y=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60,
             mode='markers',
-            marker=dict(symbol='x', color='rgba(255, 0, 0, 0.6)', size=8),
+            marker=dict(symbol='x', color='rgba(255, 0, 0, 0.6)', size=10),
             name='Missed Shot ❌',
             customdata=shot_data[shot_data["SHOT_MADE_FLAG"] == 0][['GAME_DATE_NEW', 'MATCH', 'SHOT', 'PERIOD_TIME','TIME','DISTANCE']],  # Use customdata for misses only
             hoverinfo='text',  # Set hoverinfo to text
