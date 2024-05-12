@@ -691,7 +691,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
 
 # Create trace for makes
         make_trace = go.Scatter(
-    x=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"],
+    x=-(shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"]),
     y=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"] + 60,
     mode='markers',
     marker=dict(color='rgba(0, 128, 0, 0.6)', size=10),
@@ -702,7 +702,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
 
 # Create trace for misses
         miss_trace = go.Scatter(
-    x=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"],
+    x=-(shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"]),
     y=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60,
     mode='markers',
     marker=dict(symbol='x', color='rgba(255, 0, 0, 0.6)', size=10),
@@ -1033,7 +1033,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
                     # Plot hexbin with custom colormap
         fig2 = plt.figure(figsize=(8.2,8))
         ax = fig2.add_axes([0, 0, 1, 1])
-        hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(50, 50), extent=(-300, 300, 0, 940), bins='log', cmap='Blues',edgecolors='none')
+        hb = ax.hexbin(-(shot_data['LOC_X']), shot_data['LOC_Y'] + 60, gridsize=(50, 50), extent=(-300, 300, 0, 940), bins='log', cmap='Blues',edgecolors='none')
         ax = create_court(ax, 'black')
         legend_elements = [
             plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='Less Shots', markerfacecolor='white', markersize=20),
@@ -1042,7 +1042,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
         plt.legend(handles=legend_elements, loc='upper right',framealpha=0) 
 
         # Create hexbin plot with Plotly
-        fig5 = px.density_heatmap(shot_data, x='LOC_X', y=shot_data['LOC_Y'] + 60, nbinsx=35, nbinsy=55, color_continuous_scale='Hot')
+        fig5 = px.density_heatmap(shot_data, x=-(shot_data['LOC_X']), y=shot_data['LOC_Y'] + 60, nbinsx=35, nbinsy=55, color_continuous_scale='Hot')
 
 
 
