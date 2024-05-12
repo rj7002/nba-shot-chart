@@ -513,7 +513,7 @@ player_list = PlayerList()
 players_df = player_list.players()
 
 # Create a multiselect widget with player options
-player_name = st.selectbox("Select player:", options=players_df["DISPLAY_FIRST_LAST"].tolist(), help="Select a player to view shot data. Adjust filters on sidebar for specific data. Shot data before 1996 is unavailable")
+player_name = st.selectbox("Select player:", options=players_df["DISPLAY_FIRST_LAST"].tolist(),index=None,help="Select a player to view shot data. Adjust filters on sidebar for specific data.")
 
 # player_names_input = st.text_input("Enter player name (if multiple, separate by commas)")
 if not player_name:
@@ -625,7 +625,7 @@ if player_name:
                     st.markdown(f"<span style='font-size:{font_size_large}'>**Tov:** <span style='color:{tov_color}'>{tov}</span>   **Min:** <span style='color:{min_color}'>{min}</span></span>", unsafe_allow_html=True)
 
             else:
-                st.error(f'No data found for {player_name.lower().title()} in {SEASON}')
+                st.error(f'No data found for {player_name} in {SEASON}. Check season: shot chart data before 1996 is unavailable')
 
             
         st.plotly_chart(plotgames)
@@ -1030,7 +1030,6 @@ shot_data["SECONDS_REMAINING"].astype(str)
 
 
 # Display the plot
-        st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">{SEASON}: {total_makes}/{total_shots} - {shootperc}%</span></div>', unsafe_allow_html=True)
                     # Plot hexbin with custom colormap
         fig2 = plt.figure(figsize=(8.2,8))
         ax = fig2.add_axes([0, 0, 1, 1])
@@ -1087,6 +1086,8 @@ shot_data["SECONDS_REMAINING"].astype(str)
             st.pyplot(fig2)
         else:
             st.plotly_chart(fig5,use_container_width=True)
+        st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">{SEASON}: {total_makes}/{total_shots} - {shootperc}%</span></div>', unsafe_allow_html=True)
+
 
                 
 
