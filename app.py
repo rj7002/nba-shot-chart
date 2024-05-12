@@ -694,7 +694,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
     x=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"],
     y=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"] + 60,
     mode='markers',
-    marker=dict(color='rgba(0, 128, 0, 0.6)', size=6),
+    marker=dict(color='rgba(0, 128, 0, 0.6)', size=10),
     name='Makes',
     text=text_all[shot_data["SHOT_MADE_FLAG"] == 1],  # Use concatenated text for makes only
     hoverinfo='text'
@@ -705,7 +705,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
     x=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"],
     y=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60,
     mode='markers',
-    marker=dict(symbol='x', color='rgba(255, 0, 0, 0.6)', size=8),
+    marker=dict(symbol='x', color='rgba(255, 0, 0, 0.6)', size=10),
     name='Misses',
     text=text_all[shot_data["SHOT_MADE_FLAG"] == 0],  # Use concatenated text for misses only
     hoverinfo='text'
