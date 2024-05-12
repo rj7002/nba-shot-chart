@@ -709,7 +709,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
         shot_data['DISTANCE'] = shot_data['SHOT_DISTANCE'].astype(str) + 'ft'
         # Create trace for makes
         make_trace = go.Scatter(
-            x=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"],
+            x=-(shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"]),
             y=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"] + 60,
             mode='markers',
             marker=dict(color='rgba(0, 128, 0, 0.6)', size=10),
