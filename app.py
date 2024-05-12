@@ -14,6 +14,7 @@ import requests
 import plotly.graph_objs as go
 from abc import ABC, abstractmethod
 import plotly.express as px
+import mplcursors
 
 
 st.set_page_config(page_title="NBA Shot Visualizer", page_icon='https://juststickers.in/wp-content/uploads/2015/05/basket-ball-player-1-decal.png', initial_sidebar_state="expanded")
@@ -74,9 +75,10 @@ class GameLogs:
 
 def display_player_image(player_id, width2, caption2):
     # Construct the URL for the player image using the player ID
-    image_url = f"https://cdn.nba.com/headshots/nba/latest/260x190/{player_id}.png" 
+    image_url = f"https://ak-static.cms.nba.com/wp-content/uploads/headshots/nba/latest/260x190/{player_id}.png"
+    
     # Check if the image URL returns a successful response
-    response = requests.get(image_url)
+    response = requests.head(image_url)
     
     if response.status_code == 200:
         # If image is available, display it
@@ -590,18 +592,14 @@ for player_name in selected_players:
 
     # Display the variables
                     cl1,cl2 = st.columns(2)
-                    if len(selected_players) > 1:
-                            font_size_large = "20px"
-                    else:
-                            font_size_large = "28px"
                     with cl1:
                         if len(selected_players) > 1:
                             display_player_image(PLAYER_ID,200,f"{name} - {fullteam}")
-                            st.markdown(f'<div style="text-align: center;"><span style="font-size:{font_size_large};">{playerheight} {playerweight}</span></div>', unsafe_allow_html=True)
+                            st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">{playerheight} {playerweight}</span></div>', unsafe_allow_html=True)
 
                         else:
                             display_player_image(PLAYER_ID,350,f"{name} - {fullteam}")
-                            st.markdown(f'<div style="text-align: center;"><span style="font-size:{font_size_large};">Height: {playerheight} Weight: {playerweight}</span></div>', unsafe_allow_html=True)
+                            st.markdown(f'<div style="text-align: center;"><span style="font-size:20px;">Height: {playerheight} Weight: {playerweight}</span></div>', unsafe_allow_html=True)
 
 
                     
@@ -622,7 +620,10 @@ for player_name in selected_players:
                         tov_color = "magenta"
 
         # Display text with different colors
-                        
+                        if len(selected_players) > 1:
+                            font_size_large = "20px"
+                        else:
+                            font_size_large = "28px"
 
         # Display text with different colors and font sizes using markdown syntax
 
@@ -1039,24 +1040,19 @@ for player_name in selected_players:
 
     # Display the plot
             st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">{SEASON}: {total_makes}/{total_shots} - {shootperc}%</span></div>', unsafe_allow_html=True)
-
-            with col2:
-                st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">Makes and Misses</span></div>', unsafe_allow_html=True)
-                
-                st.plotly_chart(fig)
                         # Plot hexbin with custom colormap
             fig2 = plt.figure(figsize=(8.2,8))
             ax = fig2.add_axes([0, 0, 1, 1])
-            hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(50, 50), extent=(-300, 300, 0, 940), bins='log', cmap='inferno',edgecolors='none')
+            hb = ax.hexbin(shot_data['LOC_X'], shot_data['LOC_Y'] + 60, gridsize=(50, 50), extent=(-300, 300, 0, 940), bins='log', cmap='Blues',edgecolors='none')
             ax = create_court(ax, 'black')
             legend_elements = [
-                plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='Less Shots', markerfacecolor='black', markersize=20),
-                plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='More Shots', markerfacecolor='yellow', markersize=20)
+                plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='Less Shots', markerfacecolor='white', markersize=20),
+                plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='More Shots', markerfacecolor='blue', markersize=20)
             ]
             plt.legend(handles=legend_elements, loc='upper right',framealpha=0) 
 
             # Create hexbin plot with Plotly
-            fig5 = px.density_heatmap(shot_data, x='LOC_X', y=shot_data['LOC_Y'] + 60, nbinsx=40, nbinsy=40, color_continuous_scale='Hot')
+            fig5 = px.density_heatmap(shot_data, x='LOC_X', y=shot_data['LOC_Y'] + 60, nbinsx=55, nbinsy=55, color_continuous_scale='Hot')
 
 
 
@@ -1076,30 +1072,39 @@ for player_name in selected_players:
             height=355,  # Set the height of the background
             autosize=False,
             coloraxis=dict(
-                showscale=False,
-                cmin=1,
-                cmax=25
-            )
-
+        showscale=False,
+        cmin=1,
+        cmax=25
+    )
 
             )
             fig5.update_layout(shapes=court_shapes2)
             fig5.update_yaxes(scaleanchor='x', scaleratio=1)
-            fig5.update_coloraxes(showscale=False)
+            
+
+            # fig5.update_coloraxes(showscale=False)
 
 
             # Show plot
     # Display the image in Streamlit
                         # Customize color bar legend
+            plottype = st.selectbox('Plot Type',['Make/Miss','Hexbin Plot','Heat Map'])
+            if plottype == 'Make/Miss':
+                st.plotly_chart(fig,use_container_width=True)
+            elif plottype == 'Hexbin Plot':
+                fig2.patch.set_visible(False)
+                st.pyplot(fig2)
+            else:
+                st.plotly_chart(fig5,use_container_width=True)
+
+                    
+
 
             
-            with col1:
-                    st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">Favorite Spots</span></div>', unsafe_allow_html=True)
+            
                     # st.image(img_buffer, use_column_width=False, width=345)  
-                    fig2.patch.set_visible(False)
 
-                    # st.pyplot(fig2)
-                    st.plotly_chart(fig5)
+      
 
             shotfull = ShotTracking(PLAYER_ID, season=SEASON, season_type=typeseason)
             if shottrack == 'Overall':
