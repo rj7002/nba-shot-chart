@@ -689,27 +689,47 @@ shot_data["MINUTES_REMAINING"].astype(str) + ':' +
 shot_data["SECONDS_REMAINING"].astype(str)
 )
 
-# Create trace for makes
-        make_trace = go.Scatter(
-    x=-(shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"]),
-    y=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"] + 60,
-    mode='markers',
-    marker=dict(color='rgba(0, 128, 0, 0.6)', size=10),
-    name='Makes',
-    text=text_all[shot_data["SHOT_MADE_FLAG"] == 1],  # Use concatenated text for makes only
-    hoverinfo='text'
-)
+        hover_template = (
+            "<b>Date</b>: %{customdata[0]}<br>" +
+            "<b>Match</b>: %{customdata[1]}<br>" +
+            "<b>Shot</b>: %{customdata[2]}<br>" +
+            "<b>Distance</b>: %{customdata[5]}<br>"+
+            "<b>Period</b>: %{customdata[3]}<br>" +
+            "<b>Time</b>: %{customdata[4]}" 
+            
+        )
 
-# Create trace for misses
+        # Assuming shot_data is already defined as per your provided data
+        # Extracting individual components from text_all and assigning them to customdata
+        shot_data['GAME_DATE_NEW'] = shot_data["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]]))
+        shot_data['MATCH'] = shot_data["HTM"] + ' VS ' + shot_data["VTM"]
+        shot_data['SHOT'] = shot_data['SHOT_TYPE'].str.replace(' Field Goal', '') + ' - ' + shot_data["ACTION_TYPE"]
+        shot_data['PERIOD_TIME'] = shot_data["PERIOD"].astype(str) + 'Q'
+        shot_data['TIME'] = shot_data["MINUTES_REMAINING"].astype(str) + ':' + shot_data["SECONDS_REMAINING"].astype(str)
+        shot_data['DISTANCE'] = shot_data['SHOT_DISTANCE'].astype(str) + 'ft'
+        # Create trace for makes
+        make_trace = go.Scatter(
+            x=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"],
+            y=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"] + 60,
+            mode='markers',
+            marker=dict(color='rgba(0, 128, 0, 0.6)', size=6),
+            name='Made Shot ✅',
+            customdata=shot_data[shot_data["SHOT_MADE_FLAG"] == 1][['GAME_DATE_NEW', 'MATCH', 'SHOT', 'PERIOD_TIME','TIME','DISTANCE']],  # Use customdata for makes only
+            hoverinfo='text',  # Set hoverinfo to text
+            hovertemplate=hover_template
+        )
+
+        # Create trace for misses
         miss_trace = go.Scatter(
-    x=-(shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"]),
-    y=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60,
-    mode='markers',
-    marker=dict(symbol='x', color='rgba(255, 0, 0, 0.6)', size=10),
-    name='Misses',
-    text=text_all[shot_data["SHOT_MADE_FLAG"] == 0],  # Use concatenated text for misses only
-    hoverinfo='text'
-)
+            x=-(shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"]),
+            y=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60,
+            mode='markers',
+            marker=dict(symbol='x', color='rgba(255, 0, 0, 0.6)', size=8),
+            name='Missed Shot ❌',
+            customdata=shot_data[shot_data["SHOT_MADE_FLAG"] == 0][['GAME_DATE_NEW', 'MATCH', 'SHOT', 'PERIOD_TIME','TIME','DISTANCE']],  # Use customdata for misses only
+            hoverinfo='text',  # Set hoverinfo to text
+            hovertemplate=hover_template
+        )
         fig2trace = go.Scatter(
                 x=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"],
     y=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60,
