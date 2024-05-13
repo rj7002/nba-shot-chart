@@ -1271,7 +1271,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
             plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='Less Shots', markerfacecolor='white', markersize=20),
             plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='More Shots', markerfacecolor='blue', markersize=20)
         ]
-        plt.legend(handles=legend_elements, loc='upper right',framealpha=0) 
+        plt.legend(handles=legend_elements, loc='upper right',framealpha=0,fontsize=15) 
 
         # Create hexbin plot with Plotly
         fig5 = go.Figure()
