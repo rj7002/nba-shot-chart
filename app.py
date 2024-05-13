@@ -113,10 +113,10 @@ def draw_court(ax=None, color='black', lw=2, outer_lines=False):
     # Create the basketball hoop
     # Diameter of a hoop is 18" so it has a radius of 9", which is a value
     # 7.5 in our coordinate system
-    hoop = Circle((0, 0), radius=7.5, linewidth=lw, color=color, fill=False)
+    hoop = Circle((0, 0), radius=7.5, linewidth=lw, color='#ec7607', fill=False)
 
     # Create backboard
-    backboard = Rectangle((-30, -7.5), 60, -1, linewidth=lw, color=color)
+    backboard = Rectangle((-30, -7.5), 60, -1, linewidth=lw, color='#ec7607')
 
     # The paint
     # Create the outer box 0f the paint, width=16ft, height=19ft
