@@ -1267,7 +1267,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
                     # Plot hexbin with custom colormap
         fig2 = plt.figure(figsize=(12,11))
         ax = fig2.add_axes([0, 0, 1, 1])
-        hb = ax.hexbin(-(shot_data['LOC_X']), shot_data['LOC_Y'], gridsize=(50, 50), extent=(-220, 220, -10, 350), bins='log', cmap='Blues',edgecolors='none')
+        hb = ax.hexbin(-(shot_data['LOC_X']), shot_data['LOC_Y'], gridsize=(50, 50), extent=(-240, 240, -30, 370), bins='log', cmap='Blues',edgecolors='none')
         ax = draw_court(outer_lines=True)
         legend_elements = [
             plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='Less Shots', markerfacecolor='white', markersize=20),
