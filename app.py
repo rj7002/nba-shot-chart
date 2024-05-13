@@ -536,31 +536,31 @@ def draw_plotly_court(fig, fig_width=600, margins=10):
             dict(
                 type="rect", x0=-250, y0=-52.5, x1=250, y1=417.5,
                 line=dict(color=main_line_col, width=2),
-                # fillcolor='#333333',
-                layer='below'
+                # fillcolor='#333333'
+                
             ),
             dict(
                 type="rect", x0=-80, y0=-52.5, x1=80, y1=137.5,
                 line=dict(color=main_line_col, width=2),
-                # fillcolor='#333333',
-                layer='below'
+                # fillcolor='#333333'
+                
             ),
             dict(
                 type="rect", x0=-60, y0=-52.5, x1=60, y1=137.5,
                 line=dict(color=main_line_col, width=2),
-                # fillcolor='#333333',
-                layer='below'
+                # fillcolor='#333333'
+                
             ),
             dict(
                 type="circle", x0=-60, y0=77.5, x1=60, y1=197.5, xref="x", yref="y",
                 line=dict(color=main_line_col, width=2),
-                # fillcolor='#dddddd',
-                layer='below'
+                # fillcolor='#dddddd'
+                
             ),
             dict(
                 type="line", x0=-60, y0=137.5, x1=60, y1=137.5,
-                line=dict(color=main_line_col, width=2),
-                layer='below'
+                line=dict(color=main_line_col, width=2)
+                
             ),
 
             dict(
@@ -579,67 +579,67 @@ def draw_plotly_court(fig, fig_width=600, margins=10):
 
             dict(type="path",
                  path=ellipse_arc(a=40, b=40, start_angle=0, end_angle=np.pi),
-                 line=dict(color=main_line_col, width=2), layer='below'),
+                 line=dict(color=main_line_col, width=2)),
             dict(type="path",
                  path=ellipse_arc(a=237.5, b=237.5, start_angle=0.386283101, end_angle=np.pi - 0.386283101),
-                 line=dict(color=main_line_col, width=2), layer='below'),
+                 line=dict(color=main_line_col, width=2)),
             dict(
                 type="line", x0=-220, y0=-52.5, x1=-220, y1=threept_break_y,
-                line=dict(color=three_line_col, width=2), layer='below'
+                line=dict(color=three_line_col, width=2)
             ),
             dict(
                 type="line", x0=-220, y0=-52.5, x1=-220, y1=threept_break_y,
-                line=dict(color=three_line_col, width=2), layer='below'
+                line=dict(color=three_line_col, width=2)
             ),
             dict(
                 type="line", x0=220, y0=-52.5, x1=220, y1=threept_break_y,
-                line=dict(color=three_line_col, width=2), layer='below'
+                line=dict(color=three_line_col, width=2)
             ),
 
             dict(
                 type="line", x0=-250, y0=227.5, x1=-220, y1=227.5,
-                line=dict(color=main_line_col, width=2), layer='below'
+                line=dict(color=main_line_col, width=2)
             ),
             dict(
                 type="line", x0=250, y0=227.5, x1=220, y1=227.5,
-                line=dict(color=main_line_col, width=2), layer='below'
+                line=dict(color=main_line_col, width=2)
             ),
             dict(
                 type="line", x0=-90, y0=17.5, x1=-80, y1=17.5,
-                line=dict(color=main_line_col, width=2), layer='below'
+                line=dict(color=main_line_col, width=2)
             ),
             dict(
                 type="line", x0=-90, y0=27.5, x1=-80, y1=27.5,
-                line=dict(color=main_line_col, width=2), layer='below'
+                line=dict(color=main_line_col, width=2)
             ),
             dict(
                 type="line", x0=-90, y0=57.5, x1=-80, y1=57.5,
-                line=dict(color=main_line_col, width=2), layer='below'
+                line=dict(color=main_line_col, width=2)
             ),
             dict(
                 type="line", x0=-90, y0=87.5, x1=-80, y1=87.5,
-                line=dict(color=main_line_col, width=2), layer='below'
+                line=dict(color=main_line_col, width=2)
             ),
             dict(
                 type="line", x0=90, y0=17.5, x1=80, y1=17.5,
-                line=dict(color=main_line_col, width=2), layer='below'
+                line=dict(color=main_line_col, width=2)
             ),
             dict(
                 type="line", x0=90, y0=27.5, x1=80, y1=27.5,
-                line=dict(color=main_line_col, width=2), layer='below'
+                line=dict(color=main_line_col, width=2)
             ),
             dict(
                 type="line", x0=90, y0=57.5, x1=80, y1=57.5,
-                line=dict(color=main_line_col, width=2), layer='below'
+                line=dict(color=main_line_col, width=2)
             ),
             dict(
                 type="line", x0=90, y0=87.5, x1=80, y1=87.5,
-                line=dict(color=main_line_col, width=2), layer='below'
+                line=dict(color=main_line_col, width=2)
             ),
 
             dict(type="path",
                  path=ellipse_arc(y_center=417.5, a=60, b=60, start_angle=-0, end_angle=-np.pi),
-                 line=dict(color=main_line_col, width=2), layer='below'),
+                 line=dict(color=main_line_col, width=2)),
 
         ]
     )
