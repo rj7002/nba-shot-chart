@@ -1,5 +1,6 @@
 import io
 import json
+import numpy as np
 import streamlit as st
 import pandas as pd
 from nbapy import constants
@@ -14,6 +15,7 @@ import requests
 import plotly.graph_objs as go
 from abc import ABC, abstractmethod
 import plotly.express as px
+from matplotlib.patches import Circle, Rectangle, Arc
 
 
 st.set_page_config(page_title="NBA Shot Visualizer", page_icon='https://juststickers.in/wp-content/uploads/2015/05/basket-ball-player-1-decal.png', initial_sidebar_state="expanded")
@@ -101,6 +103,74 @@ def display_player_image(player_id, width2, caption2):
         f'</div>',
         unsafe_allow_html=True
     )
+def draw_court(ax=None, color='black', lw=2, outer_lines=False):
+    # If an axes object isn't provided to plot onto, just get current one
+    if ax is None:
+        ax = plt.gca()
+
+    # Create the various parts of an NBA basketball court
+
+    # Create the basketball hoop
+    # Diameter of a hoop is 18" so it has a radius of 9", which is a value
+    # 7.5 in our coordinate system
+    hoop = Circle((0, 0), radius=7.5, linewidth=lw, color=color, fill=False)
+
+    # Create backboard
+    backboard = Rectangle((-30, -7.5), 60, -1, linewidth=lw, color=color)
+
+    # The paint
+    # Create the outer box 0f the paint, width=16ft, height=19ft
+    outer_box = Rectangle((-80, -47.5), 160, 190, linewidth=lw, color=color,
+                          fill=False)
+    # Create the inner box of the paint, widt=12ft, height=19ft
+    inner_box = Rectangle((-60, -47.5), 120, 190, linewidth=lw, color=color,
+                          fill=False)
+
+    # Create free throw top arc
+    top_free_throw = Arc((0, 142.5), 120, 120, theta1=0, theta2=180,
+                         linewidth=lw, color=color, fill=False)
+    # Create free throw bottom arc
+    bottom_free_throw = Arc((0, 142.5), 120, 120, theta1=180, theta2=0,
+                            linewidth=lw, color=color, linestyle='dashed')
+    # Restricted Zone, it is an arc with 4ft radius from center of the hoop
+    restricted = Arc((0, 0), 80, 80, theta1=0, theta2=180, linewidth=lw,
+                     color=color)
+
+    # Three point line
+    # Create the side 3pt lines, they are 14ft long before they begin to arc
+    corner_three_a = Rectangle((-220, -47.5), 0, 140, linewidth=lw,
+                               color=color)
+    corner_three_b = Rectangle((220, -47.5), 0, 140, linewidth=lw, color=color)
+    # 3pt arc - center of arc will be the hoop, arc is 23'9" away from hoop
+    # I just played around with the theta values until they lined up with the 
+    # threes
+    three_arc = Arc((0, 0), 475, 475, theta1=22, theta2=158, linewidth=lw,
+                    color=color)
+
+    # Center Court
+    center_outer_arc = Arc((0, 422.5), 120, 120, theta1=180, theta2=0,
+                           linewidth=lw, color=color)
+    center_inner_arc = Arc((0, 422.5), 40, 40, theta1=180, theta2=0,
+                           linewidth=lw, color=color)
+
+    # List of the court elements to be plotted onto the axes
+    court_elements = [hoop, backboard, outer_box, inner_box, top_free_throw,
+                      bottom_free_throw, restricted, corner_three_a,
+                      corner_three_b, three_arc, center_outer_arc,
+                      center_inner_arc]
+
+    if outer_lines:
+        # Draw the half court line, baseline and side out bound lines
+        outer_lines = Rectangle((-250, -47.5), 500, 470, linewidth=lw,
+                                color=color, fill=False)
+        court_elements.append(outer_lines)
+
+    # Add the court elements onto the axes
+    for element in court_elements:
+        ax.add_patch(element)
+    ax.set_facecolor('#D2B48C')
+    return ax
+
 def create_court(ax, color):
     # Short corner 3PT lines
     ax.set_facecolor('#D2B48C')
@@ -412,6 +482,170 @@ def get_player_season_range(player_id):
         last_season = str(currentyear-1)
     return first_season, last_season
 
+def ellipse_arc(x_center=0.0, y_center=0.0, a=10.5, b=10.5, start_angle=0.0, end_angle=2 * np.pi, N=200, closed=False):
+        t = np.linspace(start_angle, end_angle, N)
+        x = x_center + a * np.cos(t)
+        y = y_center + b * np.sin(t)
+        path = f'M {x[0]}, {y[0]}'
+        for k in range(1, len(t)):
+            path += f'L{x[k]}, {y[k]}'
+        if closed:
+            path += ' Z'
+        return path
+
+def draw_plotly_court(fig, fig_width=600, margins=10):
+        
+    # From: https://community.plot.ly/t/arc-shape-with-path/7205/5
+    
+
+    fig_height = fig_width * (470 + 2 * margins) / (500 + 2 * margins)
+    fig.update_layout(width=fig_width, height=fig_height)
+
+    # Set axes ranges
+    fig.update_xaxes(range=[-250 - margins, 250 + margins])
+    fig.update_yaxes(range=[-52.5 - margins, 417.5 + margins])
+
+    threept_break_y = 89.47765084
+    three_line_col = "black"
+    main_line_col = "black"
+
+    fig.update_layout(
+        # Line Horizontal
+        margin=dict(l=20, r=20, t=20, b=20),
+        paper_bgcolor="white",
+        plot_bgcolor="white",
+        yaxis=dict(
+            scaleanchor="x",
+            scaleratio=1,
+            showgrid=False,
+            zeroline=False,
+            showline=False,
+            ticks='',
+            showticklabels=False,
+            fixedrange=True,
+        ),
+        xaxis=dict(
+            showgrid=False,
+            zeroline=False,
+            showline=False,
+            ticks='',
+            showticklabels=False,
+            fixedrange=True,
+        ),
+        shapes=[
+            dict(
+                type="rect", x0=-250, y0=-52.5, x1=250, y1=417.5,
+                line=dict(color=main_line_col, width=2),
+                # fillcolor='#333333',
+                layer='below'
+            ),
+            dict(
+                type="rect", x0=-80, y0=-52.5, x1=80, y1=137.5,
+                line=dict(color=main_line_col, width=2),
+                # fillcolor='#333333',
+                layer='below'
+            ),
+            dict(
+                type="rect", x0=-60, y0=-52.5, x1=60, y1=137.5,
+                line=dict(color=main_line_col, width=2),
+                # fillcolor='#333333',
+                layer='below'
+            ),
+            dict(
+                type="circle", x0=-60, y0=77.5, x1=60, y1=197.5, xref="x", yref="y",
+                line=dict(color=main_line_col, width=2),
+                # fillcolor='#dddddd',
+                layer='below'
+            ),
+            dict(
+                type="line", x0=-60, y0=137.5, x1=60, y1=137.5,
+                line=dict(color=main_line_col, width=2),
+                layer='below'
+            ),
+
+            dict(
+                type="rect", x0=-2, y0=-7.25, x1=2, y1=-12.5,
+                line=dict(color="#ec7607", width=2),
+                fillcolor='#ec7607',
+            ),
+            dict(
+                type="circle", x0=-7.5, y0=-7.5, x1=7.5, y1=7.5, xref="x", yref="y",
+                line=dict(color="#ec7607", width=2),
+            ),
+            dict(
+                type="line", x0=-30, y0=-12.5, x1=30, y1=-12.5,
+                line=dict(color="#ec7607", width=2),
+            ),
+
+            dict(type="path",
+                 path=ellipse_arc(a=40, b=40, start_angle=0, end_angle=np.pi),
+                 line=dict(color=main_line_col, width=2), layer='below'),
+            dict(type="path",
+                 path=ellipse_arc(a=237.5, b=237.5, start_angle=0.386283101, end_angle=np.pi - 0.386283101),
+                 line=dict(color=main_line_col, width=2), layer='below'),
+            dict(
+                type="line", x0=-220, y0=-52.5, x1=-220, y1=threept_break_y,
+                line=dict(color=three_line_col, width=2), layer='below'
+            ),
+            dict(
+                type="line", x0=-220, y0=-52.5, x1=-220, y1=threept_break_y,
+                line=dict(color=three_line_col, width=2), layer='below'
+            ),
+            dict(
+                type="line", x0=220, y0=-52.5, x1=220, y1=threept_break_y,
+                line=dict(color=three_line_col, width=2), layer='below'
+            ),
+
+            dict(
+                type="line", x0=-250, y0=227.5, x1=-220, y1=227.5,
+                line=dict(color=main_line_col, width=2), layer='below'
+            ),
+            dict(
+                type="line", x0=250, y0=227.5, x1=220, y1=227.5,
+                line=dict(color=main_line_col, width=2), layer='below'
+            ),
+            dict(
+                type="line", x0=-90, y0=17.5, x1=-80, y1=17.5,
+                line=dict(color=main_line_col, width=2), layer='below'
+            ),
+            dict(
+                type="line", x0=-90, y0=27.5, x1=-80, y1=27.5,
+                line=dict(color=main_line_col, width=2), layer='below'
+            ),
+            dict(
+                type="line", x0=-90, y0=57.5, x1=-80, y1=57.5,
+                line=dict(color=main_line_col, width=2), layer='below'
+            ),
+            dict(
+                type="line", x0=-90, y0=87.5, x1=-80, y1=87.5,
+                line=dict(color=main_line_col, width=2), layer='below'
+            ),
+            dict(
+                type="line", x0=90, y0=17.5, x1=80, y1=17.5,
+                line=dict(color=main_line_col, width=2), layer='below'
+            ),
+            dict(
+                type="line", x0=90, y0=27.5, x1=80, y1=27.5,
+                line=dict(color=main_line_col, width=2), layer='below'
+            ),
+            dict(
+                type="line", x0=90, y0=57.5, x1=80, y1=57.5,
+                line=dict(color=main_line_col, width=2), layer='below'
+            ),
+            dict(
+                type="line", x0=90, y0=87.5, x1=80, y1=87.5,
+                line=dict(color=main_line_col, width=2), layer='below'
+            ),
+
+            dict(type="path",
+                 path=ellipse_arc(y_center=417.5, a=60, b=60, start_angle=-0, end_angle=-np.pi),
+                 line=dict(color=main_line_col, width=2), layer='below'),
+
+        ]
+    )
+    return True
+
+
 
 
 # Define Streamlit app
@@ -513,7 +747,7 @@ player_list = PlayerList()
 players_df = player_list.players()
 
 # Create a multiselect widget with player options
-player_name = st.selectbox("Select player:", options=players_df["DISPLAY_FIRST_LAST"].tolist(),index=None,help="Select a player to view shot data. Adjust filters on sidebar for specific data.")
+player_name = st.selectbox("Select player:", options=players_df["DISPLAY_FIRST_LAST"].tolist(), index=None, help="Select a player to view shot data. Adjust filters on sidebar for specific data.")
 
 # player_names_input = st.text_input("Enter player name (if multiple, separate by commas)")
 if not player_name:
@@ -611,7 +845,7 @@ if player_name:
                     fg3_pct_color = "gray"
                     ft_pct_color = "gold"
                     min_color = "cyan"
-                    tov_color = "magenta"
+                    tov_color = "magenta" 
 
     # Display text with different colors
                     font_size_large = "28px"
@@ -625,7 +859,7 @@ if player_name:
                     st.markdown(f"<span style='font-size:{font_size_large}'>**Tov:** <span style='color:{tov_color}'>{tov}</span>   **Min:** <span style='color:{min_color}'>{min}</span></span>", unsafe_allow_html=True)
 
             else:
-                st.error(f'No data found for {player_name} in {SEASON}. Check season: shot chart data before 1996 is unavailable')
+                st.error(f'No data found for {player_name.lower().title()} in {SEASON}. Check season: shot chart data before 1996 is unavailable')
 
             
         st.plotly_chart(plotgames)
@@ -677,7 +911,7 @@ if player_name:
         shootperc = shooting_percentage
         #20211019
 
-# Create  for makes
+# Create trace for makes
 # Concatenate text labels for makes and misses
         text_all = (
 shot_data["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]])) + ': ' +
@@ -710,7 +944,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
         # Create trace for makes
         make_trace = go.Scatter(
             x=-(shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"]),
-            y=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"] + 60,
+            y=shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"],
             mode='markers',
             marker=dict(color='rgba(0, 128, 0, 0.6)', size=10),
             name='Made Shot ✅',
@@ -722,7 +956,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
         # Create trace for misses
         miss_trace = go.Scatter(
             x=-(shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"]),
-            y=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60,
+            y=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"],
             mode='markers',
             marker=dict(symbol='x', color='rgba(255, 0, 0, 0.6)', size=10),
             name='Missed Shot ❌',
@@ -731,8 +965,8 @@ shot_data["SECONDS_REMAINING"].astype(str)
             hovertemplate=hover_template
         )
         fig2trace = go.Scatter(
-                x=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"],
-    y=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"] + 60,
+                x=-(shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"]),
+    y=shot_data[shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"],
     mode='markers',
     marker=dict(symbol='hexagon', color='rgba(255, 0, 0, 0.6)', size=10),
     name='Shots',
@@ -745,7 +979,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
         layout = go.Layout(
     hovermode='closest',
     xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-260, 260]),
-    yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-4, 474]),
+    yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-60, 474]),
     plot_bgcolor='#D2B48C',  # Set background color to the desired color
     
     width=600,  # Set the width of the background
@@ -756,145 +990,123 @@ shot_data["SECONDS_REMAINING"].astype(str)
 )
 
 # Create figure
-        fig = go.Figure(layout=layout)
+
+        fig = go.Figure()
+        draw_plotly_court(fig)
+        fig.update_layout(layout)
+
         fig3 = go.Figure()
 
         
 # Add basketball court lines as shapes
-        court_shapes = [
-    dict(
-            type = 'line',
-            x0=256,
-            x1=-256,
-            y0=0,
-            y1=0,
-            line=dict(color='black', width=2.5)
-    ),
-        dict(
-            type = 'line',
-            x1=256,
-            x0=256,
-            y0=515,
-            y1 = 0,
-            line=dict(color='black', width=2.5)
-    ),
-    dict(
-            type = 'line',
-            x1=-256,
-            x0=-256,
-            y0=515,
-            y1 = 0,
-            line=dict(color='black', width=2.5)
-    ),
-    dict(
-        type = 'circle',
-        x1 = 60,
-        x0 = -60,
-        y0=410,
-        y1 = 535,
-        line=dict(color='black', width=2.5)
-    ),
-    dict(
-            type = 'line',
-            y0 = 469,
-            y1 = 469,
-            x1 = -255,
-            x0 = 255,
-            line=dict(color='black', width=2.5)
-    ),
+        court_shapes=[
+            dict(
+                type="rect", x0=-250, y0=-52.5, x1=250, y1=417.5,
+                line=dict(color='white', width=2)
+                # fillcolor='#333333',
+                
+            ),
+            dict(
+                type="rect", x0=-80, y0=-52.5, x1=80, y1=137.5,
+                line=dict(color='white', width=2)
+                # fillcolor='#333333',
+                
+            ),
+            dict(
+                type="rect", x0=-60, y0=-52.5, x1=60, y1=137.5,
+                line=dict(color='white', width=2)
+                # fillcolor='#333333',
+                
+            ),
+            dict(
+                type="circle", x0=-60, y0=77.5, x1=60, y1=197.5, xref="x", yref="y",
+                line=dict(color='white', width=2)
+                # fillcolor='#dddddd',
+            ),
+            dict(
+                type="line", x0=-60, y0=137.5, x1=60, y1=137.5,
+                line=dict(color='white', width=2)
+            ),
 
-    
-    dict(
-        type='line',
-        x0=-30,
-        y0=40,
-        y1=40,
-        x1=30,
-        line=dict(color='black', width=2.5)
+            dict(
+                type="rect", x0=-2, y0=-7.25, x1=2, y1=-12.5,
+                line=dict(color="#ec7607", width=2),
+                fillcolor='#ec7607',
+            ),
+            dict(
+                type="circle", x0=-7.5, y0=-7.5, x1=7.5, y1=7.5, xref="x", yref="y",
+                line=dict(color="#ec7607", width=2),
+            ),
+            dict(
+                type="line", x0=-30, y0=-12.5, x1=30, y1=-12.5,
+                line=dict(color="#ec7607", width=2),
+            ),
 
-    ),
-    dict(
-        type='line',
-        x0=-223,
-        y0=0,
-        x1=-223,
-        y1=140,
-        line=dict(color='black', width=2.5)
-    ),
-    dict(
-        type='line',
-        x0=220,
-        y0=0,
-        x1=220,
-        y1=140,
-        line=dict(color='black', width=2.5)
-    ),
-    dict(
-        type='path',
-        path='M -225,132,100,150,160,170,180,190 C -200,320 150,375 219,140',
-        line=dict(color='black', width=2.5)
-    ),
-    dict(
-        type='line',
-        x0=-80,
-        y0=0,
-        x1=-80,
-        y1=190,
-        line=dict(color='black', width=2.5)
-    ),
-    dict(
-        type='line',
-        x0=80,
-        y0=0,
-        x1=80,
-        y1=190,
-        line=dict(color='black', width=2.5)
-    ),
-    dict(
-        type='line',
-        x0=-60,
-        y0=0,
-        x1=-60,
-        y1=190,
-        line=dict(color='black', width=2.5)
-    ),
-    dict(
-        type='line',
-        x0=60,
-        y0=0,
-        x1=60,
-        y1=190,
-        line=dict(color='black', width=2.5)
-    ),
-    dict(
-        type='line',
-        x0=-80,
-        y0=190,
-        x1=80,
-        y1=190,
-        line=dict(color='black', width=2.5)
-    ),
-    dict(
-        type='circle',
-        xref='x',
-        yref='y',
-        x0=-60,
-        y0=130,
-        x1=60,
-        y1=245,
-        line=dict(color='black', width=2.5)
-    ),
-    dict(
-        type='circle',
-        xref='x',
-        yref='y',
-        x0=-15,
-        y0=45,
-        x1=15,
-        y1=75,
-        line=dict(color='black', width=2.5)
-    )
-]
+            dict(type="path",
+                 path=ellipse_arc(a=40, b=40, start_angle=0, end_angle=np.pi),
+                 line=dict(color='white', width=2)),
+            dict(type="path",
+                 path=ellipse_arc(a=237.5, b=237.5, start_angle=0.386283101, end_angle=np.pi - 0.386283101),
+                 line=dict(color='white', width=2)),
+            dict(
+                type="line", x0=-220, y0=-52.5, x1=-220, y1=89.47765084,
+                line=dict(color='white', width=2)
+            ),
+            dict(
+                type="line", x0=-220, y0=-52.5, x1=-220, y1=89.47765084,
+                line=dict(color='white', width=2)
+            ),
+            dict(
+                type="line", x0=220, y0=-52.5, x1=220, y1=89.47765084,
+                line=dict(color='white', width=2)
+            ),
+
+            dict(
+                type="line", x0=-250, y0=227.5, x1=-220, y1=227.5,
+                line=dict(color='white', width=2)
+            ),
+            dict(
+                type="line", x0=250, y0=227.5, x1=220, y1=227.5,
+                line=dict(color='white', width=2)
+            ),
+            dict(
+                type="line", x0=-90, y0=17.5, x1=-80, y1=17.5,
+                line=dict(color='white', width=2)
+            ),
+            dict(
+                type="line", x0=-90, y0=27.5, x1=-80, y1=27.5,
+                line=dict(color='white', width=2)
+            ),
+            dict(
+                type="line", x0=-90, y0=57.5, x1=-80, y1=57.5,
+                line=dict(color='white', width=2)
+            ),
+            dict(
+                type="line", x0=-90, y0=87.5, x1=-80, y1=87.5,
+                line=dict(color='white', width=2)
+            ),
+            dict(
+                type="line", x0=90, y0=17.5, x1=80, y1=17.5,
+                line=dict(color='white', width=2)
+            ),
+            dict(
+                type="line", x0=90, y0=27.5, x1=80, y1=27.5,
+                line=dict(color='white', width=2)
+            ),
+            dict(
+                type="line", x0=90, y0=57.5, x1=80, y1=57.5,
+                line=dict(color='white', width=2)
+            ),
+            dict(
+                type="line", x0=90, y0=87.5, x1=80, y1=87.5,
+                line=dict(color='white', width=2)
+            ),
+
+            dict(type="path",
+                 path=ellipse_arc(y_center=417.5, a=60, b=60, start_angle=-0, end_angle=-np.pi),
+                 line=dict(color='white', width=2)),
+
+        ]
         court_shapes2 = [
     dict(
             type = 'line',
@@ -1031,7 +1243,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
 ]
 
 # Set aspect ratio
-        fig.update_layout(shapes=court_shapes)
+        # fig.update_layout(shapes=court_shapes)
         fig.add_trace(make_trace)
         fig.add_trace(miss_trace)
 
@@ -1050,11 +1262,12 @@ shot_data["SECONDS_REMAINING"].astype(str)
 
 
 # Display the plot
+        st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">{SEASON}: {total_makes}/{total_shots} - {shootperc}%</span></div>', unsafe_allow_html=True)
                     # Plot hexbin with custom colormap
-        fig2 = plt.figure(figsize=(8.2,8))
+        fig2 = plt.figure(figsize=(12,11))
         ax = fig2.add_axes([0, 0, 1, 1])
-        hb = ax.hexbin(-(shot_data['LOC_X']), shot_data['LOC_Y'] + 60, gridsize=(50, 50), extent=(-300, 300, 0, 940), bins='log', cmap='Blues',edgecolors='none')
-        ax = create_court(ax, 'black')
+        hb = ax.hexbin(-(shot_data['LOC_X']), shot_data['LOC_Y'], gridsize=(50, 50), extent=(-300, 300, -150, 500), bins='log', cmap='Blues',edgecolors='none')
+        ax = draw_court(outer_lines=True)
         legend_elements = [
             plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='Less Shots', markerfacecolor='white', markersize=20),
             plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='More Shots', markerfacecolor='blue', markersize=20)
@@ -1062,7 +1275,8 @@ shot_data["SECONDS_REMAINING"].astype(str)
         plt.legend(handles=legend_elements, loc='upper right',framealpha=0) 
 
         # Create hexbin plot with Plotly
-        fig5 = px.density_heatmap(shot_data, x=-(shot_data['LOC_X']), y=shot_data['LOC_Y'] + 60, nbinsx=35, nbinsy=55, color_continuous_scale='Hot')
+        fig5 = go.Figure()
+        fig5 = px.density_heatmap(shot_data, x=-(shot_data['LOC_X']), y=shot_data['LOC_Y'], nbinsx=35, nbinsy=55, color_continuous_scale='Hot')
 
 
 
@@ -1075,11 +1289,11 @@ shot_data["SECONDS_REMAINING"].astype(str)
             xaxis_title='',
             yaxis_title='',
         xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-252, 260]),
-        yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-0.5, 475]),
+        yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-70, 475]),
         plot_bgcolor='black',
         margin=dict(l=0, r=0, t=0, b=0),
-            width=650,  # Set the width of the background
-        height=615,  # Set the height of the background
+            width=800,  # Set the width of the background
+        height=765,  # Set the height of the background
         autosize=False,
         coloraxis=dict(
     showscale=False,
@@ -1088,9 +1302,12 @@ shot_data["SECONDS_REMAINING"].astype(str)
 )
 
         )
-        fig5.update_layout(shapes=court_shapes2)
+        fig5.update_layout(shapes=court_shapes)
         fig5.update_yaxes(scaleanchor='x', scaleratio=1)
         
+
+        # fig5.update_coloraxes(showscale=False)
+
 
         # fig5.update_coloraxes(showscale=False)
 
@@ -1106,8 +1323,6 @@ shot_data["SECONDS_REMAINING"].astype(str)
             st.pyplot(fig2)
         else:
             st.plotly_chart(fig5,use_container_width=True)
-        st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">{SEASON}: {total_makes}/{total_shots} - {shootperc}%</span></div>', unsafe_allow_html=True)
-
 
                 
 
@@ -1145,6 +1360,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
             # st.sidebar.header(f'{season1}: 0/{total_misses} - {shooting_percentage}%')
     except PlayerNotFoundException as e:
         st.error(str(e))
+        st.write('')
     # else:
     #     st.image("https://static.vecteezy.com/system/resources/thumbnails/013/861/222/small/silhouette-of-basketball-player-with-ball-shooting-dunk-free-vector.jpg",use_column_width=True)
 
