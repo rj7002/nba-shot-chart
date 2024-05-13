@@ -982,8 +982,8 @@ shot_data["SECONDS_REMAINING"].astype(str)
     yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-60, 474]),
     plot_bgcolor='#D2B48C',  # Set background color to the desired color
     
-    width=600,  # Set the width of the background
-    height=668,  # Set the height of the background
+    width=650,  # Set the width of the background
+    height=718,  # Set the height of the background
     autosize=False,
     legend=dict(x=0.98, y=1, xanchor='right', yanchor='top', bgcolor='rgba(0,0,0,0)',font=dict(color='black'), bordercolor='black', borderwidth=0),
     margin=dict(l=0, r=0, t=0, b=0)# Customize legend
