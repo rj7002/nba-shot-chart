@@ -925,7 +925,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
 
         hover_template = (
             "<b>Date</b>: %{customdata[0]}<br>" +
-            "<b>Match</b>: %{customdata[1]}<br>" +
+            "<b>Game</b>: %{customdata[1]}<br>" +
             "<b>Shot</b>: %{customdata[2]}<br>" +
             "<b>Distance</b>: %{customdata[5]}<br>"+
             "<b>Period</b>: %{customdata[3]}<br>" +
@@ -940,7 +940,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
         shot_data['SHOT'] = shot_data['SHOT_TYPE'].str.replace(' Field Goal', '') + ' - ' + shot_data["ACTION_TYPE"]
         shot_data['PERIOD_TIME'] = shot_data["PERIOD"].astype(str) + 'Q'
         shot_data['TIME'] = shot_data["MINUTES_REMAINING"].astype(str) + ':' + shot_data["SECONDS_REMAINING"].astype(str)
-        shot_data['DISTANCE'] = shot_data['SHOT_DISTANCE'].astype(str) + 'ft'
+        shot_data['DISTANCE'] = shot_data['SHOT_DISTANCE'].astype(str) + ' ft'
         # Create trace for makes
         make_trace = go.Scatter(
             x=-(shot_data[shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"]),
@@ -1262,7 +1262,6 @@ shot_data["SECONDS_REMAINING"].astype(str)
 
 
 # Display the plot
-        st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">{SEASON}: {total_makes}/{total_shots} - {shootperc}%</span></div>', unsafe_allow_html=True)
                     # Plot hexbin with custom colormap
         fig2 = plt.figure(figsize=(12,11))
         ax = fig2.add_axes([0, 0, 1, 1])
@@ -1323,7 +1322,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
             st.pyplot(fig2)
         else:
             st.plotly_chart(fig5,use_container_width=True)
-
+        st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">{SEASON}: {total_makes}/{total_shots} - {shootperc}%</span></div>', unsafe_allow_html=True)
                 
 
 
