@@ -1023,7 +1023,7 @@ if player_name:
         if Date == 1:
                 date = all_shot_data['GAME_DATE'].unique()
                 datetype = st.sidebar.multiselect('', all_shot_data['GAME_DATE'].unique())
-                shot_data = all_shot_data[all_shot_data['GAME_DATE'].isin(datetype)]
+                all_shot_data = all_shot_data[all_shot_data['GAME_DATE'].isin(datetype)]
         if Stat == 'MISSES':
                 all_shot_data = all_shot_data[all_shot_data['SHOT_MADE_FLAG'] == 0]
         if Quarters:
