@@ -1021,7 +1021,7 @@ if player_name:
         plt.figure(figsize=(13, 8))
         ax = plt.gca()
         if Date == 1:
-                date = shot_data['GAME_DATE'].unique()
+                date = all_shot_data['GAME_DATE'].unique()
                 datetype = st.sidebar.multiselect('', all_shot_data['GAME_DATE'].unique())
                 shot_data = all_shot_data[all_shot_data['GAME_DATE'].isin(datetype)]
         if Stat == 'MISSES':
