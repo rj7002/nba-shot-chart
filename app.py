@@ -916,7 +916,7 @@ if player_name:
         playerheight = playerinfo.loc[playerinfo['DISPLAY_FIRST_LAST'] == player_name, 'HEIGHT'].values[0]
         playerweight = playerinfo.loc[playerinfo['DISPLAY_FIRST_LAST'] == player_name, 'WEIGHT'].values[0]
 
-        display_player_image(PLAYER_ID,350,f"{player_name}")
+        display_player_image(PLAYER_ID,400,f"{player_name}")
         st.markdown(f'<div style="text-align: center;"><span style="font-size:20px;">Height: {playerheight} Weight: {playerweight}</span></div>', unsafe_allow_html=True)
 
         for SEASON in SEASONS:
