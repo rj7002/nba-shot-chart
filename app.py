@@ -807,7 +807,7 @@ elif Stat == 'PF':
     Stat2 = 'PF'
 GameSegment = st.sidebar.toggle('Game Segment')
 if GameSegment == 1:
-    typeseg = st.sidebar.checkbox('',['First Half', 'Second Half', 'Overtime'])
+    typeseg = st.sidebar.selectbox('',['First Half', 'Second Half', 'Overtime'])
 else:
     typeseg = None
 Quarters = st.sidebar.toggle('Quarters')
