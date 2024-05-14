@@ -714,6 +714,66 @@ def draw_plotly_court(fig, fig_width=600, margins=10):
     )
     return True
 
+def frequency_chart(df: pd.DataFrame, extent=(-300, 300, 422.5, -50),
+                                gridsize=25, cmap="inferno"):
+                """ Create a shot chart of a player's shot frequency and accuracy
+                """ 
+                # create frequency of shots per hexbin zone
+                shots_hex = plt.hexbin(
+                df.LOC_X, df.LOC_Y,
+                extent=extent, cmap=cmap, gridsize=gridsize)
+                plt.close()
+                shots_hex_array = shots_hex.get_array()
+                freq_by_hex = shots_hex_array / sum(shots_hex_array)
+                
+                # create field goal % per hexbin zone
+                makes_df = df[df.SHOT_MADE_FLAG == 1] # filter dataframe for made shots
+                makes_hex = plt.hexbin(makes_df.LOC_X, makes_df.LOC_Y, cmap=cmap,
+                                gridsize=gridsize, extent=extent) # create hexbins
+                plt.close()
+                pcts_by_hex = makes_hex.get_array() / shots_hex.get_array()
+                pcts_by_hex[np.isnan(pcts_by_hex)] = 0  # convert NAN values to 0
+                
+                # filter data for zone with at least 5 shots made
+                sample_sizes = shots_hex.get_array()
+                filter_threshold = 5
+                for i in range(len(pcts_by_hex)):
+                        if sample_sizes[i] < filter_threshold:
+                                pcts_by_hex[i] = 0
+                x = [i[0] for i in shots_hex.get_offsets()]
+                y = [i[1] for i in shots_hex.get_offsets()]
+                z = pcts_by_hex
+                sizes = freq_by_hex * 1000
+                
+                # Create figure and axes
+                fig = plt.figure(figsize=(3.6, 3.6), facecolor='black', edgecolor='black', dpi=100)
+                ax = fig.add_axes([0, 0, 1, 1], facecolor='black')
+                plt.xlim(275, -275)
+                plt.ylim(-55, 430)
+                # Plot hexbins
+                scatter = ax.scatter(x, y, c=z, cmap=cmap, marker='h', s=sizes)
+                # Draw court
+                ax = draw_court(ax,outer_lines=True)
+                # Add legends
+                max_freq = max(freq_by_hex)
+                max_size = max(sizes)
+                legend_acc = plt.legend(
+                *scatter.legend_elements(num=5, fmt="{x:.0f}%",
+                                        func=lambda x: x * 100),
+                loc=[0.84,0.75], title='Shot %', fontsize=6)
+                legend_freq = plt.legend(
+                *scatter.legend_elements(
+                        'sizes', num=5, alpha=0.8, fmt="{x:.1f}%"
+                        , func=lambda s: s / max_size * max_freq * 100
+                ),
+                loc=[0.68,0.785], title='Freq %', fontsize=6)
+                plt.gca().add_artist(legend_acc)
+                # Add title
+                
+                # add headshot
+
+                return fig
+
 
 
 
@@ -1385,7 +1445,7 @@ shot_data["SECONDS_REMAINING"].astype(str)
         # Show plot
 # Display the image in Streamlit
                     # Customize color bar legend
-        plottype = st.selectbox('Plot Type',['Make/Miss','Hexbin Plot','Heat Map','KDE Plot'])
+        plottype = st.selectbox('Plot Type',['Make/Miss','Hexbin Plot','Heat Map','FG% and Shot Frequency','KDE Plot'])
         if plottype == 'Make/Miss':
             st.plotly_chart(fig,use_container_width=True)
         elif plottype == 'Hexbin Plot':
@@ -1393,6 +1453,8 @@ shot_data["SECONDS_REMAINING"].astype(str)
             st.pyplot(fig2)
         elif plottype =='Heat Map':
             st.plotly_chart(fig5,use_container_width=True)
+        elif plottype =='FG% and Shot Frequency':
+             st.pyplot(frequency_chart(shot_data))
         else:
             plt.clf()
             cmap = 'gist_heat_r'
