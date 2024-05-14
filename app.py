@@ -945,7 +945,7 @@ if player_name:
                 
                 
                 player_summary = Splits(player_id=PLAYER_ID,season=SEASON)
-                player_summarytotals = Splits(player_id=PLAYER_ID,season=SEASON,per_mode=type2,season_type=typeseason)
+                player_summarytotals = Splits(player_id=PLAYER_ID,season=SEASON,per_mode=type2,season_type=typeseason,location=typeloc,vs_conference=typeconf,outcome=typeout,game_segment=typeseg)
                 player_headline_stats2 = player_summarytotals.overall()
 
                 # Check if player_summarytotals has data
