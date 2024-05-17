@@ -1472,7 +1472,7 @@ all_shot_data["SECONDS_REMAINING"].astype(str)
             fig6 = sns.kdeplot(x=-(shot_data['LOC_X']), y=shot_data['LOC_Y'], cmap=cmap, fill=True, n_levels=50)
             draw_court2(fig6,outer_lines=True)
             # Set the background color to white
-            fig6.set_facecolor('white')
+            fig6.set_facecolor('black')
             fig6.set_xlim(250, -250)
             fig6.set_ylim(-47.5, 422.5)
             fig6.set_axis_off()
