@@ -720,7 +720,7 @@ def draw_plotly_court(fig, fig_width=600, margins=10):
     )
     return True
 
-def frequency_chart(df: pd.DataFrame, extent=(-300, 300, 422.5, -50),
+def frequency_chart(df: pd.DataFrame, extent=(-300, 300,-50,422.5,),
                                 gridsize=25, cmap="inferno"):
                 """ Create a shot chart of a player's shot frequency and accuracy
                 """ 
