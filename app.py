@@ -1406,7 +1406,7 @@ all_shot_data["SECONDS_REMAINING"].astype(str)
                     # Plot hexbin with custom colormap
         fig2 = plt.figure(figsize=(12,11))
         ax = fig2.add_axes([0, 0, 1, 1])
-        hb = ax.hexbin(-(shot_data['LOC_X']), shot_data['LOC_Y'], gridsize=(30, 30), extent=(-240, 240, -30, 370), bins='log', cmap='Blues',edgecolors='none')
+        hb = ax.hexbin(-(all_shot_data['LOC_X']), all_shot_data['LOC_Y'], gridsize=(30, 30), extent=(-240, 240, -30, 370), bins='log', cmap='Blues',edgecolors='none')
         ax = draw_court(outer_lines=True)
         legend_elements = [
             plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='Less Shots', markerfacecolor='white', markersize=20),
@@ -1416,7 +1416,7 @@ all_shot_data["SECONDS_REMAINING"].astype(str)
 
         # Create hexbin plot with Plotly
         fig5 = go.Figure()
-        fig5 = px.density_heatmap(shot_data, x=-(shot_data['LOC_X']), y=shot_data['LOC_Y'], nbinsx=35, nbinsy=55, color_continuous_scale='Hot')
+        fig5 = px.density_heatmap(all_shot_data, x=-(all_shot_data['LOC_X']), y=all_shot_data['LOC_Y'], nbinsx=35, nbinsy=55, color_continuous_scale='Hot')
 
 
 
