@@ -872,25 +872,25 @@ if CourtLoc == 1:
     courtloc = st.sidebar.multiselect('',['Right Side(R)','Left Side(L)','Center(C)','Right Side Center(RC)','Left Side Center(LC)'])
 Month = st.sidebar.multiselect('Month',['October','November','December','January','February','March','April','May','June','July'])
 if Month == 'October':
-    month = 1
+    typemonth = 1
 elif Month == 'November':
-    month = 2
+    typemonth = 2
 elif Month == 'December':
-    month = 3
+    typemonth = 3
 elif Month == 'January':
-    month = 4
+    typemonth = 4
 elif Month == 'February':
-    month = 5
+    typemonth = 5
 elif Month == 'March':
-    month = 6
+    typemonth = 6
 elif Month == 'April':
-    month = 7
+    typemonth = 7
 elif Month == 'May':
-    month = 8
+    typemonth = 8
 elif Month == 'June':
-    month = 9
+    typemonth = 9
 elif Month == 'July':
-    month = 10
+    typemonth = 10
 
 Date = st.sidebar.toggle('Date (YearMonthDay)')
 
@@ -1032,7 +1032,7 @@ if player_name:
         all_shot_data = pd.DataFrame()
         for SEASON in SEASONS:
 
-            shot_chart = ShotChart(PLAYER_ID, season=SEASON,month=month,game_segment=typeseg,clutch_time=typeclutch,season_type=typeseason,vs_conf=typeconf,location=typeloc,outcome=typeout,context_measure=Stat2,ahead_behind=typeaheadbehind)
+            shot_chart = ShotChart(PLAYER_ID, season=SEASON,month=typemonth,game_segment=typeseg,clutch_time=typeclutch,season_type=typeseason,vs_conf=typeconf,location=typeloc,outcome=typeout,context_measure=Stat2,ahead_behind=typeaheadbehind)
                 # Fetch shot chart data
             shot_data = shot_chart.shot_chart()
             all_shot_data = pd.concat([all_shot_data, shot_data], ignore_index=True)
