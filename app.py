@@ -872,7 +872,7 @@ if CourtLoc == 1:
     courtloc = st.sidebar.multiselect('',['Right Side(R)','Left Side(L)','Center(C)','Right Side Center(RC)','Left Side Center(LC)'])
 Month = st.sidebar.toggle('Month')
 if Month == 1:
-    typemonth = st.sidebar.multiselect('',['October','November','December','January','February','March','April','May','June','July'])
+    typemonth = st.sidebar.selectbox('',['October','November','December','January','February','March','April','May','June','July'])
     if typemonth == 'October':
         typemonth = '1'
     elif typemonth == 'November':
