@@ -870,27 +870,29 @@ if Teams == 1:
 CourtLoc = st.sidebar.toggle('Court Location')
 if CourtLoc == 1:
     courtloc = st.sidebar.multiselect('',['Right Side(R)','Left Side(L)','Center(C)','Right Side Center(RC)','Left Side Center(LC)'])
-Month = st.sidebar.multiselect('Month',['October','November','December','January','February','March','April','May','June','July'])
-if Month == 'October':
-    typemonth = '1'
-elif Month == 'November':
-    typemonth = '2'
-elif Month == 'December':
-    typemonth = '3'
-elif Month == 'January':
-    typemonth = '4'
-elif Month == 'February':
-    typemonth = '5'
-elif Month == 'March':
-    typemonth = '6'
-elif Month == 'April':
-    typemonth = '7'
-elif Month == 'May':
-    typemonth = '8'
-elif Month == 'June':
-    typemonth = '9'
-elif Month == 'July':
-    typemonth = '10'
+Month = st.sidebar.toggle('Month')
+if Month == 1:
+    typemonth = st.sidebar.multiselect('',['October','November','December','January','February','March','April','May','June','July'])
+    if typemonth == 'October':
+        typemonth = '1'
+    elif typemonth == 'November':
+        typemonth = '2'
+    elif typemonth == 'December':
+        typemonth = '3'
+    elif typemonth == 'January':
+        typemonth = '4'
+    elif typemonth == 'February':
+        typemonth = '5'
+    elif typemonth == 'March':
+        typemonth = '6'
+    elif typemonth == 'April':
+        typemonth = '7'
+    elif typemonth == 'May':
+        typemonth = '8'
+    elif typemonth == 'June':
+        typemonth = '9'
+    elif typemonth == 'July':
+        typemonth = '10'
 
 Date = st.sidebar.toggle('Date (YearMonthDay)')
 
