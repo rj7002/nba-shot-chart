@@ -25,7 +25,7 @@ font="monospace"
 """
 
 
-st.set_page_config(page_title="NBA Shot Visualizer", page_icon='https://juststickers.in/wp-content/uploads/2015/05/basket-ball-player-1-decal.png', initial_sidebar_state="expanded")
+st.set_page_config(page_title="NBA Shot Visualizer", page_icon='https://i.imgur.com/ljWwIOF.png?1', initial_sidebar_state="expanded")
 
 currentyear = datetime.datetime.now().year
 
@@ -910,7 +910,7 @@ player_name = st.selectbox("Select player:", options=players_df["DISPLAY_FIRST_L
 
 # player_names_input = st.text_input("Enter player name (if multiple, separate by commas)")
 if not player_name:
-    st.image("https://static.vecteezy.com/system/resources/thumbnails/013/861/222/small/silhouette-of-basketball-player-with-ball-shooting-dunk-free-vector.jpg",use_column_width=True)
+    st.image("https://i.imgur.com/ljWwIOF.png?1",use_column_width=True)
 
 # Parse the input to extract individual player names
 # player_names = [name.strip() for name in player_names_input.split(',') if name.strip()]
