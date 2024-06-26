@@ -786,6 +786,7 @@ def frequency_chart(df: pd.DataFrame, extent=(-300, 300,-50,422.5,),
 # Define Streamlit app
 
 st.sidebar.markdown('<div style="text-align: center;"><span style="font-size:30px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
+st.sidebar.image("https://i.imgur.com/ljWwIOF.png?1")
 type = st.sidebar.selectbox('Player Stats',['Per Game','Totals'])
 # shottrack = st.sidebar.selectbox('Shot Tracking Stats',['Overall','General','Shot Clock','Dribbles','Closest Defender','Closest Defender Long','Touch Time'])
 Stat = st.sidebar.selectbox('',['FGA','MAKES', 'MISSES','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS','PF'])
