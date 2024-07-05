@@ -1343,7 +1343,7 @@ else:
                     x=-(all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"]),
                     y=all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"],
                     mode='markers',
-                    marker=dict(color='rgba(0, 128, 0, 0.6)', size=10),
+                    marker=dict(color='rgba(0, 128, 0, 0.6)', size=15),
                     name='Made Shot ✅',
                     customdata=all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 1][['GAME_DATE_NEW', 'MATCH', 'SHOT', 'PERIOD_TIME','TIME','DISTANCE','SHOT_ZONE']],  # Use customdata for makes only
                     hoverinfo='text',  # Set hoverinfo to text
@@ -1355,7 +1355,7 @@ else:
                     x=-(all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"]),
                     y=all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"],
                     mode='markers',
-                    marker=dict(symbol='x', color='rgba(255, 0, 0, 0.6)', size=10),
+                    marker=dict(symbol='x', color='rgba(255, 0, 0, 0.6)', size=15),
                     name='Missed Shot ❌',
                     customdata=all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0][['GAME_DATE_NEW', 'MATCH', 'SHOT', 'PERIOD_TIME','TIME','DISTANCE','SHOT_ZONE']],  # Use customdata for misses only
                     hoverinfo='text',  # Set hoverinfo to text
@@ -1365,7 +1365,7 @@ else:
                         x=-(all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"]),
             y=all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"],
             mode='markers',
-            marker=dict(symbol='hexagon', color='rgba(255, 0, 0, 0.6)', size=10),
+            marker=dict(symbol='hexagon', color='rgba(255, 0, 0, 0.6)', size=15),
             name='Shots',
             text=text_all[all_shot_data["SHOT_MADE_FLAG"] == 0],  # Use concatenated text for misses only
             hoverinfo='text'
