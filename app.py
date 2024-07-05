@@ -600,8 +600,7 @@ def draw_plotly_court(fig, fig_width=600, margins=10):
             showline=False,
             ticks='',
             showticklabels=False,
-            fixedrange=True,
-            showlegend=False
+            fixedrange=True
         ),
         xaxis=dict(
             showgrid=False,
@@ -912,7 +911,9 @@ if animated == 1:
                 xaxis=dict(range=[-250, 250], showgrid=False, zeroline=False),
                 yaxis=dict(range=[-50, 400], showgrid=False, zeroline=False),
                 height=600,  # Adjust the height of the plot
-                width=600 # Adjust the width of the plot
+                width=600,
+                showlegend=False
+                # Adjust the width of the plot
             )
             fig.update_yaxes(scaleanchor='x', scaleratio=1)
     
