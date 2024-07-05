@@ -29,7 +29,7 @@ font="monospace"
 
 st.set_page_config(page_title="NBA Shot Visualizer", page_icon='https://i.imgur.com/ljWwIOF.png?1', initial_sidebar_state="expanded")
 
-currentyear = datetime.datetime.now().year
+currentyear = datetime.now().year
 
 class Summary:
     """Contains common player information like headline stats, weight, etc.
