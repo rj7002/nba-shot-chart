@@ -591,7 +591,7 @@ def draw_plotly_court(fig, fig_width=600, margins=10):
         # Line Horizontal
         margin=dict(l=20, r=20, t=20, b=20),
         paper_bgcolor="white",
-        plot_bgcolor="white",
+        plot_bgcolor="#D2B48C",
         yaxis=dict(
             scaleanchor="x",
             scaleratio=1,
@@ -601,6 +601,7 @@ def draw_plotly_court(fig, fig_width=600, margins=10):
             ticks='',
             showticklabels=False,
             fixedrange=True,
+            showlegend=False
         ),
         xaxis=dict(
             showgrid=False,
@@ -910,7 +911,6 @@ if animated == 1:
             fig.update_layout(
                 xaxis=dict(range=[-250, 250], showgrid=False, zeroline=False),
                 yaxis=dict(range=[-50, 400], showgrid=False, zeroline=False),
-                title='Animated NBA Shot Chart',
                 height=600,  # Adjust the height of the plot
                 width=600 # Adjust the width of the plot
             )
