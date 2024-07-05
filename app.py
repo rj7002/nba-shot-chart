@@ -787,756 +787,983 @@ def frequency_chart(df: pd.DataFrame, extent=(-300, 300,-50,422.5,),
 
 st.sidebar.markdown('<div style="text-align: center;"><span style="font-size:30px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
 st.sidebar.image("https://i.imgur.com/ljWwIOF.png?1")
-type = st.sidebar.selectbox('Player Stats',['Per Game','Totals'])
-# shottrack = st.sidebar.selectbox('Shot Tracking Stats',['Overall','General','Shot Clock','Dribbles','Closest Defender','Closest Defender Long','Touch Time'])
-Stat = st.sidebar.selectbox('',['FGA','MAKES', 'MISSES','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS','PF'])
-if Stat == 'MAKES':
-    Stat2 = 'PTS'
-elif Stat == 'MISSES':
-    Stat2 = 'FGA'
-elif Stat == 'FGA':
-    Stat2 = 'FGA'
-elif Stat == '3PA':
-    Stat2 = 'FG3A'
-elif Stat == 'FB PTS':
-    Stat2 = 'PTS_FB'
-elif Stat == 'PTS OFF TOV':
-    Stat2 = 'PTS_OFF_TOV'
-elif Stat == '2ND CHANCE PTS':
-    Stat2 = 'PTS_2ND_CHANCE'
-elif Stat == 'PF':
-    Stat2 = 'PF'
-GameSegment = st.sidebar.toggle('Game Segment')
-if GameSegment == 1:
-    typeseg = st.sidebar.selectbox('',['First Half', 'Second Half', 'Overtime'])
-else:
-    typeseg = None
-Quarters = st.sidebar.toggle('Quarters')
-if Quarters:
-    typequart = st.sidebar.selectbox('',['1','2','3','4'])
-Clutch_Time = st.sidebar.toggle('Clutch Time')
-if Clutch_Time == 1:
-    typeclutch = st.sidebar.selectbox('', ['Last 5 Minutes', 'Last 4 Minutes','Last 3 Minutes','Last 2 Minutes','Last 1 Minute','Last 30 Seconds', 'Last 10 Seconds'])
-else:
-    typeclutch = None
-Playoffs = st.sidebar.toggle('Playoffs')
-if Playoffs == 1:
-    typeseason = 'Playoffs'
-else:
-    typeseason = "Regular Season"
-Conference = st.sidebar.toggle('Conference')
-if Conference == 1:
-    typeconf = st.sidebar.selectbox('',['East', 'West'])
-else:
-    typeconf = None
-Location = st.sidebar.toggle('Location')
-if Location == 1:
-    typeloc = st.sidebar.selectbox('',['Home', 'Road'])
-else:
-    typeloc = None
-Outcome = st.sidebar.toggle('Outcome')
-if Outcome == 1:
-    typeout = st.sidebar.selectbox('',['W', 'L'])
-else:
-    typeout = None
-AheadBehind = st.sidebar.toggle('Ahead/Behind')
-if AheadBehind == 1:
-    typeaheadbehind = st.sidebar.selectbox('',['Behind or Tied','Ahead or Tied'])
-else:
-    typeaheadbehind = None
-ShotDist = st.sidebar.toggle('Shot Distance')
-if ShotDist == 1:
-    shotdistbool = True
-    # shotdistance = st.sidebar.slider("Shot Distance", 0, 40)
-    shotdistance_min, shotdistance_max = st.sidebar.slider("Shot Distance", 0, 40, (0, 40))
-ShotType = st.sidebar.toggle('Shot Type')
-if ShotType == 1:
-    shottypebool = True
-    shottype = st.sidebar.selectbox('', ['Jump Shot', 'Layup','Dunk','Other'])
-    if shottype == 'Jump Shot':
-        jumpshottype = st.sidebar.multiselect('', ['Stepback Jump shot', 'Running Pull-Up Jump Shot','Turnaround Fadeaway shot','Fadeaway Jump Shot','Pullup Jump shot','Jump Bank Shot','Jump Shot'])
-        finaltype = jumpshottype
-    elif shottype == 'Layup':
-        layuptype = st.sidebar.multiselect('', ['Layup Shot', 'Running Finger Roll Layup Shot','Cutting Layup Shot','Driving Layup Shot','Running Layup Shot','Alley Oop Layup shot','Tip Layup Shot','Reverse Layup Shot','Driving Reverse Layup Shot','Running Reverse Layup Shot'])
-        finaltype = layuptype
-    elif shottype == 'Dunk':
-        dunktype = st.sidebar.multiselect('', ['Running Dunk Shot', 'Cutting Dunk Shot','Running Reverse Dunk Shot','Running Alley Oop Dunk Shot','Dunk Shot','Tip Dunk Shot'])    
-        finaltype = dunktype
-    elif shottype == 'Other':
-        othertype = st.sidebar.multiselect('', ['Driving Floating Jump Shot', 'Floating Jump shot','Driving Floating Bank Jump Shot','Driving Bank Hook Shot','Driving Hook Shot','Turnaround Hook Shot','Hook Shot'])
-        finaltype = othertype
-Teams = st.sidebar.toggle('Teams')
-if Teams == 1:
-    teamtype = st.sidebar.multiselect('', ['ATL', 'BOS', 'BKN', 'CHA', 'CHI', 'CLE', 'DAL', 'DEN', 'DET', 'GSW', 'HOU', 'IND', 'LAC', 'LAL', 'MEM', 'MIA', 'MIL', 'MIN', 'NOP', 'NYK', 'OKC', 'ORL', 'PHI', 'PHX', 'POR', 'SAC', 'SAS', 'TOR', 'UTA', 'WAS'])
-CourtLoc = st.sidebar.toggle('Court Location')
-if CourtLoc == 1:
-    courtloc = st.sidebar.multiselect('',['Right Side(R)','Left Side(L)','Center(C)','Right Side Center(RC)','Left Side Center(LC)'])
-# Month = st.sidebar.toggle('Month')
-# if Month == 1:
-#     typemonth = st.sidebar.selectbox('',['October','November','December','January','February','March','April','May','June','July'])
-#     if typemonth == 'October':
-#         typemonth = '1'
-#     elif typemonth == 'November':
-#         typemonth = '2'
-#     elif typemonth == 'December':
-#         typemonth = '3'
-#     elif typemonth == 'January':
-#         typemonth = '4'
-#     elif typemonth == 'February':
-#         typemonth = '5'
-#     elif typemonth == 'March':
-#         typemonth = '6'
-#     elif typemonth == 'April':
-#         typemonth = '7'
-#     elif typemonth == 'May':
-#         typemonth = '8'
-#     elif typemonth == 'June':
-#         typemonth = '9'
-#     elif typemonth == 'July':
-#         typemonth = '10'
+animated = st.sidebar.toggle('Animated Shot Charts')
 
-Date = st.sidebar.toggle('Date (YearMonthDay)')
-
-    # User input for player name
-st.markdown('<div style="text-align: center;"><span style="font-size:80px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
-
-# Text input for entering player names
-
-# Fetch all players
-player_list = PlayerList()
-players_df = player_list.players()
-
-# Create a multiselect widget with player options
-player_name = st.selectbox("Select player:", options=players_df["DISPLAY_FIRST_LAST"].tolist(), index=None, help="Select a player to view shot data. Adjust filters on sidebar for specific data.")
-
-# player_names_input = st.text_input("Enter player name (if multiple, separate by commas)")
-if not player_name:
-    st.image("https://i.imgur.com/ljWwIOF.png?1",use_column_width=True)
-
-# Parse the input to extract individual player names
-# player_names = [name.strip() for name in player_names_input.split(',') if name.strip()]
-type2 = ''
-if type == 'Per Game':
-     type2 = 'PerGame'
-elif type == 'Totals':
-        type2 == 'Totals'
-elif type == 'Per 36':
-     type2 == 'Per36'
-
-if player_name:
+if animated == 1:
+    player_list = PlayerList()
+    players_df = player_list.players()
     
-    try:
-            # Call get_id function to retrieve player ID
+    # Create a multiselect widget with player options
+    player_name = st.selectbox("Select player:", options=players_df["DISPLAY_FIRST_LAST"].tolist(), index=None)
+    
+    if player_name:
+    
         PLAYER_ID = get_id(player_name)
-        
-        
-            
-            # Get the range of seasons the selected player has played in
+    
         first_season, last_season = get_player_season_range(PLAYER_ID)
-            # Generate the list of seasons within the range
+                    # Generate the list of seasons within the range
         SEASONS = [f'{season}-{str(int(season)+1)[2:]}' for season in range(int(first_season), int(last_season)+1)]
-            
-        SEASONS = st.multiselect(f'Select season', reversed(SEASONS))
-        playerinfo = Summary(player_id=PLAYER_ID).info()
-        playerheight = playerinfo.loc[playerinfo['DISPLAY_FIRST_LAST'] == player_name, 'HEIGHT'].values[0]
-        playerweight = playerinfo.loc[playerinfo['DISPLAY_FIRST_LAST'] == player_name, 'WEIGHT'].values[0]
-
-        display_player_image(PLAYER_ID,400,f"{player_name}")
-        st.markdown(f'<div style="text-align: center;"><span style="font-size:20px;">Height: {playerheight} Weight: {playerweight}</span></div>', unsafe_allow_html=True)
-
-        for SEASON in SEASONS:
-            if SEASON:
-                player_list = PlayerList(season=SEASON)
-                players_df2 = player_list.players()
-
-                team_name = players_df2.loc[players_df2["DISPLAY_FIRST_LAST"] == player_name, "TEAM_NAME"].values[0]
-                team_city = players_df2.loc[players_df2["DISPLAY_FIRST_LAST"] == player_name, "TEAM_CITY"].values[0]
-                fullteam = f"{team_city} {team_name}"
-
-                game_logs = GameLogs(PLAYER_ID, season=SEASON, season_type=typeseason).logs()
-
-        # Plot game log
-
-                if game_logs is not None and not game_logs.empty:
-                    game_dates = game_logs['GAME_DATE'][::-1]
-                    pts = game_logs['PTS'][::-1]
-
-                plotgames = px.bar(x=game_dates, y=pts, labels={"x": "Game Date", "y": "Points"},width=600, height=300)
-                # st.success(f"Successfully found {player_name.lower().title()}")
-                # Create an empty list to store shot data for all selected seasons
-                all_shot_data = []
-                
-
-                
-                
-                player_summary = Splits(player_id=PLAYER_ID,season=SEASON)
-                player_summarytotals = Splits(player_id=PLAYER_ID,season=SEASON,per_mode=type2,season_type=typeseason,location=typeloc,vs_conference=typeconf,outcome=typeout,game_segment=typeseg)
-                player_headline_stats2 = player_summarytotals.overall()
-
-                # Check if player_summarytotals has data
-                if player_headline_stats2 is not None and len(player_headline_stats2) > 0:
-                    min = round(player_headline_stats2['MIN'].values[0],1)
-                    tov = round(player_headline_stats2['TOV'].values[0],1)
-                    pts = round(player_headline_stats2['PTS'].values[0],1)
-                    ast = round(player_headline_stats2['AST'].values[0],1)
-                    reb = round(player_headline_stats2['REB'].values[0],1)
-                    blk = round(player_headline_stats2['BLK'].values[0],1)
-                    stl = round(player_headline_stats2['STL'].values[0],1)
-                    season_val = player_headline_stats2['GROUP_VALUE'].values[0]
-                    fg_pct = player_headline_stats2['FG_PCT'].values[0]
-                    fg3_pct = player_headline_stats2['FG3_PCT'].values[0]
-                    ft_pct = player_headline_stats2['FT_PCT'].values[0]
-
-
-
-    # Display the variables
-                        
-
-    # Define text colors
-                    pts_color = "blue"
-                    ast_color = "green"
-                    reb_color = "red"
-                    blk_color = "purple"
-                    stl_color = "orange"
-                    fg_pct_color = "violet"
-                    fg3_pct_color = "gray"
-                    ft_pct_color = "gold"
-                    min_color = "cyan"
-                    tov_color = "magenta" 
-
-    # Display text with different colors
-                    font_size_large = "28px"
-
-    # Display text with different colors and font sizes using markdown syntax
-                    col1,col2 = st.columns(2)
-                    with col1:
-                        with st.expander('Player Stats'):
-                            st.markdown(f"<span style='font-size:{font_size_large}'>**Season:** <span style='color:{pts_color}'>{SEASON}</span>", unsafe_allow_html=True)
-                            st.markdown(f"<span style='font-size:{font_size_large}'>**Team:** <span style='color:{tov_color}'>{fullteam}</span>", unsafe_allow_html=True)
-                            st.markdown(f"<span style='font-size:{font_size_large}'>**Pts:** <span style='color:{pts_color}'>{pts}</span>   **Ast:** <span style='color:{ast_color}'>{ast}</span></span>", unsafe_allow_html=True)
-                            st.markdown(f"<span style='font-size:{font_size_large}'>**Reb:** <span style='color:{reb_color}'>{reb}</span>   **Blk:** <span style='color:{blk_color}'>{blk}</span></span>", unsafe_allow_html=True)
-                            st.markdown(f"<span style='font-size:{font_size_large}'>**Stl:** <span style='color:{stl_color}'>{stl}</span>   **<span style='color:{fg_pct_color}'>{round(fg_pct*100,1)}</span> FG%**</span>", unsafe_allow_html=True)
-                            st.markdown(f"<span style='font-size:{font_size_large}'><span style='color:{fg3_pct_color}'>{round(fg3_pct*100,1)} </span>3P%   **<span style='color:{ft_pct_color}'>{round(ft_pct*100,1)} </span>FT%**</span>", unsafe_allow_html=True)
-                            st.markdown(f"<span style='font-size:{font_size_large}'>**Tov:** <span style='color:{tov_color}'>{tov}</span>   **Min:** <span style='color:{min_color}'>{min}</span></span>", unsafe_allow_html=True)
-
-                else:
-                    st.error(f'No data found for {player_name.lower().title()} in {SEASON}. Check season: shot chart data before 1996 is unavailable')
-                with col2:
-                    with st.expander('Game Log'):
-                        st.plotly_chart(plotgames)
-
-
-            col1, col,col2 = st.columns(3)
-
-
-
-            # Create ShotChart object
-        
-        all_shot_data = pd.DataFrame()
-        for SEASON in SEASONS:
-
-            shot_chart = ShotChart(PLAYER_ID, season=SEASON,game_segment=typeseg,clutch_time=typeclutch,season_type=typeseason,vs_conf=typeconf,location=typeloc,outcome=typeout,context_measure=Stat2,ahead_behind=typeaheadbehind)
-                # Fetch shot chart data
-            shot_data = shot_chart.shot_chart()
-            all_shot_data = pd.concat([all_shot_data, shot_data], ignore_index=True)
-
-
-        shootperc = 0
-                # Plot shot chart on basketball court
-        plt.figure(figsize=(13, 8))
-        ax = plt.gca()
-        if Date == 1:
-                date = all_shot_data['GAME_DATE'].unique()
-                datetype = st.sidebar.multiselect('', all_shot_data['GAME_DATE'].unique())
-                all_shot_data = all_shot_data[all_shot_data['GAME_DATE'].isin(datetype)]
-        if Stat == 'MISSES':
-                all_shot_data = all_shot_data[all_shot_data['SHOT_MADE_FLAG'] == 0]
-        if Quarters:
-                all_shot_data = all_shot_data[all_shot_data['PERIOD'] == int(typequart)]
-        if CourtLoc:
-                all_shot_data = all_shot_data[all_shot_data['SHOT_ZONE_AREA'].isin(courtloc)]
-        if Teams:
-                    all_shot_data = all_shot_data[(all_shot_data['VTM'].isin(teamtype)) | (all_shot_data['HTM'].isin(teamtype))]
-        if ShotType:  # Check if ShotType checkbox is selected
-                all_shot_data = all_shot_data[all_shot_data['ACTION_TYPE'].isin(finaltype)]
-                # Plot makes in green
-        if ShotDist == 1:
-                all_shot_data = all_shot_data[(all_shot_data['SHOT_DISTANCE'] >= shotdistance_min) & (all_shot_data['SHOT_DISTANCE'] <= shotdistance_max)]
                     
-
-        
-        total_makes = len(all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 1])
-        total_misses = len(all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0])
-        total_shots = total_makes + total_misses
-        if total_shots != 0:
-                shooting_percentage = round((total_makes / total_shots) * 100, 1)
-        else: 
-                shooting_percentage = 0
-        shootperc = shooting_percentage
-        #20211019
-
-# Create trace for makes
-# Concatenate text labels for makes and misses
-        text_all = (
-all_shot_data["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]])) + ': ' +
-all_shot_data["HTM"] + ' VS ' + all_shot_data["VTM"] + ' | ' +
-all_shot_data['SHOT_TYPE'].str.replace(' Field Goal', '') + ' - ' +  # Remove 'Field Goal'
-all_shot_data["ACTION_TYPE"] + ' (' +
-all_shot_data["SHOT_DISTANCE"].astype(str) + ' ft)' + ' | '  + all_shot_data["PERIOD"].astype(str) + 'Q' + ' - ' +
-all_shot_data["MINUTES_REMAINING"].astype(str) + ':' +
-all_shot_data["SECONDS_REMAINING"].astype(str)
-)
-
-        hover_template = (
-            "<b>Date</b>: %{customdata[0]}<br>" +
-            "<b>Game</b>: %{customdata[1]}<br>" +
-            "<b>Shot</b>: %{customdata[2]}<br>" +
-            "<b>Shot Zone</b>: %{customdata[6]}<br>" +
-            "<b>Distance</b>: %{customdata[5]}<br>"+
-            "<b>Period</b>: %{customdata[3]}<br>" +
-            "<b>Time</b>: %{customdata[4]}" 
+        SEASON = st.selectbox(f'Select season', reversed(SEASONS))
+    
+        shotchart = ShotChart(player_id=PLAYER_ID,season=SEASON).shot_chart()
+        games = []
+        games = []
+        added_game_ids = set()
+    
+    # Iterate through each row of the DataFrame
+        for index, row in shotchart.iterrows():
+            game_id = row['GAME_ID']
+            hometeam = row['HTM']
+            awayteam = row['VTM']
+            datestr = row['GAME_DATE']
+            date = datetime.strptime(datestr, '%Y%m%d').strftime('%m/%d/%Y')
             
-        )
-
-        # Assuming shot_data is already defined as per your provided data
-        # Extracting individual components from text_all and assigning them to customdata
-        all_shot_data['GAME_DATE_NEW'] = all_shot_data["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]]))
-        all_shot_data['MATCH'] = all_shot_data["HTM"] + ' VS ' + all_shot_data["VTM"]
-        all_shot_data['SHOT'] = all_shot_data['SHOT_TYPE'].str.replace(' Field Goal', '') + ' - ' + all_shot_data["ACTION_TYPE"]
-        all_shot_data['PERIOD_TIME'] = all_shot_data["PERIOD"].astype(str) + 'Q'
-        all_shot_data['TIME'] = all_shot_data["MINUTES_REMAINING"].astype(str) + ':' + all_shot_data["SECONDS_REMAINING"].astype(str)
-        all_shot_data['DISTANCE'] = all_shot_data['SHOT_DISTANCE'].astype(str) + 'ft'
-        all_shot_data['SHOT_ZONE'] = all_shot_data['SHOT_ZONE_AREA'] + ' - ' + all_shot_data['SHOT_ZONE_BASIC']
-        # Create trace for makes
-        make_trace = go.Scatter(
-            x=-(all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"]),
-            y=all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"],
-            mode='markers',
-            marker=dict(color='rgba(0, 128, 0, 0.6)', size=10),
-            name='Made Shot ✅',
-            customdata=all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 1][['GAME_DATE_NEW', 'MATCH', 'SHOT', 'PERIOD_TIME','TIME','DISTANCE','SHOT_ZONE']],  # Use customdata for makes only
-            hoverinfo='text',  # Set hoverinfo to text
-            hovertemplate=hover_template
-        )
-
-        # Create trace for misses
-        miss_trace = go.Scatter(
-            x=-(all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"]),
-            y=all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"],
-            mode='markers',
-            marker=dict(symbol='x', color='rgba(255, 0, 0, 0.6)', size=10),
-            name='Missed Shot ❌',
-            customdata=all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0][['GAME_DATE_NEW', 'MATCH', 'SHOT', 'PERIOD_TIME','TIME','DISTANCE','SHOT_ZONE']],  # Use customdata for misses only
-            hoverinfo='text',  # Set hoverinfo to text
-            hovertemplate=hover_template
-        )
-        fig2trace = go.Scatter(
-                x=-(all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"]),
-    y=all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"],
-    mode='markers',
-    marker=dict(symbol='hexagon', color='rgba(255, 0, 0, 0.6)', size=10),
-    name='Shots',
-    text=text_all[all_shot_data["SHOT_MADE_FLAG"] == 0],  # Use concatenated text for misses only
-    hoverinfo='text'
-        )
-
-# Create layout
+            # Check if game_id has already been added
+            if game_id not in added_game_ids:
+                desc = f"{hometeam} vs {awayteam} | {date} | {game_id}"
+                games.append(desc)
+                added_game_ids.add(game_id)
+        datetype = st.selectbox('Select game', [''] + games)
+        speed = st.slider('Speed',-1,5)
+        if speed == 5:
+            sp = 0
+        elif speed == 4:
+            sp = 1
+        elif speed == 3:
+            sp = 2
+        elif speed == 2:
+            sp = 3
+        elif speed == 1:
+            sp = 4
+        elif speed == 0:
+            sp = 5
+        if speed >=0 and datetype:
+            parts = datetype.split(' | ')
+            id = parts[-1]
+            shotchart = shotchart[shotchart['GAME_ID'] == id]
     
-        layout = go.Layout(
-    hovermode='closest',
-    xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-260, 260]),
-    yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-60, 474]),
-    plot_bgcolor='#D2B48C',  # Set background color to the desired color
+      
+            display_player_image(PLAYER_ID,300,player_name)
+            # date = {shotchart["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]]))}
+            st.subheader(f"{shotchart['HTM'].iloc[0]} vs {shotchart['VTM'].iloc[0]} - {shotchart['PLAYER_NAME'].iloc[0]} Shot Chart")
     
-    width=650,  # Set the width of the background
-    height=718,  # Set the height of the background
-    autosize=False,
-    legend=dict(x=0.98, y=1, xanchor='right', yanchor='top', bgcolor='rgba(0,0,0,0)',font=dict(color='black'), bordercolor='black', borderwidth=0),
-    margin=dict(l=0, r=0, t=0, b=0)# Customize legend
-)
-
-# Create figure
-
-        fig = go.Figure()
-        draw_plotly_court(fig)
-        fig.update_layout(layout)
-
-        fig3 = go.Figure()
-
+            fig = go.Figure()
+    
+            # Draw the court
+            draw_plotly_court(fig)
+    
+    
+            hover_template = (
+                        "<b>Date</b>: %{customdata[0]}<br>" +
+                        "<b>Game</b>: %{customdata[1]}<br>" +
+                        "<b>Shot</b>: %{customdata[2]}<br>" +
+                        "<b>Shot Zone</b>: %{customdata[6]}<br>" +
+                        "<b>Distance</b>: %{customdata[5]}<br>"+
+                        "<b>Period</b>: %{customdata[3]}<br>" +
+                        "<b>Time</b>: %{customdata[4]}" 
+                        
+                    )
+    
+                    # Assuming shot_data is already defined as per your provided data
+                    # Extracting individual components from text_all and assigning them to customdata
+            shotchart['GAME_DATE_NEW'] = shotchart["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]]))
+            shotchart['MATCH'] = shotchart["HTM"] + ' VS ' + shotchart["VTM"]
+            shotchart['SHOT'] = shotchart['SHOT_TYPE'].str.replace(' Field Goal', '') + ' - ' + shotchart["ACTION_TYPE"]
+            shotchart['PERIOD_TIME'] = shotchart["PERIOD"].astype(str) + 'Q'
+            shotchart['TIME'] = shotchart["MINUTES_REMAINING"].astype(str) + ':' + shotchart["SECONDS_REMAINING"].astype(str)
+            shotchart['DISTANCE'] = shotchart['SHOT_DISTANCE'].astype(str) + 'ft'
+            shotchart['SHOT_ZONE'] = shotchart['SHOT_ZONE_AREA'] + ' - ' + shotchart['SHOT_ZONE_BASIC']
+            # Create trace for makes
+            make_trace = go.Scatter(
+                x=[],
+                y=[],
+                mode='markers',
+                marker=dict(color='rgba(0, 128, 0, 0.6)', size=15),
+                name='Made Shot ✅',
+                customdata=shotchart[shotchart["SHOT_MADE_FLAG"] == 1][['GAME_DATE_NEW', 'MATCH', 'SHOT', 'PERIOD_TIME','TIME','DISTANCE','SHOT_ZONE']],  # Use customdata for makes only
+                hoverinfo='text',  # Set hoverinfo to text
+                hovertemplate=hover_template
+            )
+    
+            # Create trace for misses
+            miss_trace = go.Scatter(
+                x=[],
+                y=[],
+                mode='markers',
+                marker=dict(symbol='x', color='rgba(255, 0, 0, 0.6)', size=15),
+                name='Missed Shot ❌',
+                customdata=shotchart[shotchart["SHOT_MADE_FLAG"] == 0][['GAME_DATE_NEW', 'MATCH', 'SHOT', 'PERIOD_TIME','TIME','DISTANCE','SHOT_ZONE']],  # Use customdata for misses only
+                hoverinfo='text',  # Set hoverinfo to text
+                hovertemplate=hover_template
+            )
+    
+    
+    
+            # Initialize the plot with empty traces for 'make' and 'miss' shots
+            fig.add_trace(make_trace)
+            fig.add_trace(miss_trace)
+    
+            fig.update_layout(
+                xaxis=dict(range=[-250, 250], showgrid=False, zeroline=False),
+                yaxis=dict(range=[-50, 400], showgrid=False, zeroline=False),
+                title='Animated NBA Shot Chart',
+                height=600,  # Adjust the height of the plot
+                width=600 # Adjust the width of the plot
+            )
+            fig.update_yaxes(scaleanchor='x', scaleratio=1)
+    
+            headers = {
+                'Host': 'stats.nba.com',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0',
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'x-nba-stats-origin': 'stats',
+                'x-nba-stats-token': 'true',
+                'Connection': 'keep-alive',
+                'Referer': 'https://stats.nba.com/',
+                'Pragma': 'no-cache',
+                'Cache-Control': 'no-cache'
+            }
+    
+    
+            plot_placeholder = st.empty()
+    
+            # Create a placeholder for the message
+            message_placeholder = st.empty()
+            message2 = st.empty()
+            message3 = st.empty()
+            messages = []
+            videos = []
+    
+            if 'paused' not in st.session_state:
+                st.session_state.paused = False
+            if 'current_index' not in st.session_state:
+                st.session_state.current_index = 0
+    
+            # Define play and pause buttons
+            
+            if st.button("Replay"):
+                st.session_state.paused = False
         
-# Add basketball court lines as shapes
-        court_shapes=[
-            dict(
-                type="rect", x0=-250, y0=-52.5, x1=250, y1=417.5,
-                line=dict(color='white', width=2)
-                # fillcolor='#333333',
-                
-            ),
-            dict(
-                type="rect", x0=-80, y0=-52.5, x1=80, y1=137.5,
-                line=dict(color='white', width=2)
-                # fillcolor='#333333',
-                
-            ),
-            dict(
-                type="rect", x0=-60, y0=-52.5, x1=60, y1=137.5,
-                line=dict(color='white', width=2)
-                # fillcolor='#333333',
-                
-            ),
-            dict(
-                type="circle", x0=-60, y0=77.5, x1=60, y1=197.5, xref="x", yref="y",
-                line=dict(color='white', width=2)
-                # fillcolor='#dddddd',
-            ),
-            dict(
-                type="line", x0=-60, y0=137.5, x1=60, y1=137.5,
-                line=dict(color='white', width=2)
-            ),
-
-            dict(
-                type="rect", x0=-2, y0=-7.25, x1=2, y1=-12.5,
-                line=dict(color="#ec7607", width=2),
-                fillcolor='#ec7607',
-            ),
-            dict(
-                type="circle", x0=-7.5, y0=-7.5, x1=7.5, y1=7.5, xref="x", yref="y",
-                line=dict(color="#ec7607", width=2),
-            ),
-            dict(
-                type="line", x0=-30, y0=-12.5, x1=30, y1=-12.5,
-                line=dict(color="#ec7607", width=2),
-            ),
-
-            dict(type="path",
-                 path=ellipse_arc(a=40, b=40, start_angle=0, end_angle=np.pi),
-                 line=dict(color='white', width=2)),
-            dict(type="path",
-                 path=ellipse_arc(a=237.5, b=237.5, start_angle=0.386283101, end_angle=np.pi - 0.386283101),
-                 line=dict(color='white', width=2)),
-            dict(
-                type="line", x0=-220, y0=-52.5, x1=-220, y1=89.47765084,
-                line=dict(color='white', width=2)
-            ),
-            dict(
-                type="line", x0=-220, y0=-52.5, x1=-220, y1=89.47765084,
-                line=dict(color='white', width=2)
-            ),
-            dict(
-                type="line", x0=220, y0=-52.5, x1=220, y1=89.47765084,
-                line=dict(color='white', width=2)
-            ),
-
-            dict(
-                type="line", x0=-250, y0=227.5, x1=-220, y1=227.5,
-                line=dict(color='white', width=2)
-            ),
-            dict(
-                type="line", x0=250, y0=227.5, x1=220, y1=227.5,
-                line=dict(color='white', width=2)
-            ),
-            dict(
-                type="line", x0=-90, y0=17.5, x1=-80, y1=17.5,
-                line=dict(color='white', width=2)
-            ),
-            dict(
-                type="line", x0=-90, y0=27.5, x1=-80, y1=27.5,
-                line=dict(color='white', width=2)
-            ),
-            dict(
-                type="line", x0=-90, y0=57.5, x1=-80, y1=57.5,
-                line=dict(color='white', width=2)
-            ),
-            dict(
-                type="line", x0=-90, y0=87.5, x1=-80, y1=87.5,
-                line=dict(color='white', width=2)
-            ),
-            dict(
-                type="line", x0=90, y0=17.5, x1=80, y1=17.5,
-                line=dict(color='white', width=2)
-            ),
-            dict(
-                type="line", x0=90, y0=27.5, x1=80, y1=27.5,
-                line=dict(color='white', width=2)
-            ),
-            dict(
-                type="line", x0=90, y0=57.5, x1=80, y1=57.5,
-                line=dict(color='white', width=2)
-            ),
-            dict(
-                type="line", x0=90, y0=87.5, x1=80, y1=87.5,
-                line=dict(color='white', width=2)
-            ),
-
-            dict(type="path",
-                 path=ellipse_arc(y_center=417.5, a=60, b=60, start_angle=-0, end_angle=-np.pi),
-                 line=dict(color='white', width=2)),
-
-        ]
-        court_shapes2 = [
-    dict(
-            type = 'line',
-            x0=256,
-            x1=-256,
-            y0=0,
-            y1=0,
-            line=dict(color='white', width=2.5)
-    ),
-        dict(
-            type = 'line',
-            x1=256,
-            x0=256,
-            y0=515,
-            y1 = 0,
-            line=dict(color='white', width=2.5)
-    ),
-    dict(
-            type = 'line',
-            x1=-256,
-            x0=-256,
-            y0=515,
-            y1 = 0,
-            line=dict(color='white', width=2.5)
-    ),
-    dict(
-        type = 'circle',
-        x1 = 60,
-        x0 = -60,
-        y0=410,
-        y1 = 535,
-        line=dict(color='white', width=2.5)
-    ),
-    dict(
-            type = 'line',
-            y0 = 469,
-            y1 = 469,
-            x1 = -255,
-            x0 = 255,
-            line=dict(color='white', width=2.5)
-    ),
-
     
-    dict(
-        type='line',
-        x0=-30,
-        y0=40,
-        y1=40,
-        x1=30,
-        line=dict(color='white', width=2.5)
-
-    ),
-    dict(
-        type='line',
-        x0=-223,
-        y0=0,
-        x1=-223,
-        y1=140,
-        line=dict(color='white', width=2.5)
-    ),
-    dict(
-        type='line',
-        x0=220,
-        y0=0,
-        x1=220,
-        y1=140,
-        line=dict(color='white', width=2.5)
-    ),
-    dict(
-        type='path',
-        path='M -225,132,100,150,160,170,180,190 C -200,320 150,375 219,140',
-        line=dict(color='white', width=2.5)
-    ),
-    dict(
-        type='line',
-        x0=-80,
-        y0=0,
-        x1=-80,
-        y1=190,
-        line=dict(color='white', width=2.5)
-    ),
-    dict(
-        type='line',
-        x0=80,
-        y0=0,
-        x1=80,
-        y1=190,
-        line=dict(color='white', width=2.5)
-    ),
-    dict(
-        type='line',
-        x0=-60,
-        y0=0,
-        x1=-60,
-        y1=190,
-        line=dict(color='white', width=2.5)
-    ),
-    dict(
-        type='line',
-        x0=60,
-        y0=0,
-        x1=60,
-        y1=190,
-        line=dict(color='white', width=2.5)
-    ),
-    dict(
-        type='line',
-        x0=-80,
-        y0=190,
-        x1=80,
-        y1=190,
-        line=dict(color='white', width=2.5)
-    ),
-    dict(
-        type='circle',
-        xref='x',
-        yref='y',
-        x0=-60,
-        y0=130,
-        x1=60,
-        y1=245,
-        line=dict(color='white', width=2.5)
-    ),
-    dict(
-        type='circle',
-        xref='x',
-        yref='y',
-        x0=-15,
-        y0=45,
-        x1=15,
-        y1=75,
-        line=dict(color='white', width=2.5)
-    )
-]
-
-# Set aspect ratio
-        # fig.update_layout(shapes=court_shapes)
-        fig.add_trace(make_trace)
-        fig.add_trace(miss_trace)
-
-        fig.update_yaxes(scaleanchor='x', scaleratio=1)
-
-# Update hover labels
-        fig.update_traces(hoverlabel=dict(bgcolor='black', font_size=12))
-        
-        fig3.update_layout(shapes=court_shapes)
-        fig3.add_trace(fig2trace)
-        fig3.update_traces(hoverlabel=dict(bgcolor='black', font_size=12))
-        fig3.update_yaxes(scaleanchor='x', scaleratio=1)
-
-
-
-
-
-# Display the plot
-                    # Plot hexbin with custom colormap
-        fig2 = plt.figure(figsize=(12,11))
-        ax = fig2.add_axes([0, 0, 1, 1])
-        hb = ax.hexbin(-(all_shot_data['LOC_X']), all_shot_data['LOC_Y'], gridsize=(30, 30), extent=(-240, 240, -30, 370), bins='log', cmap='Blues',edgecolors='none')
-        ax = draw_court(outer_lines=True)
-        legend_elements = [
-            plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='Less Shots', markerfacecolor='white', markersize=20),
-            plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='More Shots', markerfacecolor='blue', markersize=20)
-        ]
-        plt.legend(handles=legend_elements, loc='upper right',framealpha=0) 
-
-        # Create hexbin plot with Plotly
-        fig5 = go.Figure()
-        fig5 = px.density_heatmap(all_shot_data, x=-(all_shot_data['LOC_X']), y=all_shot_data['LOC_Y'], nbinsx=35, nbinsy=55, color_continuous_scale='Hot')
-
-
-
-        # Add hover labels
-        fig5.update_traces(hovertemplate='Shots: %{z}<extra></extra>',showscale=False)
-
-        # Customize layout
-        fig5.update_layout(
-            title='Shot Density',
-            xaxis_title='',
-            yaxis_title='',
-        xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-252, 260]),
-        yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-70, 475]),
-        plot_bgcolor='black',
-        margin=dict(l=0, r=0, t=0, b=0),
-            width=800,  # Set the width of the background
-        height=765,  # Set the height of the background
-        autosize=False,
-        coloraxis=dict(
-    showscale=False,
-    cmin=1,
-    cmax=25
-)
-
-        )
-        fig5.update_layout(shapes=court_shapes)
-        fig5.update_yaxes(scaleanchor='x', scaleratio=1)
-
-       
-
-        # fig5.update_coloraxes(showscale=False)
-
-
-        # fig5.update_coloraxes(showscale=False)
-
-
-        # Show plot
-# Display the image in Streamlit
-                    # Customize color bar legend
-        plottype = st.selectbox('Plot Type',['Make/Miss','Hexbin Plot','Heat Map','KDE Plot','FG% and Frequency'])
-        if plottype == 'Make/Miss':
-            st.plotly_chart(fig,use_container_width=True)
-        elif plottype == 'Hexbin Plot':
-            fig2.patch.set_visible(False)
-            st.pyplot(fig2)
-        elif plottype =='Heat Map':
-            st.plotly_chart(fig5,use_container_width=True)
-        elif plottype =='FG% and Frequency':
-             st.pyplot(frequency_chart(shot_data))
+            # Loop through each shot and update the plot
+            total_makes = 0
+            total_misses = 0
+            totalpoints = 0
+            if datetype:
+                for i, shot in shotchart.iterrows():
+                    event_id = shot['GAME_EVENT_ID']
+                    game_id = shot['GAME_ID']
+                    url = 'https://stats.nba.com/stats/videoeventsasset?GameEventID={}&GameID={}'.format(
+                            event_id, game_id)
+                    r = requests.get(url, headers=headers)
+                    if r.status_code == 200:
+                        json = r.json()
+                        video_urls = json['resultSets']['Meta']['videoUrls']
+                        playlist = json['resultSets']['playlist']
+                        video_event = {'video': video_urls[0]['lurl'], 'desc': playlist[0]['dsc']}
+                        video = video_urls[0]['lurl']
+                    
+                    if shot['SHOT_MADE_FLAG'] == 1:
+                        if shot['SHOT_TYPE'] == '3PT Field Goal':
+                            totalpoints = totalpoints+3
+                        else:
+                            totalpoints = totalpoints+2
+                        total_makes = total_makes+1
+                        fig.data[0].x += (shot['LOC_X'],)
+                        fig.data[0].y += (shot['LOC_Y'],)
+                        message = f"✅ {shot['EVENT_TYPE']} - {shot['SHOT_TYPE']}: {shot['ACTION_TYPE']} ({shot['SHOT_DISTANCE']} ft) {shot['PERIOD']}Q - {shot['MINUTES_REMAINING']}:{shot['SECONDS_REMAINING']}"
+                    else:
+                        total_misses = total_misses+1
+                        fig.data[1].x += (shot['LOC_X'],)
+                        fig.data[1].y += (shot['LOC_Y'],)
+                        message = f"❌ {shot['EVENT_TYPE']} - {shot['SHOT_TYPE']}: {shot['ACTION_TYPE']} ({shot['SHOT_DISTANCE']} ft) {shot['PERIOD']}Q - {shot['MINUTES_REMAINING']}:{shot['SECONDS_REMAINING']}"
+                    messages.append(message) 
+                    videos.append(video)
+                    videos.append(message) # Insert the new message at the beginning of the list
+    
+    
+    
+                    # Update the plot in the placeholder
+                    plot_placeholder.plotly_chart(fig, use_container_width=True)
+                    
+                    # Display the message
+                    message_placeholder.text(message)
+                    if message == None:
+                        st.text('')
+                    else:
+                        message_placeholder.text(f'Latest shot: {message}')
+                        message2.text(f'{total_makes}/{total_misses+total_makes} - {round((total_makes / (int(total_makes+total_misses))) * 100, 1)}% Points (Without FTs): {totalpoints}')
+                    # Pause for a brief moment to create the animation effect
+                    time.sleep(sp)  # Adjust the sleep time for your preferred speed
+                
+                with st.expander('All Shots'):
+                    for i, vid in enumerate(videos):
+                        if i % 2 == 0:  # Check if index i is even
+                            st.video(vid)
+                        else:
+                            st.text(vid)
         else:
-            plt.clf()
-            cmap = 'gist_heat_r'
-            fig6 = sns.kdeplot(x=-(shot_data['LOC_X']), y=shot_data['LOC_Y'], cmap=cmap, fill=True, n_levels=50)
-            draw_court2(fig6,outer_lines=True)
-            # Set the background color to white
-            fig6.set_facecolor('black')
-            fig6.set_xlim(250, -250)
-            fig6.set_ylim(-47.5, 422.5)
-            fig6.set_axis_off()
-            st.pyplot(fig6.figure)
-        st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">{total_makes}/{total_shots} - {shootperc}%</span></div>', unsafe_allow_html=True)
+            if speed < 0 and datetype != '':
+                st.error('Please pick a positive speed')
+            elif datetype == '' and speed != -1:
+                st.error('Please select a game')
+            else:
+                st.error('Please select a game and pick a positive speed')
+else:
 
-        
-                # st.image(img_buffer, use_column_width=False, width=345)  
-
+    type = st.sidebar.selectbox('Player Stats',['Per Game','Totals'])
+    # shottrack = st.sidebar.selectbox('Shot Tracking Stats',['Overall','General','Shot Clock','Dribbles','Closest Defender','Closest Defender Long','Touch Time'])
+    Stat = st.sidebar.selectbox('',['FGA','MAKES', 'MISSES','3PA','FB PTS','PTS OFF TOV','2ND CHANCE PTS','PF'])
+    if Stat == 'MAKES':
+        Stat2 = 'PTS'
+    elif Stat == 'MISSES':
+        Stat2 = 'FGA'
+    elif Stat == 'FGA':
+        Stat2 = 'FGA'
+    elif Stat == '3PA':
+        Stat2 = 'FG3A'
+    elif Stat == 'FB PTS':
+        Stat2 = 'PTS_FB'
+    elif Stat == 'PTS OFF TOV':
+        Stat2 = 'PTS_OFF_TOV'
+    elif Stat == '2ND CHANCE PTS':
+        Stat2 = 'PTS_2ND_CHANCE'
+    elif Stat == 'PF':
+        Stat2 = 'PF'
+    GameSegment = st.sidebar.toggle('Game Segment')
+    if GameSegment == 1:
+        typeseg = st.sidebar.selectbox('',['First Half', 'Second Half', 'Overtime'])
+    else:
+        typeseg = None
+    Quarters = st.sidebar.toggle('Quarters')
+    if Quarters:
+        typequart = st.sidebar.selectbox('',['1','2','3','4'])
+    Clutch_Time = st.sidebar.toggle('Clutch Time')
+    if Clutch_Time == 1:
+        typeclutch = st.sidebar.selectbox('', ['Last 5 Minutes', 'Last 4 Minutes','Last 3 Minutes','Last 2 Minutes','Last 1 Minute','Last 30 Seconds', 'Last 10 Seconds'])
+    else:
+        typeclutch = None
+    Playoffs = st.sidebar.toggle('Playoffs')
+    if Playoffs == 1:
+        typeseason = 'Playoffs'
+    else:
+        typeseason = "Regular Season"
+    Conference = st.sidebar.toggle('Conference')
+    if Conference == 1:
+        typeconf = st.sidebar.selectbox('',['East', 'West'])
+    else:
+        typeconf = None
+    Location = st.sidebar.toggle('Location')
+    if Location == 1:
+        typeloc = st.sidebar.selectbox('',['Home', 'Road'])
+    else:
+        typeloc = None
+    Outcome = st.sidebar.toggle('Outcome')
+    if Outcome == 1:
+        typeout = st.sidebar.selectbox('',['W', 'L'])
+    else:
+        typeout = None
+    AheadBehind = st.sidebar.toggle('Ahead/Behind')
+    if AheadBehind == 1:
+        typeaheadbehind = st.sidebar.selectbox('',['Behind or Tied','Ahead or Tied'])
+    else:
+        typeaheadbehind = None
+    ShotDist = st.sidebar.toggle('Shot Distance')
+    if ShotDist == 1:
+        shotdistbool = True
+        # shotdistance = st.sidebar.slider("Shot Distance", 0, 40)
+        shotdistance_min, shotdistance_max = st.sidebar.slider("Shot Distance", 0, 40, (0, 40))
+    ShotType = st.sidebar.toggle('Shot Type')
+    if ShotType == 1:
+        shottypebool = True
+        shottype = st.sidebar.selectbox('', ['Jump Shot', 'Layup','Dunk','Other'])
+        if shottype == 'Jump Shot':
+            jumpshottype = st.sidebar.multiselect('', ['Stepback Jump shot', 'Running Pull-Up Jump Shot','Turnaround Fadeaway shot','Fadeaway Jump Shot','Pullup Jump shot','Jump Bank Shot','Jump Shot'])
+            finaltype = jumpshottype
+        elif shottype == 'Layup':
+            layuptype = st.sidebar.multiselect('', ['Layup Shot', 'Running Finger Roll Layup Shot','Cutting Layup Shot','Driving Layup Shot','Running Layup Shot','Alley Oop Layup shot','Tip Layup Shot','Reverse Layup Shot','Driving Reverse Layup Shot','Running Reverse Layup Shot'])
+            finaltype = layuptype
+        elif shottype == 'Dunk':
+            dunktype = st.sidebar.multiselect('', ['Running Dunk Shot', 'Cutting Dunk Shot','Running Reverse Dunk Shot','Running Alley Oop Dunk Shot','Dunk Shot','Tip Dunk Shot'])    
+            finaltype = dunktype
+        elif shottype == 'Other':
+            othertype = st.sidebar.multiselect('', ['Driving Floating Jump Shot', 'Floating Jump shot','Driving Floating Bank Jump Shot','Driving Bank Hook Shot','Driving Hook Shot','Turnaround Hook Shot','Hook Shot'])
+            finaltype = othertype
+    Teams = st.sidebar.toggle('Teams')
+    if Teams == 1:
+        teamtype = st.sidebar.multiselect('', ['ATL', 'BOS', 'BKN', 'CHA', 'CHI', 'CLE', 'DAL', 'DEN', 'DET', 'GSW', 'HOU', 'IND', 'LAC', 'LAL', 'MEM', 'MIA', 'MIL', 'MIN', 'NOP', 'NYK', 'OKC', 'ORL', 'PHI', 'PHX', 'POR', 'SAC', 'SAS', 'TOR', 'UTA', 'WAS'])
+    CourtLoc = st.sidebar.toggle('Court Location')
+    if CourtLoc == 1:
+        courtloc = st.sidebar.multiselect('',['Right Side(R)','Left Side(L)','Center(C)','Right Side Center(RC)','Left Side Center(LC)'])
+    # Month = st.sidebar.toggle('Month')
+    # if Month == 1:
+    #     typemonth = st.sidebar.selectbox('',['October','November','December','January','February','March','April','May','June','July'])
+    #     if typemonth == 'October':
+    #         typemonth = '1'
+    #     elif typemonth == 'November':
+    #         typemonth = '2'
+    #     elif typemonth == 'December':
+    #         typemonth = '3'
+    #     elif typemonth == 'January':
+    #         typemonth = '4'
+    #     elif typemonth == 'February':
+    #         typemonth = '5'
+    #     elif typemonth == 'March':
+    #         typemonth = '6'
+    #     elif typemonth == 'April':
+    #         typemonth = '7'
+    #     elif typemonth == 'May':
+    #         typemonth = '8'
+    #     elif typemonth == 'June':
+    #         typemonth = '9'
+    #     elif typemonth == 'July':
+    #         typemonth = '10'
     
-        # for SEASON in SEASONS:
-        #     shotfull = ShotTracking(PLAYER_ID, season=SEASON, season_type=typeseason)
-        #     if shottrack == 'Overall':
-        #             shots = shotfull.overall()
-        #     elif shottrack == 'General':
-        #             shots = shotfull.general()
-        #     elif shottrack == 'Shot Clock':
-        #             shots = shotfull.shot_clock()
-        #     elif shottrack == 'Dribbles':
-        #             shots = shotfull.dribbles()
-        #     elif shottrack == 'Closest Defender':
-        #             shots = shotfull.closest_defender()
-        #     elif shottrack == 'Closest Defender Long':
-        #             shots = shotfull.closest_defender_long()
-        #     elif shottrack == 'Touch Time':
-        #             shots = shotfull.touch_time()
-        #     shots.drop(columns=['PLAYER_ID','SORT_ORDER','PLAYER_NAME_LAST_FIRST','GP','G'], inplace=True)
-        #     st.write(shots)
-        #     st.write('')
-
+    Date = st.sidebar.toggle('Date (YearMonthDay)')
+    
+        # User input for player name
+    st.markdown('<div style="text-align: center;"><span style="font-size:80px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
+    
+    # Text input for entering player names
+    
+    # Fetch all players
+    player_list = PlayerList()
+    players_df = player_list.players()
+    
+    # Create a multiselect widget with player options
+    player_name = st.selectbox("Select player:", options=players_df["DISPLAY_FIRST_LAST"].tolist(), index=None, help="Select a player to view shot data. Adjust filters on sidebar for specific data.")
+    
+    # player_names_input = st.text_input("Enter player name (if multiple, separate by commas)")
+    if not player_name:
+        st.image("https://i.imgur.com/ljWwIOF.png?1",use_column_width=True)
+    
+    # Parse the input to extract individual player names
+    # player_names = [name.strip() for name in player_names_input.split(',') if name.strip()]
+    type2 = ''
+    if type == 'Per Game':
+         type2 = 'PerGame'
+    elif type == 'Totals':
+            type2 == 'Totals'
+    elif type == 'Per 36':
+         type2 == 'Per36'
+    
+    if player_name:
         
-                # st.plotly_chart(fig3)
-                
-        
-
+        try:
+                # Call get_id function to retrieve player ID
+            PLAYER_ID = get_id(player_name)
             
-            # st.sidebar.header(f'{season1}: 0/{total_misses} - {shooting_percentage}%')
-    except PlayerNotFoundException as e:
-        st.error(str(e))
-    # else:
-    #     st.image("https://static.vecteezy.com/system/resources/thumbnails/013/861/222/small/silhouette-of-basketball-player-with-ball-shooting-dunk-free-vector.jpg",use_column_width=True)
-
+            
+                
+                # Get the range of seasons the selected player has played in
+            first_season, last_season = get_player_season_range(PLAYER_ID)
+                # Generate the list of seasons within the range
+            SEASONS = [f'{season}-{str(int(season)+1)[2:]}' for season in range(int(first_season), int(last_season)+1)]
+                
+            SEASONS = st.multiselect(f'Select season', reversed(SEASONS))
+            playerinfo = Summary(player_id=PLAYER_ID).info()
+            playerheight = playerinfo.loc[playerinfo['DISPLAY_FIRST_LAST'] == player_name, 'HEIGHT'].values[0]
+            playerweight = playerinfo.loc[playerinfo['DISPLAY_FIRST_LAST'] == player_name, 'WEIGHT'].values[0]
+    
+            display_player_image(PLAYER_ID,400,f"{player_name}")
+            st.markdown(f'<div style="text-align: center;"><span style="font-size:20px;">Height: {playerheight} Weight: {playerweight}</span></div>', unsafe_allow_html=True)
+    
+            for SEASON in SEASONS:
+                if SEASON:
+                    player_list = PlayerList(season=SEASON)
+                    players_df2 = player_list.players()
+    
+                    team_name = players_df2.loc[players_df2["DISPLAY_FIRST_LAST"] == player_name, "TEAM_NAME"].values[0]
+                    team_city = players_df2.loc[players_df2["DISPLAY_FIRST_LAST"] == player_name, "TEAM_CITY"].values[0]
+                    fullteam = f"{team_city} {team_name}"
+    
+                    game_logs = GameLogs(PLAYER_ID, season=SEASON, season_type=typeseason).logs()
+    
+            # Plot game log
+    
+                    if game_logs is not None and not game_logs.empty:
+                        game_dates = game_logs['GAME_DATE'][::-1]
+                        pts = game_logs['PTS'][::-1]
+    
+                    plotgames = px.bar(x=game_dates, y=pts, labels={"x": "Game Date", "y": "Points"},width=600, height=300)
+                    # st.success(f"Successfully found {player_name.lower().title()}")
+                    # Create an empty list to store shot data for all selected seasons
+                    all_shot_data = []
+                    
+    
+                    
+                    
+                    player_summary = Splits(player_id=PLAYER_ID,season=SEASON)
+                    player_summarytotals = Splits(player_id=PLAYER_ID,season=SEASON,per_mode=type2,season_type=typeseason,location=typeloc,vs_conference=typeconf,outcome=typeout,game_segment=typeseg)
+                    player_headline_stats2 = player_summarytotals.overall()
+    
+                    # Check if player_summarytotals has data
+                    if player_headline_stats2 is not None and len(player_headline_stats2) > 0:
+                        min = round(player_headline_stats2['MIN'].values[0],1)
+                        tov = round(player_headline_stats2['TOV'].values[0],1)
+                        pts = round(player_headline_stats2['PTS'].values[0],1)
+                        ast = round(player_headline_stats2['AST'].values[0],1)
+                        reb = round(player_headline_stats2['REB'].values[0],1)
+                        blk = round(player_headline_stats2['BLK'].values[0],1)
+                        stl = round(player_headline_stats2['STL'].values[0],1)
+                        season_val = player_headline_stats2['GROUP_VALUE'].values[0]
+                        fg_pct = player_headline_stats2['FG_PCT'].values[0]
+                        fg3_pct = player_headline_stats2['FG3_PCT'].values[0]
+                        ft_pct = player_headline_stats2['FT_PCT'].values[0]
+    
+    
+    
+        # Display the variables
+                            
+    
+        # Define text colors
+                        pts_color = "blue"
+                        ast_color = "green"
+                        reb_color = "red"
+                        blk_color = "purple"
+                        stl_color = "orange"
+                        fg_pct_color = "violet"
+                        fg3_pct_color = "gray"
+                        ft_pct_color = "gold"
+                        min_color = "cyan"
+                        tov_color = "magenta" 
+    
+        # Display text with different colors
+                        font_size_large = "28px"
+    
+        # Display text with different colors and font sizes using markdown syntax
+                        col1,col2 = st.columns(2)
+                        with col1:
+                            with st.expander('Player Stats'):
+                                st.markdown(f"<span style='font-size:{font_size_large}'>**Season:** <span style='color:{pts_color}'>{SEASON}</span>", unsafe_allow_html=True)
+                                st.markdown(f"<span style='font-size:{font_size_large}'>**Team:** <span style='color:{tov_color}'>{fullteam}</span>", unsafe_allow_html=True)
+                                st.markdown(f"<span style='font-size:{font_size_large}'>**Pts:** <span style='color:{pts_color}'>{pts}</span>   **Ast:** <span style='color:{ast_color}'>{ast}</span></span>", unsafe_allow_html=True)
+                                st.markdown(f"<span style='font-size:{font_size_large}'>**Reb:** <span style='color:{reb_color}'>{reb}</span>   **Blk:** <span style='color:{blk_color}'>{blk}</span></span>", unsafe_allow_html=True)
+                                st.markdown(f"<span style='font-size:{font_size_large}'>**Stl:** <span style='color:{stl_color}'>{stl}</span>   **<span style='color:{fg_pct_color}'>{round(fg_pct*100,1)}</span> FG%**</span>", unsafe_allow_html=True)
+                                st.markdown(f"<span style='font-size:{font_size_large}'><span style='color:{fg3_pct_color}'>{round(fg3_pct*100,1)} </span>3P%   **<span style='color:{ft_pct_color}'>{round(ft_pct*100,1)} </span>FT%**</span>", unsafe_allow_html=True)
+                                st.markdown(f"<span style='font-size:{font_size_large}'>**Tov:** <span style='color:{tov_color}'>{tov}</span>   **Min:** <span style='color:{min_color}'>{min}</span></span>", unsafe_allow_html=True)
+    
+                    else:
+                        st.error(f'No data found for {player_name.lower().title()} in {SEASON}. Check season: shot chart data before 1996 is unavailable')
+                    with col2:
+                        with st.expander('Game Log'):
+                            st.plotly_chart(plotgames)
+    
+    
+                col1, col,col2 = st.columns(3)
+    
+    
+    
+                # Create ShotChart object
+            
+            all_shot_data = pd.DataFrame()
+            for SEASON in SEASONS:
+    
+                shot_chart = ShotChart(PLAYER_ID, season=SEASON,game_segment=typeseg,clutch_time=typeclutch,season_type=typeseason,vs_conf=typeconf,location=typeloc,outcome=typeout,context_measure=Stat2,ahead_behind=typeaheadbehind)
+                    # Fetch shot chart data
+                shot_data = shot_chart.shot_chart()
+                all_shot_data = pd.concat([all_shot_data, shot_data], ignore_index=True)
+    
+    
+            shootperc = 0
+                    # Plot shot chart on basketball court
+            plt.figure(figsize=(13, 8))
+            ax = plt.gca()
+            if Date == 1:
+                    date = all_shot_data['GAME_DATE'].unique()
+                    datetype = st.sidebar.multiselect('', all_shot_data['GAME_DATE'].unique())
+                    all_shot_data = all_shot_data[all_shot_data['GAME_DATE'].isin(datetype)]
+            if Stat == 'MISSES':
+                    all_shot_data = all_shot_data[all_shot_data['SHOT_MADE_FLAG'] == 0]
+            if Quarters:
+                    all_shot_data = all_shot_data[all_shot_data['PERIOD'] == int(typequart)]
+            if CourtLoc:
+                    all_shot_data = all_shot_data[all_shot_data['SHOT_ZONE_AREA'].isin(courtloc)]
+            if Teams:
+                        all_shot_data = all_shot_data[(all_shot_data['VTM'].isin(teamtype)) | (all_shot_data['HTM'].isin(teamtype))]
+            if ShotType:  # Check if ShotType checkbox is selected
+                    all_shot_data = all_shot_data[all_shot_data['ACTION_TYPE'].isin(finaltype)]
+                    # Plot makes in green
+            if ShotDist == 1:
+                    all_shot_data = all_shot_data[(all_shot_data['SHOT_DISTANCE'] >= shotdistance_min) & (all_shot_data['SHOT_DISTANCE'] <= shotdistance_max)]
+                        
+    
+            
+            total_makes = len(all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 1])
+            total_misses = len(all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0])
+            total_shots = total_makes + total_misses
+            if total_shots != 0:
+                    shooting_percentage = round((total_makes / total_shots) * 100, 1)
+            else: 
+                    shooting_percentage = 0
+            shootperc = shooting_percentage
+            #20211019
+    
+    # Create trace for makes
+    # Concatenate text labels for makes and misses
+            text_all = (
+    all_shot_data["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]])) + ': ' +
+    all_shot_data["HTM"] + ' VS ' + all_shot_data["VTM"] + ' | ' +
+    all_shot_data['SHOT_TYPE'].str.replace(' Field Goal', '') + ' - ' +  # Remove 'Field Goal'
+    all_shot_data["ACTION_TYPE"] + ' (' +
+    all_shot_data["SHOT_DISTANCE"].astype(str) + ' ft)' + ' | '  + all_shot_data["PERIOD"].astype(str) + 'Q' + ' - ' +
+    all_shot_data["MINUTES_REMAINING"].astype(str) + ':' +
+    all_shot_data["SECONDS_REMAINING"].astype(str)
+    )
+    
+            hover_template = (
+                "<b>Date</b>: %{customdata[0]}<br>" +
+                "<b>Game</b>: %{customdata[1]}<br>" +
+                "<b>Shot</b>: %{customdata[2]}<br>" +
+                "<b>Shot Zone</b>: %{customdata[6]}<br>" +
+                "<b>Distance</b>: %{customdata[5]}<br>"+
+                "<b>Period</b>: %{customdata[3]}<br>" +
+                "<b>Time</b>: %{customdata[4]}" 
+                
+            )
+    
+            # Assuming shot_data is already defined as per your provided data
+            # Extracting individual components from text_all and assigning them to customdata
+            all_shot_data['GAME_DATE_NEW'] = all_shot_data["GAME_DATE"].apply(lambda date_str: '-'.join([date_str[4:6], date_str[6:], date_str[:4]]))
+            all_shot_data['MATCH'] = all_shot_data["HTM"] + ' VS ' + all_shot_data["VTM"]
+            all_shot_data['SHOT'] = all_shot_data['SHOT_TYPE'].str.replace(' Field Goal', '') + ' - ' + all_shot_data["ACTION_TYPE"]
+            all_shot_data['PERIOD_TIME'] = all_shot_data["PERIOD"].astype(str) + 'Q'
+            all_shot_data['TIME'] = all_shot_data["MINUTES_REMAINING"].astype(str) + ':' + all_shot_data["SECONDS_REMAINING"].astype(str)
+            all_shot_data['DISTANCE'] = all_shot_data['SHOT_DISTANCE'].astype(str) + 'ft'
+            all_shot_data['SHOT_ZONE'] = all_shot_data['SHOT_ZONE_AREA'] + ' - ' + all_shot_data['SHOT_ZONE_BASIC']
+            # Create trace for makes
+            make_trace = go.Scatter(
+                x=-(all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 1]["LOC_X"]),
+                y=all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 1]["LOC_Y"],
+                mode='markers',
+                marker=dict(color='rgba(0, 128, 0, 0.6)', size=10),
+                name='Made Shot ✅',
+                customdata=all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 1][['GAME_DATE_NEW', 'MATCH', 'SHOT', 'PERIOD_TIME','TIME','DISTANCE','SHOT_ZONE']],  # Use customdata for makes only
+                hoverinfo='text',  # Set hoverinfo to text
+                hovertemplate=hover_template
+            )
+    
+            # Create trace for misses
+            miss_trace = go.Scatter(
+                x=-(all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"]),
+                y=all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"],
+                mode='markers',
+                marker=dict(symbol='x', color='rgba(255, 0, 0, 0.6)', size=10),
+                name='Missed Shot ❌',
+                customdata=all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0][['GAME_DATE_NEW', 'MATCH', 'SHOT', 'PERIOD_TIME','TIME','DISTANCE','SHOT_ZONE']],  # Use customdata for misses only
+                hoverinfo='text',  # Set hoverinfo to text
+                hovertemplate=hover_template
+            )
+            fig2trace = go.Scatter(
+                    x=-(all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0]["LOC_X"]),
+        y=all_shot_data[all_shot_data["SHOT_MADE_FLAG"] == 0]["LOC_Y"],
+        mode='markers',
+        marker=dict(symbol='hexagon', color='rgba(255, 0, 0, 0.6)', size=10),
+        name='Shots',
+        text=text_all[all_shot_data["SHOT_MADE_FLAG"] == 0],  # Use concatenated text for misses only
+        hoverinfo='text'
+            )
+    
+    # Create layout
+        
+            layout = go.Layout(
+        hovermode='closest',
+        xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-260, 260]),
+        yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-60, 474]),
+        plot_bgcolor='#D2B48C',  # Set background color to the desired color
+        
+        width=650,  # Set the width of the background
+        height=718,  # Set the height of the background
+        autosize=False,
+        legend=dict(x=0.98, y=1, xanchor='right', yanchor='top', bgcolor='rgba(0,0,0,0)',font=dict(color='black'), bordercolor='black', borderwidth=0),
+        margin=dict(l=0, r=0, t=0, b=0)# Customize legend
+    )
+    
+    # Create figure
+    
+            fig = go.Figure()
+            draw_plotly_court(fig)
+            fig.update_layout(layout)
+    
+            fig3 = go.Figure()
+    
+            
+    # Add basketball court lines as shapes
+            court_shapes=[
+                dict(
+                    type="rect", x0=-250, y0=-52.5, x1=250, y1=417.5,
+                    line=dict(color='white', width=2)
+                    # fillcolor='#333333',
+                    
+                ),
+                dict(
+                    type="rect", x0=-80, y0=-52.5, x1=80, y1=137.5,
+                    line=dict(color='white', width=2)
+                    # fillcolor='#333333',
+                    
+                ),
+                dict(
+                    type="rect", x0=-60, y0=-52.5, x1=60, y1=137.5,
+                    line=dict(color='white', width=2)
+                    # fillcolor='#333333',
+                    
+                ),
+                dict(
+                    type="circle", x0=-60, y0=77.5, x1=60, y1=197.5, xref="x", yref="y",
+                    line=dict(color='white', width=2)
+                    # fillcolor='#dddddd',
+                ),
+                dict(
+                    type="line", x0=-60, y0=137.5, x1=60, y1=137.5,
+                    line=dict(color='white', width=2)
+                ),
+    
+                dict(
+                    type="rect", x0=-2, y0=-7.25, x1=2, y1=-12.5,
+                    line=dict(color="#ec7607", width=2),
+                    fillcolor='#ec7607',
+                ),
+                dict(
+                    type="circle", x0=-7.5, y0=-7.5, x1=7.5, y1=7.5, xref="x", yref="y",
+                    line=dict(color="#ec7607", width=2),
+                ),
+                dict(
+                    type="line", x0=-30, y0=-12.5, x1=30, y1=-12.5,
+                    line=dict(color="#ec7607", width=2),
+                ),
+    
+                dict(type="path",
+                     path=ellipse_arc(a=40, b=40, start_angle=0, end_angle=np.pi),
+                     line=dict(color='white', width=2)),
+                dict(type="path",
+                     path=ellipse_arc(a=237.5, b=237.5, start_angle=0.386283101, end_angle=np.pi - 0.386283101),
+                     line=dict(color='white', width=2)),
+                dict(
+                    type="line", x0=-220, y0=-52.5, x1=-220, y1=89.47765084,
+                    line=dict(color='white', width=2)
+                ),
+                dict(
+                    type="line", x0=-220, y0=-52.5, x1=-220, y1=89.47765084,
+                    line=dict(color='white', width=2)
+                ),
+                dict(
+                    type="line", x0=220, y0=-52.5, x1=220, y1=89.47765084,
+                    line=dict(color='white', width=2)
+                ),
+    
+                dict(
+                    type="line", x0=-250, y0=227.5, x1=-220, y1=227.5,
+                    line=dict(color='white', width=2)
+                ),
+                dict(
+                    type="line", x0=250, y0=227.5, x1=220, y1=227.5,
+                    line=dict(color='white', width=2)
+                ),
+                dict(
+                    type="line", x0=-90, y0=17.5, x1=-80, y1=17.5,
+                    line=dict(color='white', width=2)
+                ),
+                dict(
+                    type="line", x0=-90, y0=27.5, x1=-80, y1=27.5,
+                    line=dict(color='white', width=2)
+                ),
+                dict(
+                    type="line", x0=-90, y0=57.5, x1=-80, y1=57.5,
+                    line=dict(color='white', width=2)
+                ),
+                dict(
+                    type="line", x0=-90, y0=87.5, x1=-80, y1=87.5,
+                    line=dict(color='white', width=2)
+                ),
+                dict(
+                    type="line", x0=90, y0=17.5, x1=80, y1=17.5,
+                    line=dict(color='white', width=2)
+                ),
+                dict(
+                    type="line", x0=90, y0=27.5, x1=80, y1=27.5,
+                    line=dict(color='white', width=2)
+                ),
+                dict(
+                    type="line", x0=90, y0=57.5, x1=80, y1=57.5,
+                    line=dict(color='white', width=2)
+                ),
+                dict(
+                    type="line", x0=90, y0=87.5, x1=80, y1=87.5,
+                    line=dict(color='white', width=2)
+                ),
+    
+                dict(type="path",
+                     path=ellipse_arc(y_center=417.5, a=60, b=60, start_angle=-0, end_angle=-np.pi),
+                     line=dict(color='white', width=2)),
+    
+            ]
+            court_shapes2 = [
+        dict(
+                type = 'line',
+                x0=256,
+                x1=-256,
+                y0=0,
+                y1=0,
+                line=dict(color='white', width=2.5)
+        ),
+            dict(
+                type = 'line',
+                x1=256,
+                x0=256,
+                y0=515,
+                y1 = 0,
+                line=dict(color='white', width=2.5)
+        ),
+        dict(
+                type = 'line',
+                x1=-256,
+                x0=-256,
+                y0=515,
+                y1 = 0,
+                line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type = 'circle',
+            x1 = 60,
+            x0 = -60,
+            y0=410,
+            y1 = 535,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+                type = 'line',
+                y0 = 469,
+                y1 = 469,
+                x1 = -255,
+                x0 = 255,
+                line=dict(color='white', width=2.5)
+        ),
+    
+        
+        dict(
+            type='line',
+            x0=-30,
+            y0=40,
+            y1=40,
+            x1=30,
+            line=dict(color='white', width=2.5)
+    
+        ),
+        dict(
+            type='line',
+            x0=-223,
+            y0=0,
+            x1=-223,
+            y1=140,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='line',
+            x0=220,
+            y0=0,
+            x1=220,
+            y1=140,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='path',
+            path='M -225,132,100,150,160,170,180,190 C -200,320 150,375 219,140',
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='line',
+            x0=-80,
+            y0=0,
+            x1=-80,
+            y1=190,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='line',
+            x0=80,
+            y0=0,
+            x1=80,
+            y1=190,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='line',
+            x0=-60,
+            y0=0,
+            x1=-60,
+            y1=190,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='line',
+            x0=60,
+            y0=0,
+            x1=60,
+            y1=190,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='line',
+            x0=-80,
+            y0=190,
+            x1=80,
+            y1=190,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='circle',
+            xref='x',
+            yref='y',
+            x0=-60,
+            y0=130,
+            x1=60,
+            y1=245,
+            line=dict(color='white', width=2.5)
+        ),
+        dict(
+            type='circle',
+            xref='x',
+            yref='y',
+            x0=-15,
+            y0=45,
+            x1=15,
+            y1=75,
+            line=dict(color='white', width=2.5)
+        )
+    ]
+    
+    # Set aspect ratio
+            # fig.update_layout(shapes=court_shapes)
+            fig.add_trace(make_trace)
+            fig.add_trace(miss_trace)
+    
+            fig.update_yaxes(scaleanchor='x', scaleratio=1)
+    
+    # Update hover labels
+            fig.update_traces(hoverlabel=dict(bgcolor='black', font_size=12))
+            
+            fig3.update_layout(shapes=court_shapes)
+            fig3.add_trace(fig2trace)
+            fig3.update_traces(hoverlabel=dict(bgcolor='black', font_size=12))
+            fig3.update_yaxes(scaleanchor='x', scaleratio=1)
+    
+    
+    
+    
+    
+    # Display the plot
+                        # Plot hexbin with custom colormap
+            fig2 = plt.figure(figsize=(12,11))
+            ax = fig2.add_axes([0, 0, 1, 1])
+            hb = ax.hexbin(-(all_shot_data['LOC_X']), all_shot_data['LOC_Y'], gridsize=(30, 30), extent=(-240, 240, -30, 370), bins='log', cmap='Blues',edgecolors='none')
+            ax = draw_court(outer_lines=True)
+            legend_elements = [
+                plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='Less Shots', markerfacecolor='white', markersize=20),
+                plt.Line2D([0.5], [0.5], marker='H', color='#D2B48C', label='More Shots', markerfacecolor='blue', markersize=20)
+            ]
+            plt.legend(handles=legend_elements, loc='upper right',framealpha=0) 
+    
+            # Create hexbin plot with Plotly
+            fig5 = go.Figure()
+            fig5 = px.density_heatmap(all_shot_data, x=-(all_shot_data['LOC_X']), y=all_shot_data['LOC_Y'], nbinsx=35, nbinsy=55, color_continuous_scale='Hot')
+    
+    
+    
+            # Add hover labels
+            fig5.update_traces(hovertemplate='Shots: %{z}<extra></extra>',showscale=False)
+    
+            # Customize layout
+            fig5.update_layout(
+                title='Shot Density',
+                xaxis_title='',
+                yaxis_title='',
+            xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-252, 260]),
+            yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-70, 475]),
+            plot_bgcolor='black',
+            margin=dict(l=0, r=0, t=0, b=0),
+                width=800,  # Set the width of the background
+            height=765,  # Set the height of the background
+            autosize=False,
+            coloraxis=dict(
+        showscale=False,
+        cmin=1,
+        cmax=25
+    )
+    
+            )
+            fig5.update_layout(shapes=court_shapes)
+            fig5.update_yaxes(scaleanchor='x', scaleratio=1)
+    
+           
+    
+            # fig5.update_coloraxes(showscale=False)
+    
+    
+            # fig5.update_coloraxes(showscale=False)
+    
+    
+            # Show plot
+    # Display the image in Streamlit
+                        # Customize color bar legend
+            plottype = st.selectbox('Plot Type',['Make/Miss','Hexbin Plot','Heat Map','KDE Plot','FG% and Frequency'])
+            if plottype == 'Make/Miss':
+                st.plotly_chart(fig,use_container_width=True)
+            elif plottype == 'Hexbin Plot':
+                fig2.patch.set_visible(False)
+                st.pyplot(fig2)
+            elif plottype =='Heat Map':
+                st.plotly_chart(fig5,use_container_width=True)
+            elif plottype =='FG% and Frequency':
+                 st.pyplot(frequency_chart(shot_data))
+            else:
+                plt.clf()
+                cmap = 'gist_heat_r'
+                fig6 = sns.kdeplot(x=-(shot_data['LOC_X']), y=shot_data['LOC_Y'], cmap=cmap, fill=True, n_levels=50)
+                draw_court2(fig6,outer_lines=True)
+                # Set the background color to white
+                fig6.set_facecolor('black')
+                fig6.set_xlim(250, -250)
+                fig6.set_ylim(-47.5, 422.5)
+                fig6.set_axis_off()
+                st.pyplot(fig6.figure)
+            st.markdown(f'<div style="text-align: center;"><span style="font-size:25px;">{total_makes}/{total_shots} - {shootperc}%</span></div>', unsafe_allow_html=True)
+    
+            
+                    # st.image(img_buffer, use_column_width=False, width=345)  
+    
+        
+            # for SEASON in SEASONS:
+            #     shotfull = ShotTracking(PLAYER_ID, season=SEASON, season_type=typeseason)
+            #     if shottrack == 'Overall':
+            #             shots = shotfull.overall()
+            #     elif shottrack == 'General':
+            #             shots = shotfull.general()
+            #     elif shottrack == 'Shot Clock':
+            #             shots = shotfull.shot_clock()
+            #     elif shottrack == 'Dribbles':
+            #             shots = shotfull.dribbles()
+            #     elif shottrack == 'Closest Defender':
+            #             shots = shotfull.closest_defender()
+            #     elif shottrack == 'Closest Defender Long':
+            #             shots = shotfull.closest_defender_long()
+            #     elif shottrack == 'Touch Time':
+            #             shots = shotfull.touch_time()
+            #     shots.drop(columns=['PLAYER_ID','SORT_ORDER','PLAYER_NAME_LAST_FIRST','GP','G'], inplace=True)
+            #     st.write(shots)
+            #     st.write('')
+    
+            
+                    # st.plotly_chart(fig3)
+                    
+            
+    
+                
+                # st.sidebar.header(f'{season1}: 0/{total_misses} - {shooting_percentage}%')
+        except PlayerNotFoundException as e:
+            st.error(str(e))
+        # else:
+        #     st.image("https://static.vecteezy.com/system/resources/thumbnails/013/861/222/small/silhouette-of-basketball-player-with-ball-shooting-dunk-free-vector.jpg",use_column_width=True)
+    
