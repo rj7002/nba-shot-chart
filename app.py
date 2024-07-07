@@ -1672,35 +1672,7 @@ else:
                 plt.legend(handles=legend_elements, loc='upper right',framealpha=0) 
         
                 # Create hexbin plot with Plotly
-                fig5 = go.Figure()
-                fig5 = px.density_heatmap(all_shot_data, x=-(all_shot_data['LOC_X']), y=all_shot_data['LOC_Y'], nbinsx=35, nbinsy=55, color_continuous_scale='Hot')
-        
-        
-        
-                # Add hover labels
-                fig5.update_traces(hovertemplate='Shots: %{z}<extra></extra>',showscale=False)
-        
-                # Customize layout
-                fig5.update_layout(
-                    title='Shot Density',
-                    xaxis_title='',
-                    yaxis_title='',
-                xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-252, 260]),
-                yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-70, 475]),
-                plot_bgcolor='black',
-                margin=dict(l=0, r=0, t=0, b=0),
-                    width=800,  # Set the width of the background
-                height=765,  # Set the height of the background
-                autosize=False,
-                coloraxis=dict(
-            showscale=False,
-            cmin=1,
-            cmax=25
-        )
-        
-                )
-                fig5.update_layout(shapes=court_shapes)
-                fig5.update_yaxes(scaleanchor='x', scaleratio=1)
+                
         
                
         
@@ -1720,6 +1692,40 @@ else:
                     fig2.patch.set_visible(False)
                     st.pyplot(fig2)
                 elif plottype =='Heat Map':
+                    c1,c2 = st.columns(2)
+                    with c1:
+                        xbins = st.slider('Number of x bins',5,80,35)
+                    with c2:
+                        ybins = st.slider('Number of y bins',5,80,55)
+                    fig5 = go.Figure()
+                    fig5 = px.density_heatmap(all_shot_data, x=-(all_shot_data['LOC_X']), y=all_shot_data['LOC_Y'], nbinsx=xbins, nbinsy=ybins, color_continuous_scale='Hot')
+        
+        
+        
+                # Add hover labels
+                    fig5.update_traces(hovertemplate='Shots: %{z}<extra></extra>',showscale=False)
+        
+                # Customize layout
+                    fig5.update_layout(
+                                    title='Shot Density',
+                                    xaxis_title='',
+                                    yaxis_title='',
+                                xaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-252, 260]),
+                                yaxis=dict(showline=False, showticklabels=False, showgrid=False, range=[-70, 475]),
+                                plot_bgcolor='black',
+                                margin=dict(l=0, r=0, t=0, b=0),
+                                    width=800,  # Set the width of the background
+                                height=765,  # Set the height of the background
+                                autosize=False,
+                                coloraxis=dict(
+                            showscale=False,
+                            cmin=1,
+                            cmax=25
+                        )
+                        
+                    )
+                    fig5.update_layout(shapes=court_shapes)
+                    fig5.update_yaxes(scaleanchor='x', scaleratio=1)
                     st.plotly_chart(fig5,use_container_width=True)
                 elif plottype =='FG% and Frequency':
                      st.pyplot(frequency_chart(shot_data))
