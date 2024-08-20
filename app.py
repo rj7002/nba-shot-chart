@@ -1690,7 +1690,7 @@ else:
                 plottype = st.selectbox('Plot Type',['3D','Make/Miss','Hexbin Plot','Heat Map','KDE Plot','FG% and Frequency'])
                 if plottype == '3D':
                     df = all_shot_data
-                    court = CourtCoordinates(realseason)
+                    court = CourtCoordinates(SEASON)
                     court_lines_df = court.get_coordinates()
                     fig = px.line_3d(
                         data_frame=court_lines_df,
