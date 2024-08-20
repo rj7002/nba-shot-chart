@@ -1862,7 +1862,7 @@ else:
                             hovertemplate=hovertemplate
                     
                         ))
-                    st.subheader(f'{selected_player} Shot Chart in {realseason}')
+                    # st.subheader(f'{selected_player} Shot Chart in {realseason}')
                     st.plotly_chart(fig)
 
                     
