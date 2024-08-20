@@ -1685,7 +1685,188 @@ else:
                 # Show plot
         # Display the image in Streamlit
                             # Customize color bar legend
-                plottype = st.selectbox('Plot Type',['Make/Miss','Hexbin Plot','Heat Map','KDE Plot','FG% and Frequency'])
+                plottype = st.selectbox('Plot Type',['3D','Make/Miss','Hexbin Plot','Heat Map','KDE Plot','FG% and Frequency'])
+                if plottype == '3D':
+                    df = all_shot_data
+                    court = CourtCoordinates(realseason)
+                    court_lines_df = court.get_coordinates()
+                    fig = px.line_3d(
+                        data_frame=court_lines_df,
+                        x='x',
+                        y='y',
+                        z='z',
+                        line_group='line_group_id',
+                        color='line_group_id',
+                        color_discrete_map={
+                            'court': 'black',
+                            'hoop': '#e47041',
+                            'net': '#D3D3D3',
+                            'backboard': 'gray',
+                            'free_throw_line': 'black',
+                            'hoop2':'white'
+                        }
+                    )
+                    fig.update_traces(hovertemplate=None, hoverinfo='skip', showlegend=False)
+                    fig.update_traces(line=dict(width=6))
+                    fig.update_layout(    
+                        margin=dict(l=20, r=20, t=20, b=20),
+                        scene_aspectmode="data",
+                        height=600,
+                        scene_camera=dict(
+                            eye=dict(x=1.3, y=0, z=0.7)
+                        ),
+                        scene=dict(
+                            xaxis=dict(title='', showticklabels=False, showgrid=False),
+                            yaxis=dict(title='', showticklabels=False, showgrid=False),
+                            zaxis=dict(title='',  showticklabels=False, showgrid=False, showbackground=True, backgroundcolor='#d2a679'),
+                        ),
+                        showlegend=False,
+                        legend=dict(
+                            yanchor='top',
+                            y=0.05,
+                            x=0.2,
+                            xanchor='left',
+                            orientation='h',
+                            font=dict(size=15, color='gray'),
+                            bgcolor='rgba(0, 0, 0, 0)',
+                            title='',
+                            itemsizing='constant'
+                        )
+                    )
+                    # df2 = shotchart(selected_player,realseason)
+                    # shotchartdata = shotchartdetail.ShotChartDetail(player_id=id,season_nullable=realseason,team_id=0,context_measure_simple = 'FGA')
+                    
+                    # df = shotchartdata.get_data_frames()[0]
+                    
+                    x_values = []
+                    y_values = []
+                    z_values = []
+                    
+                    for index, row in df.iterrows():
+                        
+                        
+                       
+                        x_values.append(-row['LOC_X'])
+                        # Append the value from column 'x' to the list
+                        y_values.append(row['LOC_Y']+45)
+                        z_values.append(0)
+                    
+                    
+                    
+                    x_values2 = []
+                    y_values2 = []
+                    z_values2 = []
+                    for index, row in df.iterrows():
+                        # Append the value from column 'x' to the list
+                      
+                    
+                        x_values2.append(court.hoop_loc_x)
+                    
+                        y_values2.append(court.hoop_loc_y)
+                        z_values2.append(100)
+                    
+                    import numpy as np
+                    import plotly.graph_objects as go
+                    import streamlit as st
+                    import math
+                    def calculate_distance(x1, y1, x2, y2):
+                        """Calculate the distance between two points (x1, y1) and (x2, y2)."""
+                        return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+                    
+                    def generate_arc_points(p1, p2, apex, num_points=100):
+                        """Generate points on a quadratic Bezier curve (arc) between p1 and p2 with an apex."""
+                        t = np.linspace(0, 1, num_points)
+                        x = (1 - t)**2 * p1[0] + 2 * (1 - t) * t * apex[0] + t**2 * p2[0]
+                        y = (1 - t)**2 * p1[1] + 2 * (1 - t) * t * apex[1] + t**2 * p2[1]
+                        z = (1 - t)**2 * p1[2] + 2 * (1 - t) * t * apex[2] + t**2 * p2[2]
+                        return x, y, z
+                    
+                    # Example lists of x and y coordinates
+                    x_coords = x_values
+                    y_coords = y_values
+                    z_value = 0  # Fixed z value
+                    x_coords2 = x_values2
+                    y_coords2 = y_values2
+                    z_value2 = 100
+                    for i in range(len(df)):
+                        x1 = x_coords[i]
+                        y1 = y_coords[i]
+                        x2 = x_coords2[i]
+                        y2 = y_coords2[i]
+                        # Define the start and end points
+                        p2 = np.array([x1, y1, z_value])
+                        p1 = np.array([x2, y2, z_value2])
+                        
+                        # Apex will be above the line connecting p1 and p2
+                        distance = calculate_distance(x1, y1, x2, y2)
+                    
+                        if df['SHOT_MADE_FLAG'].iloc[i] == 1:
+                            s = 'circle-open'
+                            s2 = 'circle'
+                            size = 9
+                            color = 'green'
+                        else:
+                            s = 'cross'
+                            s2 = 'cross'
+                            size = 10
+                            color = 'red'
+                        hovertemplate= f"Game: {df['HTM'].iloc[i]} vs {df['VTM'].iloc[i]}<br>Result: {df['EVENT_TYPE'].iloc[i]}<br>Shot Type: {df['ACTION_TYPE'].iloc[i]}<br>Distance: {df['SHOT_DISTANCE'].iloc[i]} ft {df['SHOT_TYPE'].iloc[i]}<br>Quarter: {df['PERIOD'].iloc[i]}<br>Time: {df['MINUTES_REMAINING'].iloc[i]}:{df['SECONDS_REMAINING'].iloc[i]}"
+                    
+                        if df['SHOT_DISTANCE'].iloc[i] > 3:
+                            if df['SHOT_DISTANCE'].iloc[i] > 50:
+                                h = randint(275,325)
+                            elif df['SHOT_DISTANCE'].iloc[i] > 30:
+                                h = randint(250,300)
+                            elif df['SHOT_DISTANCE'].iloc[i] > 25:
+                                h = randint(200,250)
+                            elif df['SHOT_DISTANCE'].iloc[i] > 15:
+                                h = randint(200,250)
+                            else:
+                                h = randint(150,200)
+                        
+                            apex = np.array([0.5 * (x1 + x2), 0.5 * (y1 + y2), h])  # Adjust apex height as needed
+                            
+                            # Generate arc points
+                            x, y, z = generate_arc_points(p1, p2, apex)
+                            fig.add_trace(go.Scatter3d(
+                                        x=x, y=y, z=z,
+                                        mode='lines',
+                                        line=dict(width=8,color = color),
+                                        opacity =0.5,
+                                        name=f'Arc {i + 1}',
+                                        # hoverinfo='text',
+                                        hovertemplate=hovertemplate
+                                    ))
+                        # Add start and end points
+                    
+                        fig.add_trace(go.Scatter3d(
+                            x=[p2[0], p2[0]],
+                            y=[p2[1], p2[1]],
+                            z=[p2[2], p2[2]],
+                            mode='markers',
+                            marker=dict(size=size, symbol=s,color=color),
+                            name=f'Endpoints {i + 1}',
+                            # hoverinfo='text',
+                            hovertemplate=hovertemplate
+                        ))
+                        fig.add_trace(go.Scatter3d(
+                            x=[p2[0], p2[0]],
+                            y=[p2[1], p2[1]],
+                            z=[p2[2], p2[2]],
+                            mode='markers',
+                            marker=dict(size=5, symbol=s2,color = color),
+                            name=f'Endpoints {i + 1}',
+                            # hoverinfo='text',
+                            hovertemplate=hovertemplate
+                    
+                        ))
+                    st.subheader(f'{selected_player} Shot Chart in {realseason}')
+                    st.plotly_chart(fig)
+
+                    
+
+
+                    
                 if plottype == 'Make/Miss':
                     st.plotly_chart(fig,use_container_width=True)
                 elif plottype == 'Hexbin Plot':
