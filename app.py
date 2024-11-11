@@ -1687,7 +1687,7 @@ else:
                 # Show plot
         # Display the image in Streamlit
                             # Customize color bar legend
-                plottype = st.selectbox('Plot Type',['3D','Make/Miss','Hexbin Plot','Heat Map','KDE Plot','FG% and Frequency'])
+                plottype = st.selectbox('Plot Type',['Make/Miss','Hexbin Plot','Heat Map','KDE Plot','FG% and Frequency'])
                 if plottype == '3D':
                     df = all_shot_data
                     court = CourtCoordinates(SEASON)
