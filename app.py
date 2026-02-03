@@ -792,7 +792,7 @@ def frequency_chart(df: pd.DataFrame, extent=(-300, 300,-50,422.5,),
 
 st.sidebar.markdown('<div style="text-align: center;"><span style="font-size:30px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
 st.sidebar.image("https://i.imgur.com/ljWwIOF.png?1")
-animated = st.sidebar.toggle('Animated Shot Charts')
+animated = st.sidebar.checkbox('Animated Shot Charts')
 
 if animated == 1:
     player_list = PlayerList()
