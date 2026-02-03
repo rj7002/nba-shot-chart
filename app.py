@@ -1047,7 +1047,7 @@ else:
     Quarters = st.sidebar.checkbox('Quarters')
     if Quarters:
         typequart = st.sidebar.selectbox('',['1','2','3','4'])
-    Clutch_Time = st.sidebar.toggle('Clutch Time')
+    Clutch_Time = st.sidebar.checkbox('Clutch Time')
     if Clutch_Time == 1:
         typeclutch = st.sidebar.selectbox('', ['Last 5 Minutes', 'Last 4 Minutes','Last 3 Minutes','Last 2 Minutes','Last 1 Minute','Last 30 Seconds', 'Last 10 Seconds'])
     else:
@@ -1128,7 +1128,7 @@ else:
     #     elif typemonth == 'July':
     #         typemonth = '10'
     
-    Date = st.sidebar.toggle('Date (YearMonthDay)')
+    Date = st.sidebar.checkbox('Date (YearMonthDay)')
     
         # User input for player name
     st.markdown('<div style="text-align: center;"><span style="font-size:80px;">NBA Shot Visualizer</span></div>', unsafe_allow_html=True)
