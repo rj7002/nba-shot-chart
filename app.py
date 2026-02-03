@@ -1039,12 +1039,12 @@ else:
         Stat2 = 'PTS_2ND_CHANCE'
     elif Stat == 'PF':
         Stat2 = 'PF'
-    GameSegment = st.sidebar.toggle('Game Segment')
+    GameSegment = st.sidebar.checkbox('Game Segment')
     if GameSegment == 1:
         typeseg = st.sidebar.selectbox('',['First Half', 'Second Half', 'Overtime'])
     else:
         typeseg = None
-    Quarters = st.sidebar.toggle('Quarters')
+    Quarters = st.sidebar.checkbox('Quarters')
     if Quarters:
         typequart = st.sidebar.selectbox('',['1','2','3','4'])
     Clutch_Time = st.sidebar.toggle('Clutch Time')
@@ -1052,37 +1052,37 @@ else:
         typeclutch = st.sidebar.selectbox('', ['Last 5 Minutes', 'Last 4 Minutes','Last 3 Minutes','Last 2 Minutes','Last 1 Minute','Last 30 Seconds', 'Last 10 Seconds'])
     else:
         typeclutch = None
-    Playoffs = st.sidebar.toggle('Playoffs')
+    Playoffs = st.sidebar.checkbox('Playoffs')
     if Playoffs == 1:
         typeseason = 'Playoffs'
     else:
         typeseason = "Regular Season"
-    Conference = st.sidebar.toggle('Conference')
+    Conference = st.sidebar.checkbox('Conference')
     if Conference == 1:
         typeconf = st.sidebar.selectbox('',['East', 'West'])
     else:
         typeconf = None
-    Location = st.sidebar.toggle('Location')
+    Location = st.sidebar.checkbox('Location')
     if Location == 1:
         typeloc = st.sidebar.selectbox('',['Home', 'Road'])
     else:
         typeloc = None
-    Outcome = st.sidebar.toggle('Outcome')
+    Outcome = st.sidebar.checkbox('Outcome')
     if Outcome == 1:
         typeout = st.sidebar.selectbox('',['W', 'L'])
     else:
         typeout = None
-    AheadBehind = st.sidebar.toggle('Ahead/Behind')
+    AheadBehind = st.sidebar.checkbox('Ahead/Behind')
     if AheadBehind == 1:
         typeaheadbehind = st.sidebar.selectbox('',['Behind or Tied','Ahead or Tied'])
     else:
         typeaheadbehind = None
-    ShotDist = st.sidebar.toggle('Shot Distance')
+    ShotDist = st.sidebar.checkbox('Shot Distance')
     if ShotDist == 1:
         shotdistbool = True
         # shotdistance = st.sidebar.slider("Shot Distance", 0, 40)
         shotdistance_min, shotdistance_max = st.sidebar.slider("Shot Distance", 0, 40, (0, 40))
-    ShotType = st.sidebar.toggle('Shot Type')
+    ShotType = st.sidebar.checkbox('Shot Type')
     if ShotType == 1:
         shottypebool = True
         shottype = st.sidebar.selectbox('', ['Jump Shot', 'Layup','Dunk','Other'])
@@ -1098,13 +1098,13 @@ else:
         elif shottype == 'Other':
             othertype = st.sidebar.multiselect('', ['Driving Floating Jump Shot', 'Floating Jump shot','Driving Floating Bank Jump Shot','Driving Bank Hook Shot','Driving Hook Shot','Turnaround Hook Shot','Hook Shot'])
             finaltype = othertype
-    Teams = st.sidebar.toggle('Teams')
+    Teams = st.sidebar.checkbox('Teams')
     if Teams == 1:
         teamtype = st.sidebar.multiselect('', ['ATL', 'BOS', 'BKN', 'CHA', 'CHI', 'CLE', 'DAL', 'DEN', 'DET', 'GSW', 'HOU', 'IND', 'LAC', 'LAL', 'MEM', 'MIA', 'MIL', 'MIN', 'NOP', 'NYK', 'OKC', 'ORL', 'PHI', 'PHX', 'POR', 'SAC', 'SAS', 'TOR', 'UTA', 'WAS'])
-    CourtLoc = st.sidebar.toggle('Court Location')
+    CourtLoc = st.sidebar.checkbox('Court Location')
     if CourtLoc == 1:
         courtloc = st.sidebar.multiselect('',['Right Side(R)','Left Side(L)','Center(C)','Right Side Center(RC)','Left Side Center(LC)'])
-    # Month = st.sidebar.toggle('Month')
+    # Month = st.sidebar.checkbox('Month')
     # if Month == 1:
     #     typemonth = st.sidebar.selectbox('',['October','November','December','January','February','March','April','May','June','July'])
     #     if typemonth == 'October':
