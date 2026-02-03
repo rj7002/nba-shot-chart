@@ -12,3 +12,4 @@ unidecode
 streamlit
 nba-api>=1.4.1
 seaborn
+altair==4.2.2
